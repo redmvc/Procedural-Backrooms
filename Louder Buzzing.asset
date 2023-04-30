@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f11136daadff0b44ac2278a314682ab, type: 3}
+  m_Name: Louder Buzzing
+  m_EditorClassIdentifier: 
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 6ba9257acb911864994726b9be39b77a,
+    type: 2}
+  udonAssembly: ".data_start\r\n\r\n    .export audioSource\r\n    \r\n    onPlayerTriggerEnterPlayer:
+    %VRCSDKBaseVRCPlayerApi, null\r\n    __Boolean_0: %SystemBoolean, null\r\n   
+    __Boolean_1: %SystemBoolean, null\r\n    __instance_0: %VRCSDKBaseVRCPlayerApi,
+    null\r\n    __Boolean_2: %SystemBoolean, null\r\n    __instance_1: %VRCSDKBaseVRCPlayerApi,
+    null\r\n    __instance_2: %UnityEngineAudioSource, null\r\n    __value_0: %SystemSingle,
+    null\r\n    audioSource: %UnityEngineAudioSource, null\r\n\r\n.data_end\r\n\r\n.code_start\r\n\r\n   
+    .export _onPlayerTriggerEnter\r\n    \r\n    _onPlayerTriggerEnter:\r\n    \r\n       
+    PUSH, onPlayerTriggerEnterPlayer\r\n        PUSH, __instance_0\r\n        COPY\r\n       
+    PUSH, __instance_0\r\n        PUSH, __Boolean_0\r\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__IsValid__SystemBoolean\"\r\n       
+    PUSH, onPlayerTriggerEnterPlayer\r\n        PUSH, __instance_0\r\n        COPY\r\n       
+    PUSH, __Boolean_0\r\n        PUSH, __Boolean_1\r\n        COPY\r\n        PUSH,
+    __Boolean_0\r\n        JUMP_IF_FALSE, 0x000000DC\r\n        PUSH, onPlayerTriggerEnterPlayer\r\n       
+    PUSH, __instance_1\r\n        COPY\r\n        PUSH, __instance_1\r\n        PUSH,
+    __Boolean_2\r\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\r\n       
+    PUSH, __Boolean_2\r\n        JUMP_IF_FALSE, 0x000000D4\r\n        PUSH, audioSource\r\n       
+    PUSH, __instance_2\r\n        COPY\r\n        PUSH, __instance_2\r\n        PUSH,
+    __value_0\r\n        EXTERN, \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\r\n       
+    JUMP, 0x000000D4\r\n        JUMP, 0x000000DC\r\n        JUMP, 0xFFFFFFFC\r\n   
+    \r\n\r\n.code_end\r\n"
+  assemblyError: 
+  graphData:
+    name: 
+    description: 
+    nodes:
+    - fullName: Variable_UnityEngineAudioSource
+      uid: c40f6c8f-b5fc-4d5d-9ec7-d8b2de2833b7
+      position: {x: 0, y: 0}
+      nodeUIDs:
+      - 
+      - 
+      - 
+      - 
+      - 
+      flowUIDs: []
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: 
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|audioSource
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089|True
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089|False
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|none
+    - fullName: Get_Variable
+      uid: 38e4dcb9-9ade-408a-b198-c17559c3ac0f
+      position: {x: 760, y: 382}
+      nodeUIDs:
+      - 
+      flowUIDs: []
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|c40f6c8f-b5fc-4d5d-9ec7-d8b2de2833b7
+      - unityObjectValue: {fileID: 0}
+        stringValue: 
+    - fullName: UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid
+      uid: 91658472-82dd-4a52-9fd3-5e08267aa4f6
+      position: {x: 1114.3976, y: 164.5785}
+      nodeUIDs:
+      - 38e4dcb9-9ade-408a-b198-c17559c3ac0f|0
+      - 
+      flowUIDs:
+      - 
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: 
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|0.25
+    - fullName: Event_OnPlayerTriggerEnter
+      uid: 2037df07-4837-498b-9f03-83e4e991c5e9
+      position: {x: 200, y: 94}
+      nodeUIDs: []
+      flowUIDs:
+      - 2a2a418b-4ec0-465a-b8ff-47a12e036324
+      nodeValues: []
+    - fullName: VRCSDKBaseVRCPlayerApi.__IsValid__SystemBoolean
+      uid: 2a2a418b-4ec0-465a-b8ff-47a12e036324
+      position: {x: 482, y: 98}
+      nodeUIDs:
+      - 2037df07-4837-498b-9f03-83e4e991c5e9|0
+      flowUIDs:
+      - 81e1199a-09e3-4dbd-8a19-6db9c88d89cd
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: 
+    - fullName: Branch
+      uid: 81e1199a-09e3-4dbd-8a19-6db9c88d89cd
+      position: {x: 677.1869, y: 98.27037}
+      nodeUIDs:
+      - 2a2a418b-4ec0-465a-b8ff-47a12e036324|0
+      flowUIDs:
+      - cdbc2a80-e6c3-4692-bc67-ed16a4d22586
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089|False
+    - fullName: VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean
+      uid: 0bf1aee8-4384-44b0-9291-2e1dec78a21b
+      position: {x: 473, y: 262}
+      nodeUIDs:
+      - 2037df07-4837-498b-9f03-83e4e991c5e9|0
+      flowUIDs: []
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: 
+    - fullName: Branch
+      uid: cdbc2a80-e6c3-4692-bc67-ed16a4d22586
+      position: {x: 861.14514, y: 112.66399}
+      nodeUIDs:
+      - 0bf1aee8-4384-44b0-9291-2e1dec78a21b|0
+      flowUIDs:
+      - 91658472-82dd-4a52-9fd3-5e08267aa4f6
+      nodeValues:
+      - unityObjectValue: {fileID: 0}
+        stringValue: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089|False
+    updateOrder: 0
+  graphElementData: []
+  version: 1.0.0
+  showAssembly: 0
