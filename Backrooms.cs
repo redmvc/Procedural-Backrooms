@@ -1442,6 +1442,7 @@ public class Backrooms : UdonSharpBehaviour
     {
         // Deal with the networking things
         UnityEngine.Random.InitState(rngSeed);
+        stepsTaken = new int[100];
 
         // set up the first grid
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
