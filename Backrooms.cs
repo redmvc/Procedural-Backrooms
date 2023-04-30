@@ -55,16 +55,9 @@ public class Backrooms : UdonSharpBehaviour
 
     // ----------------------------------------------------------
     // Networking variables
+    // For now the grid is deterministic given a seed, TODO revisit this later
     [UdonSynced] int rngSeed;
     private bool initialSetupDone = false;
-    [UdonSynced] int[] stepsTakenSynced;
-    [UdonSynced] int numStepsSynced = 0;
-    private int[] stepsTaken;
-    private int numSteps = 0;
-
-    // Networking constant
-    private const int stepGenerateEnd = 1; // Generate a grid at the end of the chain
-    private const int stepGenerateStart = -1; // Generate a grid at the start of the chain (which can only happen if the initial grid got deleted and people walked back towards it to explore)
 
     private void InitializeGrid()
     {
@@ -1493,6 +1486,7 @@ public class Backrooms : UdonSharpBehaviour
 
     public override void OnDeserialization()
     {
+        // TODO implement nondeterminism (re-exploring the past)
         if (!initialSetupDone) {
             // I am not the world owner so I only set up after I get the rng seed
             initialSetupDone = true;
@@ -1513,8 +1507,6 @@ public class Backrooms : UdonSharpBehaviour
     {
         // Deal with the networking things
         UnityEngine.Random.InitState(rngSeed);
-        stepsTakenSynced = new int[100];
-        stepsTaken = new int[100];
 
         // set up the first grid
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
