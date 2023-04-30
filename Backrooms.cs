@@ -1464,7 +1464,7 @@ public class Backrooms : UdonSharpBehaviour
         for (int j = 0; j < candidateJ; j++) {
             teleportXCoordinate += startingGridColumns[j];
         }
-        teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.y;
+        teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.z;
         teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
 
         // These variables will be synced with the teleporter automatically
