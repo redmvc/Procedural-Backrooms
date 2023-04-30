@@ -56,8 +56,9 @@ public class Backrooms : UdonSharpBehaviour
     // ----------------------------------------------------------
     // Networking variables
     // For now the grid is deterministic given a seed, TODO revisit this later
-    [UdonSynced] int rngSeed;
     private bool initialSetupDone = false;
+    [UdonSynced] int[] rngSeed;
+    private int stepsTaken = 0;
 
     private void InitializeGrid()
     {
@@ -1190,8 +1191,9 @@ public class Backrooms : UdonSharpBehaviour
         }
     }
 
-    public void ExploreGrid(RoomGrid newGrid) {
+    public void ExploreGrid (RoomGrid newGrid) {
         // Triggered when you first explore a grid coming from another grid, should:
+        // 0. Initiate the random seed for this step
         // 1. Decide on an unexplored neighbour to generate and then wall off the other two
         // 1.1. Verifying that there isn't already a neighbour there (which will not be marked as a neighbour)
         // 2. Delete any neighbours that are four steps away
@@ -1199,6 +1201,7 @@ public class Backrooms : UdonSharpBehaviour
         // 4. Delete the trigger object
 
         // First we check which direction we came from
+        UnityEngine.Random.InitState (rngSeed[stepsTaken++]);
         RoomGrid originGrid;
         int originDirection;
         if (newGrid.northGrid != null) {
@@ -1496,9 +1499,13 @@ public class Backrooms : UdonSharpBehaviour
 
     void Start()
     {
+        rngSeed = new int[100];
         if (!Networking.IsOwner(transform.gameObject)) return;
 
-        rngSeed = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+        for (int i = 0; i < 100; i++) {
+            // Generate seeds for all generations
+            rngSeed[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+        }
         RequestSerialization();
         SetUp();
     }
@@ -1506,7 +1513,7 @@ public class Backrooms : UdonSharpBehaviour
     void SetUp()
     {
         // Deal with the networking things
-        UnityEngine.Random.InitState(rngSeed);
+        UnityEngine.Random.InitState(rngSeed[stepsTaken++]);
 
         // set up the first grid
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
