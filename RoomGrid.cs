@@ -6,11 +6,13 @@ using VRC.Udon;
 using System;
 public class RoomGrid : UdonSharpBehaviour
 {
+    // Neighbours
     public RoomGrid northGrid;
     public RoomGrid southGrid;
     public RoomGrid eastGrid;
     public RoomGrid westGrid;
 
+    // Definition variables
     private GameObject root;
     private Backrooms backroomsController;
     private Vector2[] gridCorners;
@@ -19,6 +21,7 @@ public class RoomGrid : UdonSharpBehaviour
     private int numExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
 
+    // Spawnable meshes
     public GameObject gridExitInstance;
     public GameObject emptyGameObject;
     private GameObject gridExitOrganiser;
