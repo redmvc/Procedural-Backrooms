@@ -32,7 +32,7 @@ public class Backrooms : UdonSharpBehaviour
     public GameObject emptyGameObject;
     public GameObject gridInstance;
 
-    private RoomGrid startingGrid;
+    public RoomGrid startingGrid;
 
     // ----------------------------------------------------------
     // Constants
