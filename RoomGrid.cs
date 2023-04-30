@@ -23,8 +23,14 @@ public class RoomGrid : UdonSharpBehaviour
     public bool[][] rectangles;
     public double[] rows;
     public double[] columns;
-    private int[] rngSeeds;
-    private int currentSeed = 0;
+    private int[] northRngSeeds;
+    private int currentNorthSeed = 0;
+    private int[] eastRngSeeds;
+    private int currentEastSeed = 0;
+    private int[] southRngSeeds;
+    private int currentSouthSeed = 0;
+    private int[] westRngSeeds;
+    private int currentWestSeed = 0;
 
     // Spawnable meshes
     public GameObject gridExitInstance;
@@ -71,9 +77,15 @@ public class RoomGrid : UdonSharpBehaviour
             this.columns[j] = columns[j];
         }
 
-        rngSeeds = new int[20];
+        northRngSeeds = new int[20];
+        eastRngSeeds = new int[20];
+        southRngSeeds = new int[20];
+        westRngSeeds = new int[20];
         for (int i = 0; i < 20; i++) {
-            rngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+            northRngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+            eastRngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+            southRngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+            westRngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
         }
     }
 
@@ -126,21 +138,24 @@ public class RoomGrid : UdonSharpBehaviour
         this.explorationTrigger = GameObject.Instantiate(explorationTriggerTile);
         this.explorationTrigger.transform.SetParent(transform);
         this.explorationTrigger.name = "Exploration Trigger";
-        this.explorationTrigger.GetComponent<ExplorationTrigger>().Initialize (this, backroomsController, rngSeeds[currentSeed++]);
 
         if (this.northGrid != null) {
+            this.explorationTrigger.GetComponent<ExplorationTrigger>().Initialize (this, backroomsController, northRngSeeds[currentNorthSeed++]);
             this.explorationTrigger.transform.localScale = new Vector3 ((float) horizontalSize * 2, 1f, 1f); // * 2 because the default width is 0.5
             this.explorationTrigger.transform.localPosition = new Vector3 (0f, 0f, verticalSize / 2);
             this.explorationTrigger.transform.rotation = Quaternion.Euler(Vector3.zero);
         } else if (this.eastGrid != null) {
+            this.explorationTrigger.GetComponent<ExplorationTrigger>().Initialize (this, backroomsController, eastRngSeeds[currentEastSeed++]);
             this.explorationTrigger.transform.localScale = new Vector3 ((float) verticalSize * 2, 1f, 1f);
             this.explorationTrigger.transform.localPosition = new Vector3 (horizontalSize / 2, 0f, 0f);
             this.explorationTrigger.transform.rotation = Quaternion.Euler(new Vector3(0f, 90f, 0f));
         } else if (this.southGrid != null) {
+            this.explorationTrigger.GetComponent<ExplorationTrigger>().Initialize (this, backroomsController, southRngSeeds[currentSouthSeed++]);
             this.explorationTrigger.transform.localScale = new Vector3 ((float) horizontalSize * 2, 1f, 1f);
             this.explorationTrigger.transform.localPosition = new Vector3 (0f, 0f, -verticalSize / 2);
             this.explorationTrigger.transform.rotation = Quaternion.Euler(new Vector3(0f, 180f, 0f));
         } else {
+            this.explorationTrigger.GetComponent<ExplorationTrigger>().Initialize (this, backroomsController, westRngSeeds[currentWestSeed++]);
             this.explorationTrigger.transform.localScale = new Vector3 ((float) verticalSize * 2, 1f, 1f);
             this.explorationTrigger.transform.localPosition = new Vector3 (-horizontalSize / 2, 0f, 0f);
             this.explorationTrigger.transform.rotation = Quaternion.Euler(new Vector3(0f, 270f, 0f));
