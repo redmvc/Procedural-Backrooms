@@ -28,6 +28,7 @@ public class Backrooms : UdonSharpBehaviour
     private double skirtingBoardThickness = 0.006;
     public GameObject lightUnit;
     public double spaceBetweenLights = 5;
+    public GameObject[] flashlights;
 
     public GameObject emptyGameObject;
     public GameObject gridInstance;
@@ -1542,5 +1543,60 @@ public class Backrooms : UdonSharpBehaviour
                 break;
         }
         createdGrid.CreateExplorationTrigger();
+
+        if (Networking.IsOwner(transform.gameObject)) {
+            // Owner will move flashlights to random locations in the starting grid
+            for (int f = 0; f < flashlights.Length; f++) {
+                flashlights[f].transform.SetParent(startingGrid.transform);
+
+                // Attempt 20 times to move the flashlight somewhere random, otherwise do it sequentially
+                const int maxTries = 20;
+                int candidateI = -1, candidateJ = -1;
+                rectangles = startingGrid.rectangles;
+                rows = startingGrid.rows;
+                numRows = rows.Length;
+                columns = startingGrid.columns;
+                numCols = columns.Length;
+                for (int t = 0; t < maxTries; t++) {
+                    int i = UnityEngine.Random.Range (0, numRows);
+                    int j = UnityEngine.Random.Range (0, numCols);
+                    if (rectangles[i][j]) {
+                        candidateI = i;
+                        candidateJ = j;
+                        break;
+                    }
+                }
+                if (candidateI == -1) {
+                    for (int i = 0; i < numRows; i++) {
+                        for (int j = 0; j < numCols; j++) {
+                            if (rectangles[i][j]) {
+                                candidateI = i;
+                                candidateJ = j;
+                                break;
+                            }
+                        }
+                    }
+                    if (candidateI != -1) {
+                        break;
+                    }
+                }
+
+                if (candidateI == -1) {
+                    // Shouldn't happen
+                    Debug.LogError("Error spawning flashlight.");
+                    continue;
+                }
+
+                double XCoordinate = 0, ZCoordinate = 0;
+                for (int i = 0; i < candidateI; i++) {
+                    ZCoordinate += rows[i];
+                }
+                for (int j = 0; j < candidateJ; j++) {
+                    XCoordinate += columns[j];
+                }
+
+                flashlights[f].transform.localPosition = new Vector3((float) (XCoordinate + (columns[candidateJ] - gridSideSize) / 2), 1.5f, (float) (ZCoordinate + (rows[candidateI] - gridSideSize) / 2));
+            }
+        }
     }
 }
