@@ -28,11 +28,12 @@ public class RoomGrid : UdonSharpBehaviour
 
     void Start() {}
 
-    public void initialize(GameObject root, Vector2[] gridCorners) {
+    public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController) {
         this.root = root;
         this.gridCorners = gridCorners;
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
         this.horizontalSize = gridCorners[1][0] - gridCorners[0][0];
+        this.backroomsController = backroomsController;
 
         this.northGrid = null;
         this.southGrid = null;
@@ -51,10 +52,6 @@ public class RoomGrid : UdonSharpBehaviour
         gridExitOrganiser.name = "Exits";
 
         this.explorationTrigger = null;
-    }
-
-    public void SetController(Backrooms backroomsController) {
-        this.backroomsController = backroomsController;
     }
 
     public void SetFences(GameObject organiser) {
@@ -81,17 +78,15 @@ public class RoomGrid : UdonSharpBehaviour
                 break;
         }
         
-        this.CreateExplorationTrigger(this.backroomsController);
+        this.CreateExplorationTrigger();
     }
 
-    public void CreateExplorationTrigger(Backrooms backrooms) {
-        this.backroomsController = backrooms;
-
+    public void CreateExplorationTrigger() {
         this.explorationTrigger = GameObject.Instantiate(explorationTriggerTile);
         this.explorationTrigger.transform.SetParent(transform);
         this.explorationTrigger.name = "Exploration Trigger";
         this.explorationTrigger.GetComponent<ExplorationTrigger>().parentGrid = this;
-        this.explorationTrigger.GetComponent<ExplorationTrigger>().parentBackrooms = backrooms;
+        this.explorationTrigger.GetComponent<ExplorationTrigger>().parentBackrooms = backroomsController;
 
         if (this.northGrid != null) {
             this.explorationTrigger.transform.localScale = new Vector3 ((float) horizontalSize * 2, 1f, 1f); // * 2 because the default width is 0.5

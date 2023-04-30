@@ -980,7 +980,7 @@ public class Backrooms : UdonSharpBehaviour
         DrawWalls(gridRoot, effectiveGridCorners[0]);
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.initialize(gridRoot, effectiveGridCorners);
+        grid.initialize(gridRoot, effectiveGridCorners, this);
         grid.GenerateExits(rectangles, rows, numRows, columns, numCols);
 
         return grid;
@@ -1394,7 +1394,7 @@ public class Backrooms : UdonSharpBehaviour
             }
         }
         GenerateFences (newGrid, fencesToCreate);
-        createdGrid.CreateExplorationTrigger(this);
+        createdGrid.CreateExplorationTrigger();
         newGrid.DestroyExplorationTrigger();
     }
 
@@ -1407,7 +1407,6 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.position = transform.position;
 
         RoomGrid grid = GenerateGrid(gridRoot);
-        grid.SetController(this);
 
         // Create its first neighbour
         int randomNeighbour = UnityEngine.Random.Range((int) 0, (int) 4);
@@ -1431,6 +1430,6 @@ public class Backrooms : UdonSharpBehaviour
                 GenerateFences (grid, new int[3]{North, East, South});
                 break;
         }
-        createdGrid.CreateExplorationTrigger(this);
+        createdGrid.CreateExplorationTrigger();
     }
 }
