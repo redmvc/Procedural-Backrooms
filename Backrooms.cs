@@ -32,7 +32,9 @@ public class Backrooms : UdonSharpBehaviour
     public GameObject emptyGameObject;
     public GameObject gridInstance;
 
-    public RoomGrid startingGrid;
+    public RoomGrid startingGrid = null;
+    public bool initialGridWasDestroyed = false; // If the initial grid was destroyed then we need to set up a teleport to a new grid
+    public double teleportXCoordinate = 0, teleportZCoordinate = 0;
 
     // ----------------------------------------------------------
     // Constants
@@ -1141,14 +1143,19 @@ public class Backrooms : UdonSharpBehaviour
         return newGrid;
     }
 
-    void GenerateFences (RoomGrid grid, int[] directionsToDraw) {
+    void GenerateFences (RoomGrid grid, int[] directionsToDraw, GameObject existingFenceOrganiser = null) {
         // Generate fencing walls around a grid
         GameObject gridRoot = grid.GetRoot();
-        GameObject fenceOrganiser = GameObject.Instantiate(emptyGameObject);
-        fenceOrganiser.name = "Fences";
-        fenceOrganiser.transform.SetParent(gridRoot.transform);
-        fenceOrganiser.transform.localPosition = Vector3.zero;
-        grid.SetFences(fenceOrganiser);
+        GameObject fenceOrganiser;
+        if (existingFenceOrganiser == null) {
+            fenceOrganiser = GameObject.Instantiate(emptyGameObject);
+            fenceOrganiser.name = "Fences";
+            fenceOrganiser.transform.SetParent(gridRoot.transform);
+            fenceOrganiser.transform.localPosition = Vector3.zero;
+            grid.SetFences(fenceOrganiser);
+        } else {
+            fenceOrganiser = existingFenceOrganiser;
+        }
         
         int dir;
         for (int i = 0; i < directionsToDraw.Length; i++) {
@@ -1171,8 +1178,8 @@ public class Backrooms : UdonSharpBehaviour
         }
     }
 
-    void GenerateFence (RoomGrid grid, int directionToDraw) {
-        GenerateFences (grid, new int[1] {directionToDraw});
+    public void GenerateFence (RoomGrid grid, int directionToDraw, GameObject existingFenceOrganiser = null) {
+        GenerateFences (grid, new int[1] {directionToDraw}, existingFenceOrganiser);
     }
 
     int OppositeDirection (int dir) {
@@ -1428,6 +1435,69 @@ public class Backrooms : UdonSharpBehaviour
             initialSetupDone = true;
             SetUp();
         }
+    }
+
+    public void DestroyStartingGrid(RoomGrid newTeleportingGrid) 
+    {
+        startingGrid = newTeleportingGrid;
+        if (!initialGridWasDestroyed) {
+            // This is the first time the starting grid is destroyed, need to warn the teleporter that will take you to a different grid
+            initialGridWasDestroyed = true;
+        }
+
+        // Now we need to choose the coordinates of where the teleporter will take us
+        double[] startingGridRows = startingGrid.rows;
+        int startingGridNumRows = startingGridRows.Length;
+        double[] startingGridColumns = startingGrid.columns;
+        int startingGridNumCols = startingGridColumns.Length;
+        bool[][] startingGridRectangles = startingGrid.rectangles;
+
+        // We'll try to find a random location twenty times and if we can't we'll just look for it sequentially
+        const int maxTries = 20;
+        int candidateI = -1, candidateJ = -1;
+        for (int t = 0; t < maxTries; t++) {
+            int i = UnityEngine.Random.Range(0, startingGridNumRows);
+            int j = UnityEngine.Random.Range(0, startingGridNumCols);
+            if (startingGridRectangles[i][j]) {
+                candidateI = i;
+                candidateJ = j;
+                break;
+            }
+        }
+        if (candidateI == -1) {
+            // Didn't find a random location
+            for (int i = 0; i < startingGridNumRows; i++) {
+                for (int j = 0; j < startingGridNumCols; j++) {
+                    if (startingGridRectangles[i][j]) {
+                        candidateI = i;
+                        candidateJ = j;
+                        break;
+                    }
+                }
+
+                if (candidateI != -1) {
+                    break;
+                }
+            }
+        }
+
+        if (candidateI == -1) {
+            // This should just never happen
+            Debug.LogError("Destroy starting grid function failed to generate coordinates.");
+            return;
+        }
+
+        teleportXCoordinate = 0; teleportZCoordinate = 0;
+        for (int i = 0; i < candidateI; i++) {
+            teleportZCoordinate += startingGridRows[i];
+        }
+        for (int j = 0; j < candidateJ; j++) {
+            teleportXCoordinate += startingGridColumns[j];
+        }
+        teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.y;
+        teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
+
+        // These variables will be synced with the teleporter automatically
     }
 
     void Start()

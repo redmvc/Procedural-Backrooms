@@ -20,9 +20,9 @@ public class RoomGrid : UdonSharpBehaviour
     private GridExit firstExit;
     private int numExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
-    private bool[][] rectangles;
-    private double[] rows;
-    private double[] columns;
+    public bool[][] rectangles;
+    public double[] rows;
+    public double[] columns;
 
     // Spawnable meshes
     public GameObject gridExitInstance;
@@ -75,26 +75,44 @@ public class RoomGrid : UdonSharpBehaviour
     }
 
     public void DestroyNeighbour(int dir) {
-        GameObject.Destroy(this.fenceOrganiser);
-        this.fenceOrganiser = null;
+        // For now, when a past location is destroyed I just fence it off, but in the future I want to make it possible to reexplore it and see something new
+        // TODO
+        // GameObject.Destroy(this.fenceOrganiser);
+        // this.fenceOrganiser = null;
 
         switch (dir) {
             case Backrooms.North:
+                if (backroomsController.startingGrid == this.northGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.northGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.North, this.fenceOrganiser);
                 break;
             case Backrooms.East:
+                if (backroomsController.startingGrid == this.eastGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.eastGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.East, this.fenceOrganiser);
                 break;
             case Backrooms.South:
+                if (backroomsController.startingGrid == this.southGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.southGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.South, this.fenceOrganiser);
                 break;
             case Backrooms.West:
             default:
+                if (backroomsController.startingGrid == this.westGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.westGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.West, this.fenceOrganiser);
                 break;
         }
         
-        this.CreateExplorationTrigger();
+        // this.CreateExplorationTrigger(); TODO permit recreation of new random places in the past
     }
 
     public void CreateExplorationTrigger() {
@@ -147,7 +165,7 @@ public class RoomGrid : UdonSharpBehaviour
         GameObject.Destroy(root);
     }
 
-    public void AddExit(GridExit newExit) {
+    private void AddExit(GridExit newExit) {
         if (firstExit == null) {
             numExits = 1;
             firstExit = newExit;
@@ -158,7 +176,7 @@ public class RoomGrid : UdonSharpBehaviour
         }
     }
 
-    public void AddExit(Vector2 start, Vector2 end) {
+    private void AddExit(Vector2 start, Vector2 end) {
         GameObject gridExitObject = GameObject.Instantiate(gridExitInstance);
         gridExitObject.transform.SetParent(gridExitOrganiser.transform);
         GridExit newExit = gridExitObject.GetComponent<GridExit>();
