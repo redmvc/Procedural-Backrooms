@@ -842,10 +842,7 @@ public class Backrooms : UdonSharpBehaviour
         // TODO the logic here still isn't amazing, you get weird dark corridors sometimes that logically seem like they should have lights, but the effect isn't bad so I'll keep it for now
     }
     
-    // Vector2[] JustifyGrid (Vector2[] effectiveGridCorners) {
     bool JustifyGrid () {
-        // Realised belatedly that the only real way to make this work is to force the grids to be all the same size at least for now
-
         // Removes "padding" of the grid (i.e. entire rows or columns at the borders that are empty)
         // First we find what the minimum and maximum coordinates reachable on the grid are
         int startingRow = numRows, endingRow = 0;
@@ -867,36 +864,6 @@ public class Backrooms : UdonSharpBehaviour
         if (startingRow == 0 && endingRow == numRows - 1 && startingCol == 0 && endingCol == numCols - 1) {
             return true;
         }
-
-        // // Next we adjust the effective grid corners
-        // Vector2[] newGridCorners = new Vector2[2] {Vector2.zero, Vector2.zero};
-
-        // double cumulativeCorner = 0;
-        // for (int i = 0; i < startingRow; i++) {
-        //     cumulativeCorner += rows[i];
-        // }
-        // newGridCorners[0][0] = (float) cumulativeCorner;
-
-        // cumulativeCorner = 0;
-        // for (int i = endingRow; i < numRows - 1; i++) {
-        //     cumulativeCorner += rows[i];
-        // }
-        // newGridCorners[1][0] = -(float) cumulativeCorner;
-
-        // cumulativeCorner = 0;
-        // for (int j = 0; j < startingCol; j++) {
-        //     cumulativeCorner += columns[j];
-        // }
-        // newGridCorners[0][1] = (float) cumulativeCorner;
-
-        // cumulativeCorner = 0;
-        // for (int j = endingCol; j < numCols - 1; j++) {
-        //     cumulativeCorner += columns[j];
-        // }
-        // newGridCorners[1][1] = -(float) cumulativeCorner;
-
-        // newGridCorners[0] = newGridCorners[0] + effectiveGridCorners[0];
-        // newGridCorners[1] = newGridCorners[1] + effectiveGridCorners[1];
 
         double numerator = 0, denominator = 0;
         for (int i = 0; i < numRows; i++) {
@@ -947,45 +914,6 @@ public class Backrooms : UdonSharpBehaviour
         // return newGridCorners;
         return true;
     }
-    
-    // Vector2[] GetEffectiveGridCornersFromSouthwest (Vector2 southWestCorner) {
-    //     // Realised belatedly that the only real way to make this work is to force the grids to be all the same size at least for now
-    //     return new Vector2[2] {southWestCorner, southWestCorner + new Vector2(gridSideSize, gridSideSize)};
-
-    //     // double minXCoordinate = gridSideSize, maxXCoordinate = 0, minYCoordinate = gridSideSize, maxYCoordinate = 0;
-    //     // double cumulativeXCoordinate = 0, cumulativeYCoordinate = 0;
-    //     // for (int i = 0; i < numRows; i++) {
-    //     //     cumulativeYCoordinate += rows[i];
-    //     //     cumulativeXCoordinate = 0;
-    //     //     for (int j = 0; j < numCols; j++) {
-    //     //         cumulativeXCoordinate += columns[j];
-    //     //         if (rectangles[i][j]) {
-    //     //             minXCoordinate = Math.Min(minXCoordinate, cumulativeXCoordinate - columns[j]);
-    //     //             maxXCoordinate = Math.Max(maxXCoordinate, cumulativeXCoordinate);
-                    
-    //     //             minYCoordinate = Math.Min(minYCoordinate, cumulativeYCoordinate - rows[i]);
-    //     //             maxYCoordinate = Math.Max(maxYCoordinate, cumulativeYCoordinate);
-    //     //         }
-    //     //     }
-    //     // }
-
-    //     // return (new Vector2[2] {
-    //     //     southWestCorner + new Vector2((float) minXCoordinate, (float) minYCoordinate),
-    //     //     southWestCorner + new Vector2((float) maxXCoordinate, (float) maxYCoordinate)
-    //     // });
-    // }
-
-    // Vector2[] GetEffectiveGridCornersFromNortheast (Vector2 northEastCorner) {
-    //     // Realised belatedly that the only real way to make this work is to force the grids to be all the same size at least for now
-    //     return new Vector2[2] {northEastCorner - new Vector2(gridSideSize, gridSideSize), northEastCorner};
-
-    //     // Vector2[] corners = GetEffectiveGridCornersFromSouthwest(Vector2.zero);
-
-    //     // return (new Vector2[2] {
-    //     //     northEastCorner - corners[0],
-    //     //     northEastCorner - corners[1]
-    //     // });
-    // }
 
     RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes,
                       Vector2 southWestCorner, Vector2 northEastCorner,
@@ -1051,14 +979,7 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         Vector2[] effectiveGridCorners = {new Vector2 (- gridSideSize / 2, - gridSideSize / 2), new Vector2 (gridSideSize / 2, gridSideSize / 2)};
-        // Effective grid corners are unnecessary bc the grid is forced to be gridSideSize x gridSideSize
-        // if (southWestCorner != Vector2.zero) {
-        //     effectiveGridCorners = GetEffectiveGridCornersFromSouthwest(southWestCorner);
-        // } else {
-        //     effectiveGridCorners = GetEffectiveGridCornersFromNortheast(southWestCorner);
-        // }
         
-        // effectiveGridCorners = JustifyGrid(effectiveGridCorners); 
         DrawFloorAndCeiling(gridRoot, effectiveGridCorners); 
         DrawLights(gridRoot, effectiveGridCorners);
         DrawWalls(gridRoot, effectiveGridCorners[0]);
