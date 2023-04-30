@@ -23,6 +23,8 @@ public class RoomGrid : UdonSharpBehaviour
     public bool[][] rectangles;
     public double[] rows;
     public double[] columns;
+    private int[] rngSeeds;
+    private int currentSeed = 0;
 
     // Spawnable meshes
     public GameObject gridExitInstance;
@@ -67,6 +69,11 @@ public class RoomGrid : UdonSharpBehaviour
         this.columns = new double[numCols];
         for (int j = 0; j < numCols; j++) {
             this.columns[j] = columns[j];
+        }
+
+        rngSeeds = new int[20];
+        for (int i = 0; i < 20; i++) {
+            rngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
         }
     }
 
@@ -119,8 +126,7 @@ public class RoomGrid : UdonSharpBehaviour
         this.explorationTrigger = GameObject.Instantiate(explorationTriggerTile);
         this.explorationTrigger.transform.SetParent(transform);
         this.explorationTrigger.name = "Exploration Trigger";
-        this.explorationTrigger.GetComponent<ExplorationTrigger>().parentGrid = this;
-        this.explorationTrigger.GetComponent<ExplorationTrigger>().parentBackrooms = backroomsController;
+        this.explorationTrigger.GetComponent<ExplorationTrigger>().Initialize (this, backroomsController, rngSeeds[currentSeed++]);
 
         if (this.northGrid != null) {
             this.explorationTrigger.transform.localScale = new Vector3 ((float) horizontalSize * 2, 1f, 1f); // * 2 because the default width is 0.5
