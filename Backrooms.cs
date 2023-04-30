@@ -983,8 +983,8 @@ public class Backrooms : UdonSharpBehaviour
         DrawWalls(gridRoot, effectiveGridCorners[0]);
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.initialize(gridRoot, effectiveGridCorners, this);
-        grid.GenerateExits(rectangles, rows, numRows, columns, numCols);
+        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols);
+        grid.GenerateExits();
 
         return grid;
     }
