@@ -49,10 +49,17 @@ public class Backrooms : UdonSharpBehaviour
     private int numRows;
     private bool[][] rectangles;
 
-    // ---
-    // Networking
+    // ----------------------------------------------------------
+    // Networking variables
     [UdonSynced] int rngSeed;
     private bool initialSetupDone = false;
+    [UdonSynced] int[] stepsTaken;
+    [UdonSynced] int numStepsSynced = 0;
+    private int numSteps = 0;
+
+    // Networking constant
+    private const int stepGenerateEnd = 1; // Generate a grid at the end of the chain
+    private const int stepGenerateStart = -1; // Generate a grid at the start of the chain (which can only happen if the initial grid got deleted and people walked back towards it to explore)
 
     private void InitializeGrid()
     {
