@@ -205,11 +205,13 @@ public class Backrooms : UdonSharpBehaviour
                 walkableCoord = true;
             }
 
-            for (int i = 0; i < nProbeRows; i++) {
-                for (int j = 0; j < nProbeCols; j++) {
-                    if (rectangles[probeRows[i]][probeCols[j]]) {
-                        hasValidProbe = hasValidProbe || walkableCoord; // I'll draw cells that aren't walkable if there's at least _one_ walkable location on this grid
-                        explorationRectangles[probeRows[i]][probeCols[j]] = 0;
+            if (walkableCoord) {
+                for (int i = 0; i < nProbeRows; i++) {
+                    for (int j = 0; j < nProbeCols; j++) {
+                        if (rectangles[probeRows[i]][probeCols[j]]) {
+                            hasValidProbe = true;
+                            explorationRectangles[probeRows[i]][probeCols[j]] = 0;
+                        }
                     }
                 }
             }
