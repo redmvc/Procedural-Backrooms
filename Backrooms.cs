@@ -984,14 +984,14 @@ public class Backrooms : UdonSharpBehaviour
             
             // Now validate that there exist reachable cells from the probe coordinates
             if (ValidateGrid(probeCoordinates, numProbes, numTries > maxValidationTriesBeforeForcing)) { 
-                // double totalArea = numRows * numCols;
-                double totalArea = gridSideSize * gridSideSize;
+                double totalArea = numRows * numCols;
+                // double totalArea = gridSideSize * gridSideSize;
                 double traversableArea = 0;
                 for (int i = 0; i < numRows; i++) {
                     for (int j = 0; j < numCols; j++) {
                         if (rectangles[i][j]) {
-                            // traversableArea += 1;
-                            traversableArea += rows[i] * columns[j];
+                            traversableArea += 1;
+                            // traversableArea += rows[i] * columns[j];
                         }
                     }
                 }
