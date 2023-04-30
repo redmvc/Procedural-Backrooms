@@ -919,7 +919,25 @@ public class Backrooms : UdonSharpBehaviour
         return true;
     }
 
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes = true, bool isStartingGrid = false) {
+    RoomGrid GenerateGrid (GameObject gridRoot) {
+        // Starting grid
+        return GenerateGrid(
+            gridRoot,
+            new Vector2[1][] {
+                new Vector2[2] {
+                    new Vector2((float) ((gridSideSize - minRowColSize) / 2), (float) ((gridSideSize - minRowColSize) / 2)),
+                    new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
+                }
+            },
+            1, true, true);
+    }
+
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes = true) {
+        // Non-starting grid
+        return GenerateGrid (gridRoot, probeCoordinates, numProbes, spawnMeshes, false);
+    }
+
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes, bool isStartingGrid) {
         double traversableFraction = 0;
         int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
         while (traversableFraction < minTraversableFraction) {
@@ -991,18 +1009,6 @@ public class Backrooms : UdonSharpBehaviour
         grid.GenerateExits(rectangles, rows, numRows, columns, numCols);
 
         return grid;
-    }
-
-    RoomGrid GenerateGrid (GameObject gridRoot) {
-        return GenerateGrid(
-            gridRoot,
-            new Vector2[1][] {
-                new Vector2[2] {
-                    new Vector2((float) ((gridSideSize - minRowColSize) / 2), (float) ((gridSideSize - minRowColSize) / 2)),
-                    new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
-                }
-            },
-            1, true, true);
     }
 
     RoomGrid GenerateNorthNeighbour (RoomGrid originGrid) {
