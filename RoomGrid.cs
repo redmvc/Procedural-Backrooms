@@ -165,7 +165,7 @@ public class RoomGrid : UdonSharpBehaviour
         GameObject.Destroy(root);
     }
 
-    public void AddExit(GridExit newExit) {
+    private void AddExit(GridExit newExit) {
         if (firstExit == null) {
             numExits = 1;
             firstExit = newExit;
@@ -176,7 +176,7 @@ public class RoomGrid : UdonSharpBehaviour
         }
     }
 
-    public void AddExit(Vector2 start, Vector2 end) {
+    private void AddExit(Vector2 start, Vector2 end) {
         GameObject gridExitObject = GameObject.Instantiate(gridExitInstance);
         gridExitObject.transform.SetParent(gridExitOrganiser.transform);
         GridExit newExit = gridExitObject.GetComponent<GridExit>();
