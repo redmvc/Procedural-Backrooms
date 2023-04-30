@@ -49,6 +49,10 @@ public class Backrooms : UdonSharpBehaviour
     private int numRows;
     private bool[][] rectangles;
 
+    // ---
+    // Networking
+    [UdonSynced] int rngSeed;
+    private bool initialSetupDone = false;
 
     private void InitializeGrid()
     {
@@ -1401,8 +1405,29 @@ public class Backrooms : UdonSharpBehaviour
         newGrid.DestroyExplorationTrigger();
     }
 
+    public override void OnDeserialization()
+    {
+        if (!initialSetupDone) {
+            // I am not the world owner so I only set up after I get the rng seed
+            initialSetupDone = true;
+            SetUp();
+        }
+    }
+
     void Start()
     {
+        if (!Networking.IsOwner(transform.gameObject)) return;
+
+        rngSeed = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+        RequestSerialization();
+        SetUp();
+    }
+
+    void SetUp()
+    {
+        // Deal with the networking things
+        UnityEngine.Random.InitState(rngSeed);
+
         // set up the first grid
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
         gridRoot.name = "grid 0";
