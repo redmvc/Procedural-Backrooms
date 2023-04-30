@@ -62,8 +62,10 @@ public class RoomGrid : UdonSharpBehaviour
     }
 
     public void DestroyNeighbour(int dir) {
-        GameObject.Destroy(this.fenceOrganiser);
-        this.fenceOrganiser = null;
+        // For now, when a past location is destroyed I just fence it off, but in the future I want to make it possible to reexplore it and see something new
+        // TODO
+        // GameObject.Destroy(this.fenceOrganiser);
+        // this.fenceOrganiser = null;
 
         switch (dir) {
             case Backrooms.North:
@@ -71,18 +73,21 @@ public class RoomGrid : UdonSharpBehaviour
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.northGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.North, this.fenceOrganiser);
                 break;
             case Backrooms.East:
                 if (backroomsController.startingGrid == this.eastGrid) {
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.eastGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.East, this.fenceOrganiser);
                 break;
             case Backrooms.South:
                 if (backroomsController.startingGrid == this.southGrid) {
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.southGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.South, this.fenceOrganiser);
                 break;
             case Backrooms.West:
             default:
@@ -90,10 +95,11 @@ public class RoomGrid : UdonSharpBehaviour
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.westGrid.destroy();
+                backroomsController.GenerateFence(this, Backrooms.West, this.fenceOrganiser);
                 break;
         }
         
-        this.CreateExplorationTrigger();
+        // this.CreateExplorationTrigger(); TODO permit recreation of new random places in the past
     }
 
     public void CreateExplorationTrigger() {

@@ -1121,14 +1121,19 @@ public class Backrooms : UdonSharpBehaviour
         return newGrid;
     }
 
-    void GenerateFences (RoomGrid grid, int[] directionsToDraw) {
+    void GenerateFences (RoomGrid grid, int[] directionsToDraw, GameObject existingFenceOrganiser = null) {
         // Generate fencing walls around a grid
         GameObject gridRoot = grid.GetRoot();
-        GameObject fenceOrganiser = GameObject.Instantiate(emptyGameObject);
-        fenceOrganiser.name = "Fences";
-        fenceOrganiser.transform.SetParent(gridRoot.transform);
-        fenceOrganiser.transform.localPosition = Vector3.zero;
-        grid.SetFences(fenceOrganiser);
+        GameObject fenceOrganiser;
+        if (existingFenceOrganiser == null) {
+            fenceOrganiser = GameObject.Instantiate(emptyGameObject);
+            fenceOrganiser.name = "Fences";
+            fenceOrganiser.transform.SetParent(gridRoot.transform);
+            fenceOrganiser.transform.localPosition = Vector3.zero;
+            grid.SetFences(fenceOrganiser);
+        } else {
+            fenceOrganiser = existingFenceOrganiser;
+        }
         
         int dir;
         for (int i = 0; i < directionsToDraw.Length; i++) {
@@ -1151,8 +1156,8 @@ public class Backrooms : UdonSharpBehaviour
         }
     }
 
-    void GenerateFence (RoomGrid grid, int directionToDraw) {
-        GenerateFences (grid, new int[1] {directionToDraw});
+    public void GenerateFence (RoomGrid grid, int directionToDraw, GameObject existingFenceOrganiser = null) {
+        GenerateFences (grid, new int[1] {directionToDraw}, existingFenceOrganiser);
     }
 
     int OppositeDirection (int dir) {
