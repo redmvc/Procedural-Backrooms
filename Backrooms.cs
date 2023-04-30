@@ -915,7 +915,7 @@ public class Backrooms : UdonSharpBehaviour
         return true;
     }
 
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool isStartingGrid = false) {
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes = true, bool isStartingGrid = false) {
         double traversableFraction = 0;
         int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
         while (traversableFraction < minTraversableFraction) {
@@ -975,9 +975,12 @@ public class Backrooms : UdonSharpBehaviour
 
         Vector2[] effectiveGridCorners = {new Vector2 (- gridSideSize / 2, - gridSideSize / 2), new Vector2 (gridSideSize / 2, gridSideSize / 2)};
         
-        DrawFloorAndCeiling(gridRoot, effectiveGridCorners); 
-        DrawLights(gridRoot, effectiveGridCorners);
-        DrawWalls(gridRoot, effectiveGridCorners[0]);
+        if (spawnMeshes) {
+            // I won't spawn the meshes if I'm not the owner and this grid has not been spawned
+            DrawFloorAndCeiling(gridRoot, effectiveGridCorners); 
+            DrawLights(gridRoot, effectiveGridCorners);
+            DrawWalls(gridRoot, effectiveGridCorners[0]);
+        }
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
         grid.initialize(gridRoot, effectiveGridCorners, this);
@@ -995,7 +998,7 @@ public class Backrooms : UdonSharpBehaviour
                     new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
                 }
             },
-            1, true);
+            1, true, true);
     }
 
     RoomGrid GenerateNorthNeighbour (RoomGrid originGrid) {
