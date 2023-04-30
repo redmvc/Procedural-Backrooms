@@ -20,9 +20,9 @@ public class RoomGrid : UdonSharpBehaviour
     private GridExit firstExit;
     private int numExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
-    private bool[][] rectangles;
-    private double[] rows;
-    private double[] columns;
+    public bool[][] rectangles;
+    public double[] rows;
+    public double[] columns;
 
     // Spawnable meshes
     public GameObject gridExitInstance;
