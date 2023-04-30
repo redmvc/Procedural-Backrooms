@@ -55,8 +55,9 @@ public class Backrooms : UdonSharpBehaviour
     // Networking variables
     [UdonSynced] int rngSeed;
     private bool initialSetupDone = false;
-    [UdonSynced] int[] stepsTaken;
+    [UdonSynced] int[] stepsTakenSynced;
     [UdonSynced] int numStepsSynced = 0;
+    private int[] stepsTaken;
     private int numSteps = 0;
 
     // Networking constant
@@ -1442,6 +1443,7 @@ public class Backrooms : UdonSharpBehaviour
     {
         // Deal with the networking things
         UnityEngine.Random.InitState(rngSeed);
+        stepsTakenSynced = new int[100];
         stepsTaken = new int[100];
 
         // set up the first grid
