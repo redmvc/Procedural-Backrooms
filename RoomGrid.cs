@@ -20,6 +20,9 @@ public class RoomGrid : UdonSharpBehaviour
     private GridExit firstExit;
     private int numExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
+    private bool[][] rectangles;
+    private double[] rows;
+    private double[] columns;
 
     // Spawnable meshes
     public GameObject gridExitInstance;
@@ -31,7 +34,7 @@ public class RoomGrid : UdonSharpBehaviour
 
     void Start() {}
 
-    public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController) {
+    public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController, bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols) {
         this.root = root;
         this.gridCorners = gridCorners;
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
@@ -55,6 +58,16 @@ public class RoomGrid : UdonSharpBehaviour
         gridExitOrganiser.name = "Exits";
 
         this.explorationTrigger = null;
+
+        this.rectangles = rectangles;
+        this.rows = new double[numRows];
+        for (int i = 0; i < numRows; i++) {
+            this.rows[i] = rows[i];
+        }
+        this.columns = new double[numCols];
+        for (int j = 0; j < numCols; j++) {
+            this.columns[j] = columns[j];
+        }
     }
 
     public void SetFences(GameObject organiser) {
@@ -221,7 +234,7 @@ public class RoomGrid : UdonSharpBehaviour
         return horizontalSize;
     }
 
-    public void GenerateExits (bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols) {
+    public void GenerateExits () {
         // generate a list of exits from the bool grid
         // this should only be called when the grid is current
 
@@ -235,8 +248,7 @@ public class RoomGrid : UdonSharpBehaviour
         double cumulativeCoord = 0;
         double startingZeroCoord = double.NaN;
         double startingMaxCoord = double.NaN;
-        for (int j = 0; j < numCols; j++) {
-
+        for (int j = 0; j < columns.Length; j++) {
             if (rectangles[0][j]) {
                 // Traversable southern rectangle
                 if (Double.IsNaN(startingZeroCoord)) {
@@ -251,7 +263,7 @@ public class RoomGrid : UdonSharpBehaviour
                 startingZeroCoord = double.NaN;
             }
 
-            if (rectangles[numRows - 1][j]) {
+            if (rectangles[rows.Length - 1][j]) {
                 // Traversable northern rectangle
                 if (Double.IsNaN(startingMaxCoord)) {
                     // first traversable northern rectangle
@@ -291,7 +303,7 @@ public class RoomGrid : UdonSharpBehaviour
         cumulativeCoord = 0;
         startingZeroCoord = double.NaN;
         startingMaxCoord = double.NaN;
-        for (int i = 0; i < numRows; i++) {
+        for (int i = 0; i < rows.Length; i++) {
             if (rectangles[i][0]) {
                 // Traversable western rectangle
                 if (Double.IsNaN(startingZeroCoord)) {
@@ -306,7 +318,7 @@ public class RoomGrid : UdonSharpBehaviour
                 startingZeroCoord = double.NaN;
             }
 
-            if (rectangles[i][numCols - 1]) {
+            if (rectangles[i][columns.Length - 1]) {
                 // Traversable eastern rectangle
                 if (Double.IsNaN (startingMaxCoord)) {
                     // First eastern rectangle

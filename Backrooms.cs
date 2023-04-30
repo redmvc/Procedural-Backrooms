@@ -1005,8 +1005,8 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.initialize(gridRoot, effectiveGridCorners, this);
-        grid.GenerateExits(rectangles, rows, numRows, columns, numCols);
+        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols);
+        grid.GenerateExits();
 
         return grid;
     }
