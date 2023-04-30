@@ -1428,15 +1428,6 @@ public class Backrooms : UdonSharpBehaviour
         newGrid.DestroyExplorationTrigger();
     }
 
-    public override void OnDeserialization()
-    {
-        if (!initialSetupDone) {
-            // I am not the world owner so I only set up after I get the rng seed
-            initialSetupDone = true;
-            SetUp();
-        }
-    }
-
     public void DestroyStartingGrid(RoomGrid newTeleportingGrid) 
     {
         startingGrid = newTeleportingGrid;
@@ -1498,6 +1489,15 @@ public class Backrooms : UdonSharpBehaviour
         teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
 
         // These variables will be synced with the teleporter automatically
+    }
+
+    public override void OnDeserialization()
+    {
+        if (!initialSetupDone) {
+            // I am not the world owner so I only set up after I get the rng seed
+            initialSetupDone = true;
+            SetUp();
+        }
     }
 
     void Start()
