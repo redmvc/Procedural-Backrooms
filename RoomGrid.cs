@@ -6,11 +6,13 @@ using VRC.Udon;
 using System;
 public class RoomGrid : UdonSharpBehaviour
 {
+    // Neighbours
     public RoomGrid northGrid;
     public RoomGrid southGrid;
     public RoomGrid eastGrid;
     public RoomGrid westGrid;
 
+    // Definition variables
     private GameObject root;
     private Backrooms backroomsController;
     private Vector2[] gridCorners;
@@ -19,6 +21,7 @@ public class RoomGrid : UdonSharpBehaviour
     private int numExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
 
+    // Spawnable meshes
     public GameObject gridExitInstance;
     public GameObject emptyGameObject;
     private GameObject gridExitOrganiser;
@@ -64,16 +67,28 @@ public class RoomGrid : UdonSharpBehaviour
 
         switch (dir) {
             case Backrooms.North:
+                if (backroomsController.startingGrid == this.northGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.northGrid.destroy();
                 break;
             case Backrooms.East:
+                if (backroomsController.startingGrid == this.eastGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.eastGrid.destroy();
                 break;
             case Backrooms.South:
+                if (backroomsController.startingGrid == this.southGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.southGrid.destroy();
                 break;
             case Backrooms.West:
             default:
+                if (backroomsController.startingGrid == this.westGrid) {
+                    backroomsController.DestroyStartingGrid(this);
+                }
                 this.westGrid.destroy();
                 break;
         }

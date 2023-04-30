@@ -32,6 +32,9 @@ public class Backrooms : UdonSharpBehaviour
     public GameObject emptyGameObject;
     public GameObject gridInstance;
 
+    public RoomGrid startingGrid = null;
+    public RoomGrid teleportingGrid = null; // This grid is where people will teleport to if they go back to the landing and the starting grid has been destroyed
+
     // ----------------------------------------------------------
     // Constants
     public const int North = 0;
@@ -1398,6 +1401,13 @@ public class Backrooms : UdonSharpBehaviour
         newGrid.DestroyExplorationTrigger();
     }
 
+    public void DestroyStartingGrid(RoomGrid newTeleportingGrid) 
+    {
+        startingGrid = null;
+        teleportingGrid = newTeleportingGrid;
+        // TODO deal with this
+    }
+
     void Start()
     {
         // set up the first grid
@@ -1406,28 +1416,28 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.SetParent(transform);
         gridRoot.transform.position = transform.position;
 
-        RoomGrid grid = GenerateGrid(gridRoot);
+        startingGrid = GenerateGrid(gridRoot);
 
         // Create its first neighbour
         int randomNeighbour = UnityEngine.Random.Range((int) 0, (int) 4);
         RoomGrid createdGrid;
         switch (directions[randomNeighbour]) {
             case North:
-                createdGrid = GenerateNorthNeighbour(grid);
-                GenerateFences (grid, new int[3]{East, South, West});
+                createdGrid = GenerateNorthNeighbour(startingGrid);
+                GenerateFences (startingGrid, new int[3]{East, South, West});
                 break;
             case East:
-                createdGrid = GenerateEastNeighbour(grid);
-                GenerateFences (grid, new int[3]{North, South, West});
+                createdGrid = GenerateEastNeighbour(startingGrid);
+                GenerateFences (startingGrid, new int[3]{North, South, West});
                 break;
             case South:
-                createdGrid = GenerateSouthNeighbour(grid);
-                GenerateFences (grid, new int[3]{North, East, West});
+                createdGrid = GenerateSouthNeighbour(startingGrid);
+                GenerateFences (startingGrid, new int[3]{North, East, West});
                 break;
             case West:
             default:
-                createdGrid = GenerateWestNeighbour(grid);
-                GenerateFences (grid, new int[3]{North, East, South});
+                createdGrid = GenerateWestNeighbour(startingGrid);
+                GenerateFences (startingGrid, new int[3]{North, East, South});
                 break;
         }
         createdGrid.CreateExplorationTrigger();
