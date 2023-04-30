@@ -915,11 +915,6 @@ public class Backrooms : UdonSharpBehaviour
         return true;
     }
 
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes,
-                      Vector2 southWestCorner, Vector2 northEastCorner,
-                      bool isStartingGrid = false) {
-        return GenerateGrid(gridRoot, probeCoordinates, numProbes, isStartingGrid);
-    }
     RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool isStartingGrid = false) {
         double traversableFraction = 0;
         int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
@@ -1000,9 +995,7 @@ public class Backrooms : UdonSharpBehaviour
                     new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
                 }
             },
-            1,
-            new Vector2((float) -gridSideSize / 2, (float) -gridSideSize / 2), Vector2.zero,
-            true);
+            1, true);
     }
 
     RoomGrid GenerateNorthNeighbour (RoomGrid originGrid) {
@@ -1025,7 +1018,7 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, northExits.Length, new Vector2((float) -gridSideSize / 2, (float) -gridSideSize / 2), Vector2.zero);
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, northExits.Length);
 
         originGrid.northGrid = newGrid;
         newGrid.southGrid = originGrid;
@@ -1055,7 +1048,7 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, southExits.Length, new Vector2((float) -gridSideSize / 2, (float) -gridSideSize / 2), Vector2.zero);
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, southExits.Length);
 
         originGrid.southGrid = newGrid;
         newGrid.northGrid = originGrid;
@@ -1085,7 +1078,7 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, eastExits.Length, new Vector2((float) -gridSideSize / 2, (float) -gridSideSize / 2), Vector2.zero);
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, eastExits.Length);
 
         originGrid.eastGrid = newGrid;
         newGrid.westGrid = originGrid;
@@ -1115,7 +1108,7 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, westExits.Length, new Vector2((float) -gridSideSize / 2, (float) -gridSideSize / 2), Vector2.zero);
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, westExits.Length);
 
         originGrid.westGrid = newGrid;
         newGrid.eastGrid = originGrid;
