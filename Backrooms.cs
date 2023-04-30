@@ -1335,7 +1335,7 @@ public class Backrooms : UdonSharpBehaviour
         int stepNum = 1;
         int stepDirection = OppositeDirection(originDirection);
         RoomGrid stepGrid = originGrid;
-        while (stepNum < 2 && stepNum > -1) {
+        while (stepNum < 3 && stepNum > -1) {
             switch (stepDirection) {
                 case North:
                     // We are North of this grid, so we gotta check its non-north neighbours
