@@ -1392,6 +1392,11 @@ public class Backrooms : UdonSharpBehaviour
 
     void DrawLightControllers (GameObject grid, Vector2 southWestCorner) {
         Vector2 gridXZPosition = new Vector2(grid.transform.position.x, grid.transform.position.z);
+        // Create a parent object
+        GameObject lightControllerOrganiser = GameObject.Instantiate(emptyGameObject);
+        lightControllerOrganiser.transform.SetParent(grid.transform);
+        lightControllerOrganiser.transform.localPosition = Vector3.zero;
+        lightControllerOrganiser.name = "Light Controllers";
 
         // Draw the volumes that will be used to control which lights are on
         numLightControllers = 0;
@@ -1424,7 +1429,7 @@ public class Backrooms : UdonSharpBehaviour
             // Then we spawn the controller
             GameObject controllerObject = GameObject.Instantiate(lightsController);
             controllerObject.transform.localScale = new Vector3 (controllerSize[0] + 0.1f, 3.1f, controllerSize[1] + 0.1f); // Make the controller slightly larger than the rectangle it's in
-            controllerObject.transform.SetParent (grid.transform);
+            controllerObject.transform.SetParent (lightControllerOrganiser.transform);
             controllerObject.transform.localPosition = new Vector3 (centerControllerCoordinates[0], 1.5f, centerControllerCoordinates[1]);
 
             // We fetch and initialize its script
