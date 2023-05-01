@@ -135,7 +135,7 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         numLightControllersPlanned = numRectangles;
-        lightControllersCoordinates = new int[numRectangles + 1][][];
+        lightControllersCoordinates = new int[numRectangles * 2][][];
         numLightControllersCreated = 0;
         // I do one fewer rectangle than max to give space for the central rectangle of the starting grid or the forced probe of other grids
         for (int r = 0; r < numRectangles; r++) {
