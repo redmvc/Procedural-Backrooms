@@ -577,13 +577,13 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = startingRow; i < endingRow + 1; i++) {
             numerator += rows[i];
         }
-        double rowNormalisationFactor = numerator/cumulativeRows[numRows];
+        double rowNormalisationFactor = numerator/cumulativeRows[numRows - 1];
 
         numerator = 0;
         for (int j = startingCol; j < endingCol + 1; j++) {
             numerator += columns[j];
         }
-        double colNormalisationFactor = numerator/cumulativeCols[numCols];
+        double colNormalisationFactor = numerator/cumulativeCols[numCols - 1];
 
         // Finally, we adjust the rectangles arrays
         numRows = endingRow - startingRow + 1;
