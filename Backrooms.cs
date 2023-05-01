@@ -156,18 +156,20 @@ public class Backrooms : UdonSharpBehaviour
                 rectangleSize = new int[2] {UnityEngine.Random.Range(1, numRows + 1), 1};
             }
             
+            // Once the rectangle size has been determined, we place it randomly on the grid by picking a random center coordinate for it
+            int[] centerCoordinates = {UnityEngine.Random.Range (0, numRows), UnityEngine.Random.Range(0, numCols)};
+            
             int[] halfSize = {rectangleSize[0] / 2, rectangleSize[1] / 2};
-            if (UnityEngine.Random.Range ((int) 0, (int) 2) == 0) {
+            if (centerCoordinates[0] == numRows - 1 ||
+                (centerCoordinates[0] > 0 && UnityEngine.Random.Range ((int) 0, (int) 2) == 0)) {
                 // Randomly pick ceiling and floor of each coordinate
                 halfSize[0] = rectangleSize[0] - halfSize[0];
             }
-            if (UnityEngine.Random.Range ((int) 0, (int) 2) == 0) {
+            if (centerCoordinates[1] == numCols - 1 ||
+                (centerCoordinates[1] > 0 && UnityEngine.Random.Range ((int) 0, (int) 2) == 0)) {
                 // Randomly pick ceiling and floor of each coordinate
                 halfSize[1] = rectangleSize[1] - halfSize[1];
             }
-            
-            // Once the rectangle size has been determined, we place it randomly on the grid by picking a random center coordinate for it
-            int[] centerCoordinates = {UnityEngine.Random.Range (0, numRows), UnityEngine.Random.Range(0, numCols)};
             for (int i = - halfSize[0]; i < rectangleSize[0] - halfSize[0]; i++) {
                 if (centerCoordinates[0] + i < 0) {
                     continue;
