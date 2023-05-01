@@ -1434,20 +1434,13 @@ public class Backrooms : UdonSharpBehaviour
                         }
                     }
 
-                    double x, y;
-                    for (int m = 0; m < numLightRows; m++) {
-                        y = minPadding + gridEdgePadding + m * spaceBetweenLights;
-                        if (y > endingY) {
-                            break;
-                        } else if (y >= startingY) {
-                            for (int n = 0; n < numLightCols; n++) {
-                                x = minPadding + gridEdgePadding + n * spaceBetweenLights;
-                                if (x > endingX) {
-                                    break;
-                                } else if (x >= startingX) {
-                                    drawLights[m][n] = true;
-                                }
-                            }
+                    int minLightRow = (int) Math.Max (0, Math.Ceiling ((startingY - minPadding - gridEdgePadding) / spaceBetweenLights));
+                    double maxLightRow = Math.Min (numLightRows, (endingY - minPadding - gridEdgePadding) / spaceBetweenLights);
+                    int minLightCol = (int) Math.Max (0, Math.Ceiling ((startingX - minPadding - gridEdgePadding) / spaceBetweenLights));
+                    double maxLightCol = Math.Min (numLightCols, (endingX - minPadding - gridEdgePadding) / spaceBetweenLights);
+                    for (int m = minLightRow; m < maxLightRow; m++) {
+                        for (int n = minLightCol; n < maxLightCol; n++) {
+                            drawLights[m][n] = true;
                         }
                     }
                 }
