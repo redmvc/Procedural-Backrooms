@@ -131,20 +131,34 @@ public class Backrooms : UdonSharpBehaviour
                 rectangleSize = new int[2] {UnityEngine.Random.Range(1, numRows + 1), 1};
             }
             
-            // Once the rectangle size has been determine, we place it randomly on the grid by picking a random starting coordinate for it
-            int[] startingCoordinates = {UnityEngine.Random.Range(0, numRows), UnityEngine.Random.Range(0, numCols)};
-            for (int i = 0; i < rectangleSize[0]; i++) {
-                if (startingCoordinates[0] + i >= numRows) {
+            int[] halfSize = {rectangleSize[0] / 2, rectangleSize[1] / 2};
+            if (UnityEngine.Random.Range ((int) 0, (int) 2) == 0) {
+                // Randomly pick ceiling and floor of each coordinate
+                halfSize[0] = rectangleSize[0] - halfSize[0];
+            }
+            if (UnityEngine.Random.Range ((int) 0, (int) 2) == 0) {
+                // Randomly pick ceiling and floor of each coordinate
+                halfSize[1] = rectangleSize[1] - halfSize[1];
+            }
+            
+            // Once the rectangle size has been determined, we place it randomly on the grid by picking a random center coordinate for it
+            int[] centerCoordinates = {UnityEngine.Random.Range (0, numRows), UnityEngine.Random.Range(0, numCols)};
+            for (int i = - halfSize[0]; i < rectangleSize[0] - halfSize[0]; i++) {
+                if (centerCoordinates[0] + i < 0) {
+                    continue;
+                } else if (centerCoordinates[0] + i >= numRows) {
                     break;
                 }
 
-                for (int j = 0;  j < rectangleSize[1]; j++) {
-                    if (startingCoordinates[1] + j >= numCols) {
+                for (int j = - halfSize[1];  j < rectangleSize[1] - halfSize[1]; j++) {
+                    if (centerCoordinates[1] + j < 0) {
+                        continue;
+                    } else if (centerCoordinates[1] + j >= numCols) {
                         break;
                     }
 
                     // The "rectangles" array is set to "true" for the cells that are traversable and "false" elsewhere
-                    rectangles[startingCoordinates[0] + i][startingCoordinates[1] + j] = true;
+                    rectangles[centerCoordinates[0] + i][centerCoordinates[1] + j] = true;
                 }
             }
         }
