@@ -842,12 +842,12 @@ public class Backrooms : UdonSharpBehaviour
 
                     double x, y;
                     for (int m = 0; m < numLightRows; m++) {
-                        y = minPadding + m * spaceBetweenLights;
+                        y = minPadding + gridEdgePadding + m * spaceBetweenLights;
                         if (y > endingY) {
                             break;
                         } else if (y >= startingY) {
                             for (int n = 0; n < numLightCols; n++) {
-                                x = minPadding + n * spaceBetweenLights;
+                                x = minPadding + gridEdgePadding + n * spaceBetweenLights;
                                 if (x > endingX) {
                                     break;
                                 } else if (x >= startingX) {
