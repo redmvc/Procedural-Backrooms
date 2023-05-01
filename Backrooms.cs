@@ -362,9 +362,9 @@ public class Backrooms : UdonSharpBehaviour
                     }
                 }
 
-                lightControllersCoordinates[numRectangles] = new int[2][];
-                lightControllersCoordinates[numRectangles][0] = new int[2] {minForcedRow, minForcedCol};
-                lightControllersCoordinates[numRectangles][1] = new int[2] {maxForcedRow, maxForcedCol};
+                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minForcedRow, minForcedCol};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxForcedRow + 1, maxForcedCol + 1};
                 numLightControllersPlanned += 1;
             } else {
                 return false;
@@ -651,9 +651,9 @@ public class Backrooms : UdonSharpBehaviour
                 }
 
                 // And I add a light controller to the central rectangle
-                lightControllersCoordinates[numRectangles] = new int[2][];
-                lightControllersCoordinates[numRectangles][0] = new int[2]{minMidRow, minMidCol};
-                lightControllersCoordinates[numRectangles][1] = new int[2]{maxMidRow, maxMidCol};
+                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2]{minMidRow, minMidCol};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2]{maxMidRow, maxMidCol};
                 numLightControllersPlanned += 1;
             }
             
