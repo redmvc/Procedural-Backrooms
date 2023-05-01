@@ -564,22 +564,32 @@ public class Backrooms : UdonSharpBehaviour
             return false;
         }
         double[] newRows = new double[numRows];
+        cumulativeRows = new double[numRows];
+
         numCols = endingCol - startingCol + 1;
         if (numCols <= 0) {
             // grid has no valid paths
             return false;
         }
         double[] newCols = new double[numCols];
+        cumulativeCols = new double[numCols];
+
+        double cumul = 0;
         bool[][] newRectangles = new bool[numRows][];
         for (int i = 0; i < numRows; i++) {
             newRows[i] = rows[i + startingRow] / rowNormalisationFactor;
+            cumul += newRows[i];
+            cumulativeRows[i] = cumul;
             newRectangles[i] = new bool[numCols];
             for (int j = 0; j < numCols; j++) {
                 newRectangles[i][j] = rectangles[i + startingRow][j + startingCol];
             }
         }
+        cumul = 0;
         for (int j = 0; j < numCols; j++) {
             newCols[j] = columns[j + startingCol] / colNormalisationFactor;
+            cumul += newCols[j];
+            cumulativeCols[j] = cumul;
         }
 
         rows = newRows;
