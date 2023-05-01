@@ -364,7 +364,7 @@ public class Backrooms : UdonSharpBehaviour
 
                 lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
                 lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minForcedRow, minForcedCol};
-                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxForcedRow + 1, maxForcedCol + 1};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxForcedRow - 1, maxForcedCol - 1};
                 numLightControllersPlanned += 1;
             } else {
                 return false;
