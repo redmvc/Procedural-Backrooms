@@ -1391,6 +1391,7 @@ public class Backrooms : UdonSharpBehaviour
     }
 
     void DrawLightControllers (GameObject grid, Vector2 southWestCorner) {
+        // TODO deal with light controllers that are entirely contained within others
         Vector2 gridXZPosition = new Vector2(grid.transform.position.x, grid.transform.position.z);
         // Create a parent object
         GameObject lightControllerOrganiser = GameObject.Instantiate(emptyGameObject);
