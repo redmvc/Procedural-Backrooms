@@ -65,7 +65,7 @@ public class Backrooms : UdonSharpBehaviour
 
     // ----------------------------------------------------------
     // Grid generation
-    private void InitializeGrid ()
+    private void InitializeGrid (bool isStartingGrid)
     {
         // Generates a grid of "gridSideSize" x "gridSideSize" and stores it in "columns", "rows", and "rectangles"
 
@@ -125,7 +125,9 @@ public class Backrooms : UdonSharpBehaviour
                 rectangles[i][j] = false;
             }
         }
-        for (int r = 0; r < numRectangles; r++) {
+        // (For the starting grid, I generate one fewer rectangle here to generate another one in the middle later)
+        int effectiveNumRectangles = numRectangles - (isStartingGrid ? 1 : 0);
+        for (int r = 0; r < effectiveNumRectangles; r++) {
             // We determine the sizes of the rectangles using "thickRectangleProbability" and "thickRectangleMaxGridNum"
             // Rectangles have a (1 - thickRectangleProbability) probability of being "thin" rectangles, which means they're either (1 x N) or (N x 1) in size, where N can be anywhere between 1 and numCols or numRows (depending on orientation), randomly
             // And otherwise they are "thick" rectangles, which are either (M x N) or (N X M) where N is defined as above and M is some value between 2 and thickRectangleMaxGridNum
@@ -579,7 +581,7 @@ public class Backrooms : UdonSharpBehaviour
         int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
         while (traversableFraction < minTraversableFraction) {
             numTries++;
-            InitializeGrid();
+            InitializeGrid(isStartingGrid);
 
             if (isStartingGrid) {
                 // For the initial grid, I'll forcibly add a large rectangle smack-dab in the middle
