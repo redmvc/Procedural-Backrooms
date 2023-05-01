@@ -481,41 +481,69 @@ public class Backrooms : UdonSharpBehaviour
 
             // Now dig a path from each missing edge to this random candidate
             if (!hasPathSouth) {
+                int maxIReached = candidateI;
                 for (int i = 0; i < candidateI; i++) {
                     if (!rectangles[i][candidateJ]) {
                         rectangles[i][candidateJ] = true;
                     } else {
+                        maxIReached = i;
                         break;
                     }
                 }
+
+                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {0, candidateJ};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxIReached, candidateJ};
+                numLightControllersPlanned++;
             }
             if (!hasPathNorth) {
+                int minIReached = candidateI;
                 for (int i = numRows - 1; i > candidateI; i--) {
                     if (!rectangles[i][candidateJ]) {
                         rectangles[i][candidateJ] = true;
                     } else {
+                        minIReached = i;
                         break;
                     }
                 }
+
+                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minIReached, candidateJ};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {numRows - 1, candidateJ};
+                numLightControllersPlanned++;
             }
 
             if (!hasPathWest) {
+                int maxJReached = candidateJ;
                 for (int j = 0; j < candidateJ; j++) {
                     if (!rectangles[candidateI][j]) {
                         rectangles[candidateI][j] = true;
                     } else {
+                        maxJReached = j;
                         break;
                     }
                 }
+
+                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {candidateI, 0};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {candidateI, maxJReached};
+                numLightControllersPlanned++;
             }
             if (!hasPathEast) {
+                int minJReached = candidateJ;
                 for (int j = numCols - 1; j > candidateJ; j--) {
                     if (!rectangles[candidateI][j]) {
                         rectangles[candidateI][j] = true;
                     } else {
+                        minJReached = j;
                         break;
                     }
                 }
+
+                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {candidateI, minJReached};
+                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {candidateI, numCols - 1};
+                numLightControllersPlanned++;
             }
         }
 
