@@ -1623,6 +1623,9 @@ public class Backrooms : UdonSharpBehaviour
                 }
 
                 flashlights[f].transform.localPosition = new Vector3((float) (XCoordinate + (columns[candidateJ] - gridSideSize) / 2), 1.5f, (float) (ZCoordinate + (rows[candidateI] - gridSideSize) / 2));
+                flashlights[f].transform.rotation = Quaternion.Euler (UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f));
+                flashlights[f].GetComponent<Rigidbody>().useGravity = true;
+                flashlights[f].GetComponent<Rigidbody>().isKinematic = false;
             }
         }
     }
