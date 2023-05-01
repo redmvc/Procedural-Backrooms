@@ -50,8 +50,10 @@ public class Backrooms : UdonSharpBehaviour
     // ----------------------------------------------------------
     // Grid under construction
     private double[] columns;
+    private double[] cumulativeCols;
     private int numCols;
     private double[] rows;
+    private double[] cumulativeRows;
     private int numRows;
     private bool[][] rectangles;
 
@@ -89,8 +91,12 @@ public class Backrooms : UdonSharpBehaviour
             columns[d++] = newColSize;
         }
         numCols = d;
+        cumulativeCols = new double[numCols];
+        double cumul = 0;
         for (int i = 0; i < numCols; i++) {
             columns[i] = columns[i] / (xSize / gridSideSize); // Rescale to fit
+            cumul += columns[i];
+            cumulativeCols[i] = cumul;
         }
 
         double ySize = 0;
@@ -102,8 +108,12 @@ public class Backrooms : UdonSharpBehaviour
             rows[d++] = newRowSize;
         }
         numRows = d;
+        cumulativeRows = new double[numRows];
+        cumul = 0;
         for (int i = 0; i < numRows; i++) {
             rows[i] = rows[i] / (ySize / gridSideSize); // Rescale to fit
+            cumul += rows[i];
+            cumulativeRows[i] = cumul;
         }
 
         // ----------------------------------------------------------
@@ -200,32 +210,28 @@ public class Backrooms : UdonSharpBehaviour
 
             bool walkableCoord = false; // This variable keeps track of whether the space offered by the intersection of coordinates is sufficiently walkable
 
-            double currentSize = 0;
             int[] probeRows = new int[numRows];
             int nProbeRows = 0;
             double maxCoord = 0, minCoord = gridSideSize;
             for (int i = 0; i < numRows; i++) {
-                currentSize += rows[i];
-                if (currentSize >= probeCoordinate[0][1] && currentSize - rows[i] <= probeCoordinate[1][1]) {
+                if (cumulativeRows[i] >= probeCoordinate[0][1] && cumulativeRows[i] - rows[i] <= probeCoordinate[1][1]) {
                     probeRows[nProbeRows++] = i;
-                    maxCoord = Math.Max(Math.Min(currentSize, probeCoordinate[1][0]), maxCoord);
-                    minCoord = Math.Min(Math.Max(currentSize - rows[i], probeCoordinate[0][0]), minCoord);
+                    maxCoord = Math.Max(Math.Min(cumulativeRows[i], probeCoordinate[1][0]), maxCoord);
+                    minCoord = Math.Min(Math.Max(cumulativeRows[i] - rows[i], probeCoordinate[0][0]), minCoord);
                 }
             }
             if (maxCoord - minCoord >= minRowColSize - 0.1) { // Someday I will kill floating point errors
                 walkableCoord = true;
             }
             
-            currentSize = 0;
             int[] probeCols = new int[numCols];
             int nProbeCols = 0;
             maxCoord = 0; minCoord = gridSideSize;
             for (int j = 0; j < numCols; j++) {
-                currentSize += columns[j];
-                if (currentSize >= probeCoordinate[0][0] && currentSize - columns[j] <= probeCoordinate[1][0]) {
+                if (cumulativeCols[j] >= probeCoordinate[0][0] && cumulativeCols[j] - columns[j] <= probeCoordinate[1][0]) {
                     probeCols[nProbeCols++] = j;
-                    maxCoord = Math.Max(Math.Min(currentSize, probeCoordinate[1][1]), maxCoord);
-                    minCoord = Math.Min(Math.Max(currentSize - columns[j], probeCoordinate[0][1]), minCoord);
+                    maxCoord = Math.Max(Math.Min(cumulativeCols[j], probeCoordinate[1][1]), maxCoord);
+                    minCoord = Math.Min(Math.Max(cumulativeCols[j] - columns[j], probeCoordinate[0][1]), minCoord);
                 }
             }
             if (maxCoord - minCoord >= minRowColSize - 0.1) {
@@ -247,16 +253,13 @@ public class Backrooms : UdonSharpBehaviour
             if (forceProbe) {
                 // I will attempt to forcibly add rectangles around one of the probe coordinates
                 Vector2[] probeForced = probeCoordinates[UnityEngine.Random.Range((int) 0, numProbes)];
-                double cumulativeY = 0, cumulativeX = 0;
                 int minForcedRow = 0, maxForcedRow = 0, minForcedCol = 0, maxForcedCol = 0;
                 for (int i = 0; i < numRows; i++) {
                     // Find the first i coordinate that contains that probe
-                    cumulativeY += rows[i];
-                    if (cumulativeY > probeForced[0][1]) {
+                    if (cumulativeRows[i] > probeForced[0][1]) {
                         for (int j = 0; j < numCols; j++) {
                             // Find the first j coordinate that contains the probe
-                            cumulativeX += columns[j];
-                            if (cumulativeX > probeForced[0][0]) {
+                            if (cumulativeCols[j] > probeForced[0][0]) {
                                 // Now I'm gonna set a bunch of rectangles starting here to valid
                                 if (probeForced[1][0] - probeForced[0][0] < 0.1) { // yayyyy floating points
                                     // Vertical probe
@@ -509,23 +512,17 @@ public class Backrooms : UdonSharpBehaviour
             return true;
         }
 
-        double numerator = 0, denominator = 0;
-        for (int i = 0; i < numRows; i++) {
-            denominator += rows[i];
-            if (i >= startingRow && i <= endingRow) {
-                numerator += rows[i];
-            }
+        double numerator = 0;
+        for (int i = startingRow; i < endingRow + 1; i++) {
+            numerator += rows[i];
         }
-        double rowNormalisationFactor = numerator/denominator;
+        double rowNormalisationFactor = numerator/cumulativeRows[numRows];
 
-        numerator = 0; denominator = 0;
-        for (int j = 0; j < numCols; j++) {
-            denominator += columns[j];
-            if (j >= startingCol && j <= endingCol) {
-                numerator += columns[j];
-            }
+        numerator = 0;
+        for (int j = startingCol; j < endingCol + 1; j++) {
+            numerator += columns[j];
         }
-        double colNormalisationFactor = numerator/denominator;
+        double colNormalisationFactor = numerator/cumulativeCols[numCols];
 
         // Finally, we adjust the rectangles arrays
         numRows = endingRow - startingRow + 1;
@@ -586,26 +583,22 @@ public class Backrooms : UdonSharpBehaviour
 
             if (isStartingGrid) {
                 // For the initial grid, I'll forcibly add a large rectangle smack-dab in the middle
-                double cumulativeSize = 0;
                 int minMidRow = -1, maxMidRow = -1;
                 for (int i = 0; i < numRows; i++) {
-                    cumulativeSize += rows[i];
-                    if (minMidRow != -1 && cumulativeSize >= gridSideSize / 2 + 10) {
+                    if (minMidRow != -1 && cumulativeRows[i] >= gridSideSize / 2 + 10) {
                         maxMidRow = i;
                         break;
-                    } else if (minMidRow == -1 && cumulativeSize >= gridSideSize / 2 - 10) {
+                    } else if (minMidRow == -1 && cumulativeRows[i] >= gridSideSize / 2 - 10) {
                         minMidRow = i;
                     }
                 }
 
-                cumulativeSize = 0;
                 int minMidCol = -1, maxMidCol = -1;
                 for (int i = 0; i < numCols; i++) {
-                    cumulativeSize += columns[i];
-                    if (minMidCol != -1 && cumulativeSize >= gridSideSize / 2 + 10) {
+                    if (minMidCol != -1 && cumulativeCols[i] >= gridSideSize / 2 + 10) {
                         maxMidCol = i;
                         break;
-                    } else if (minMidCol == -1 && cumulativeSize >= gridSideSize / 2 - 10) {
+                    } else if (minMidCol == -1 && cumulativeCols[i] >= gridSideSize / 2 - 10) {
                         minMidCol = i;
                     }
                 }
@@ -1132,12 +1125,10 @@ public class Backrooms : UdonSharpBehaviour
         double northFacingStartingXCoordinate, northFacingEndingXCoordinate;
         double southFacingStartingXCoordinate, southFacingEndingXCoordinate;
         double edgeStartingCoordinate, edgeEndingCoordinate;
-        double cumulativeXCoordinate = 0, cumulativeYCoordinate = 0;
 
         for (int i = 0; i < numRows; i++) {
-            southYCoordinate = cumulativeYCoordinate;
-            cumulativeYCoordinate += rows[i];
-            northYCoordinate = cumulativeYCoordinate;
+            southYCoordinate = cumulativeRows[i] - rows[i];
+            northYCoordinate = cumulativeRows[i];
 
             northFacingStartingXCoordinate = double.NaN;
             northFacingEndingXCoordinate = double.NaN;
@@ -1145,9 +1136,7 @@ public class Backrooms : UdonSharpBehaviour
             southFacingEndingXCoordinate = double.NaN;
             edgeStartingCoordinate = double.NaN;
             edgeEndingCoordinate = double.NaN;
-            cumulativeXCoordinate = 0;
             for (int j = 0; j < numCols; j++) {
-                cumulativeXCoordinate += columns[j];
                 if (rectangles[i][j]) {
                     if (!Double.IsNaN(edgeStartingCoordinate)) {
                         if (i == 0) {
@@ -1164,9 +1153,9 @@ public class Backrooms : UdonSharpBehaviour
                             // There is a wall to the south of where I am
                             if (Double.IsNaN(northFacingStartingXCoordinate)) {
                                 // Start a new wall
-                                northFacingStartingXCoordinate = cumulativeXCoordinate - columns[j];
+                                northFacingStartingXCoordinate = cumulativeCols[j] - columns[j];
                             }
-                            northFacingEndingXCoordinate = cumulativeXCoordinate;
+                            northFacingEndingXCoordinate = cumulativeCols[j];
                         } else if (!Double.IsNaN(northFacingStartingXCoordinate)) {
                             // There is not a wall to the south of where I am but I have been building a wall
                             BuildNorthFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) northFacingStartingXCoordinate, (float) northFacingEndingXCoordinate), southYCoordinate);
@@ -1178,9 +1167,9 @@ public class Backrooms : UdonSharpBehaviour
                         if (i == numRows - 1 || !rectangles[i + 1][j]) {
                             if (Double.IsNaN(southFacingStartingXCoordinate)) {
                                 // Start a new wall
-                                southFacingStartingXCoordinate = cumulativeXCoordinate - columns[j];
+                                southFacingStartingXCoordinate = cumulativeCols[j] - columns[j];
                             }
-                            southFacingEndingXCoordinate = cumulativeXCoordinate;
+                            southFacingEndingXCoordinate = cumulativeCols[j];
                         } else if (!Double.IsNaN(southFacingStartingXCoordinate)) {
                             BuildSouthFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) southFacingStartingXCoordinate, (float) southFacingEndingXCoordinate), northYCoordinate);
                             southFacingStartingXCoordinate = double.NaN;
@@ -1201,16 +1190,16 @@ public class Backrooms : UdonSharpBehaviour
                         // I am on a non-traversable space to the south, I want to make a south-facing wall at the edge
                         if (Double.IsNaN(edgeStartingCoordinate)) {
                             // Start a new wall
-                            edgeStartingCoordinate = cumulativeXCoordinate - columns[j];
+                            edgeStartingCoordinate = cumulativeCols[j] - columns[j];
                         }
-                        edgeEndingCoordinate = cumulativeXCoordinate;
+                        edgeEndingCoordinate = cumulativeCols[j];
                     } else if (i == numRows - 1) {
                         // I am on a non-traversable space to the north, I want to make a north-facing wall at the edge
                         if (Double.IsNaN(edgeStartingCoordinate)) {
                             // Start a new wall
-                            edgeStartingCoordinate = cumulativeXCoordinate - columns[j];
+                            edgeStartingCoordinate = cumulativeCols[j] - columns[j];
                         }
-                        edgeEndingCoordinate = cumulativeXCoordinate;
+                        edgeEndingCoordinate = cumulativeCols[j];
                     } else {
                         continue;
                     }
@@ -1239,12 +1228,9 @@ public class Backrooms : UdonSharpBehaviour
         double eastXCoordinate, westXCoordinate;
         double eastFacingStartingYCoordinate, eastFacingEndingYCoordinate;
         double westFacingStartingYCoordinate, westFacingEndingYCoordinate;
-        cumulativeXCoordinate = 0;
-        cumulativeYCoordinate = 0;
         for (int j = 0; j < numCols; j++) {
-            westXCoordinate = cumulativeXCoordinate;
-            cumulativeXCoordinate += columns[j];
-            eastXCoordinate = cumulativeXCoordinate;
+            westXCoordinate = cumulativeCols[j] - columns[j];
+            eastXCoordinate = cumulativeCols[j];
 
             eastFacingStartingYCoordinate = double.NaN;
             eastFacingEndingYCoordinate = double.NaN;
@@ -1252,9 +1238,7 @@ public class Backrooms : UdonSharpBehaviour
             westFacingEndingYCoordinate = double.NaN;
             edgeStartingCoordinate = double.NaN;
             edgeEndingCoordinate = double.NaN;
-            cumulativeYCoordinate = 0;
             for (int i = 0; i < numRows; i++) {
-                cumulativeYCoordinate += rows[i];
                 if (rectangles[i][j]) {
                     if (!Double.IsNaN(edgeStartingCoordinate)) {
                         if (j == 0) {
@@ -1271,9 +1255,9 @@ public class Backrooms : UdonSharpBehaviour
                             // There is a wall to the west of where I am
                             if (Double.IsNaN(eastFacingStartingYCoordinate)) {
                                 // Start a new wall
-                                eastFacingStartingYCoordinate = cumulativeYCoordinate - rows[i];
+                                eastFacingStartingYCoordinate = cumulativeRows[i] - rows[i];
                             }
-                            eastFacingEndingYCoordinate = cumulativeYCoordinate;
+                            eastFacingEndingYCoordinate = cumulativeRows[i];
                         } else if (!Double.IsNaN(eastFacingStartingYCoordinate)) {
                             // There is not a wall to the west of where I am but I have been building a wall
                             BuildEastFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) eastFacingStartingYCoordinate, (float) eastFacingEndingYCoordinate), westXCoordinate);
@@ -1285,9 +1269,9 @@ public class Backrooms : UdonSharpBehaviour
                         if (j == numCols - 1 || !rectangles[i][j + 1]) {
                             if (Double.IsNaN(westFacingStartingYCoordinate)) {
                                 // Start a new wall
-                                westFacingStartingYCoordinate = cumulativeYCoordinate - rows[i];
+                                westFacingStartingYCoordinate = cumulativeRows[i] - rows[i];
                             }
-                            westFacingEndingYCoordinate = cumulativeYCoordinate;
+                            westFacingEndingYCoordinate = cumulativeRows[i];
                         } else if (!Double.IsNaN(westFacingStartingYCoordinate)) {
                             BuildWestFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) westFacingStartingYCoordinate, (float) westFacingEndingYCoordinate), eastXCoordinate);
                             westFacingStartingYCoordinate = double.NaN;
@@ -1309,16 +1293,16 @@ public class Backrooms : UdonSharpBehaviour
                         // I am on a non-traversable space to the west, I want to make a west-facing wall at the edge
                         if (Double.IsNaN(edgeStartingCoordinate)) {
                             // Start a new wall
-                            edgeStartingCoordinate = cumulativeYCoordinate - rows[i];
+                            edgeStartingCoordinate = cumulativeRows[i] - rows[i];
                         }
-                        edgeEndingCoordinate = cumulativeYCoordinate;
+                        edgeEndingCoordinate = cumulativeRows[i];
                     } else if (j == numCols - 1) {
                         // I am on a non-traversable space to the east, I want to make a east-facing wall at the edge
                         if (Double.IsNaN(edgeStartingCoordinate)) {
                             // Start a new wall
-                            edgeStartingCoordinate = cumulativeYCoordinate - rows[i];
+                            edgeStartingCoordinate = cumulativeRows[i] - rows[i];
                         }
-                        edgeEndingCoordinate = cumulativeYCoordinate;
+                        edgeEndingCoordinate = cumulativeRows[i];
                     } else {
                         continue;
                     }
@@ -1389,16 +1373,10 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         // I will go through the grid and for each cell determine which of the lights in it are drawn
-        double cumulativeY = 0;
-        double cumulativeX = 0;
         for (int i = 0; i < numRows; i++) {
-            cumulativeY += rows[i];
-            
-            cumulativeX = 0;
             for (int j = 0; j < numCols; j++) {
-                cumulativeX += columns[j];
                 if (rectangles[i][j]) {
-                    double startingX = cumulativeX - columns [j];
+                    double startingX = cumulativeCols[j] - columns [j];
                     if (j == 0 || !rectangles[i][j - 1]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         startingX += minPadding;
@@ -1407,7 +1385,7 @@ public class Backrooms : UdonSharpBehaviour
                         }
                     }
                     
-                    double endingX = cumulativeX;
+                    double endingX = cumulativeCols[j];
                     if (j == numCols - 1 || !rectangles[i][j + 1]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         endingX -= minPadding;
@@ -1416,7 +1394,7 @@ public class Backrooms : UdonSharpBehaviour
                         }
                     }
                     
-                    double startingY = cumulativeY - rows[i]; 
+                    double startingY = cumulativeRows[i] - rows[i]; 
                     if (i == 0 || !rectangles[i - 1][j]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         startingY += minPadding;
@@ -1425,7 +1403,7 @@ public class Backrooms : UdonSharpBehaviour
                         }
                     }
                     
-                    double endingY = cumulativeY;
+                    double endingY = cumulativeRows[i];
                     if (i == numRows - 1 || !rectangles[i + 1][j]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         endingY -= minPadding;
@@ -1598,11 +1576,11 @@ public class Backrooms : UdonSharpBehaviour
                 }
 
                 double XCoordinate = 0, ZCoordinate = 0;
-                for (int i = 0; i < candidateI; i++) {
-                    ZCoordinate += rows[i];
+                if (candidateI > 0) {
+                    ZCoordinate = cumulativeRows[candidateI - 1];
                 }
-                for (int j = 0; j < candidateJ; j++) {
-                    XCoordinate += columns[j];
+                if (candidateJ > 0) {
+                    XCoordinate = cumulativeCols[candidateJ - 1];
                 }
 
                 flashlights[f].transform.localPosition = new Vector3((float) (XCoordinate + (columns[candidateJ] - gridSideSize) / 2), 1.5f, (float) (ZCoordinate + (rows[candidateI] - gridSideSize) / 2));
