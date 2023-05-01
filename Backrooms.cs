@@ -1574,7 +1574,7 @@ public class Backrooms : UdonSharpBehaviour
         if (Networking.IsOwner(transform.gameObject)) {
             // Owner will move flashlights to random locations in the starting grid
             for (int f = 0; f < flashlights.Length; f++) {
-                flashlights[f].transform.SetParent(startingGrid.transform);
+                // flashlights[f].transform.SetParent(startingGrid.transform); // Commented this out so that the flashlights will have their spawning locations within the shaft down to the backrooms so they get respawned there if needed
 
                 // Attempt 20 times to move the flashlight somewhere random, otherwise do it sequentially
                 const int maxTries = 20;
