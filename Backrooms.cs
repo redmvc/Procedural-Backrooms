@@ -29,6 +29,8 @@ public class Backrooms : UdonSharpBehaviour
     private double skirtingBoardThickness = 0.006;
     public GameObject lightUnit;
     public double spaceBetweenLights = 5;
+    public GameObject lightsController;
+    public int maxLitUpDistance = 3;
     public GameObject[] flashlights;
     public GameObject emptyGameObject;
     public GameObject gridInstance;
@@ -56,6 +58,11 @@ public class Backrooms : UdonSharpBehaviour
     private double[] cumulativeRows;
     private int numRows;
     private bool[][] rectangles;
+    private int[][][] lightControllersCoordinates;
+    private LightController[] lightControllers;
+    private int numLightControllers;
+    private LightController[] edgeLightControllers; // Light controllers that touch the grid's edges
+    private int numEdgeLightControllers = 0;
 
     // ----------------------------------------------------------
     // Networking variables
@@ -125,6 +132,9 @@ public class Backrooms : UdonSharpBehaviour
                 rectangles[i][j] = false;
             }
         }
+
+        lightControllersCoordinates = new int[numRectangles][][];
+        numLightControllers = 0;
         // (For the starting grid, I generate one fewer rectangle here to generate another one in the middle later)
         int effectiveNumRectangles = numRectangles - (isStartingGrid ? 1 : 0);
         for (int r = 0; r < effectiveNumRectangles; r++) {
@@ -176,6 +186,18 @@ public class Backrooms : UdonSharpBehaviour
                     rectangles[centerCoordinates[0] + i][centerCoordinates[1] + j] = true;
                 }
             }
+
+            // Then we create a potential light controller for that rectangle
+            lightControllersCoordinates[r] = new int[2][] {
+                new int[2] {
+                        (int) Math.Max(0, centerCoordinates[0] - halfSize[0]),
+                        (int) Math.Max(0, centerCoordinates[1] - halfSize[1])
+                    },
+                new int[2] {
+                        (int) Math.Min(numRows, centerCoordinates[0] + rectangleSize[0] - halfSize[0]) - 1,
+                        (int) Math.Min(numCols, centerCoordinates[1] + rectangleSize[1] - halfSize[1]) - 1
+                    }
+            };
         }
     }
 
@@ -554,7 +576,15 @@ public class Backrooms : UdonSharpBehaviour
         rows = newRows;
         columns = newCols;
         rectangles = newRectangles;
-        // return newGridCorners;
+
+        // Now we adjust the light controllers that might have gotten displaced
+        for (int r = 0; r < numRectangles; r++) {
+            lightControllersCoordinates[r][0][0] -= startingRow;
+            lightControllersCoordinates[r][1][0] -= startingRow;
+            lightControllersCoordinates[r][0][1] -= startingCol;
+            lightControllersCoordinates[r][1][1] -= startingCol;
+        }
+        
         return true;
     }
 
@@ -610,6 +640,11 @@ public class Backrooms : UdonSharpBehaviour
                         rectangles[i][j] = true;
                     }
                 }
+
+                // And I add a light controller to the central rectangle
+                lightControllersCoordinates[numRectangles - 1] = new int[2][];
+                lightControllersCoordinates[numRectangles - 1][0] = new int[2]{minMidRow, minMidCol};
+                lightControllersCoordinates[numRectangles - 1][1] = new int[2]{maxMidRow, maxMidCol};
             }
             
             // Now validate that there exist reachable cells from the probe coordinates
@@ -635,12 +670,13 @@ public class Backrooms : UdonSharpBehaviour
         if (spawnMeshes) {
             // I won't spawn the meshes if I'm not the owner and this grid has not been spawned
             DrawFloorAndCeiling(gridRoot, effectiveGridCorners); 
+            DrawLightControllers(gridRoot, effectiveGridCorners[0]);
             DrawLights(gridRoot, effectiveGridCorners);
             DrawWalls(gridRoot, effectiveGridCorners[0]);
         }
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols);
+        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols, edgeLightControllers, numEdgeLightControllers);
         grid.GenerateExits();
 
         return grid;
@@ -670,6 +706,7 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.northGrid = newGrid;
         newGrid.southGrid = originGrid;
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
 
@@ -1351,6 +1388,64 @@ public class Backrooms : UdonSharpBehaviour
         uniqueMaterial.mainTextureScale = new Vector2((float) effectiveGridSize[0] * 2, (float) effectiveGridSize[1] * 2);
     }
 
+    void DrawLightControllers (GameObject grid, Vector2 southWestCorner) {
+        Vector2 gridXZPosition = new Vector2(grid.transform.position.x, grid.transform.position.z);
+
+        // Draw the volumes that will be used to control which lights are on
+        numLightControllers = 0;
+        lightControllers = new LightController[numRectangles];
+        numEdgeLightControllers = 0;
+        edgeLightControllers = new LightController[numRectangles];
+        for (int r = 0; r < numRectangles; r++) {
+            // First we check whether this controller should be drawn at all, in the finalized version of the grid
+            int[][] controllerCells = lightControllersCoordinates[r];
+            int[] bottomLeft = controllerCells[0];
+            int[] topRight = controllerCells[1];
+            if (!rectangles [bottomLeft[0]][bottomLeft[1]]) {
+                continue;
+            }
+
+            // Next we determine the controller's dimensions
+            Vector2[] controllerCorners = {
+                southWestCorner + new Vector2 (
+                                               (float) (cumulativeCols[bottomLeft[1]] - columns[bottomLeft[1]]),
+                                               (float) (cumulativeRows[bottomLeft[0]] - rows[bottomLeft[0]])
+                                              ),
+                southWestCorner + new Vector2 (
+                                               (float) cumulativeCols[topRight[1]],
+                                               (float) cumulativeRows[topRight[0]]
+                                              )
+            };
+            Vector2 controllerSize = controllerCorners[1] - controllerCorners[0];
+            Vector2 centerControllerCoordinates = controllerCorners[0] + 0.5f * controllerSize;
+
+            // Then we spawn the controller
+            GameObject controllerObject = GameObject.Instantiate(lightsController);
+            controllerObject.transform.localScale = new Vector3 (controllerSize[0] + 0.1f, 3.1f, controllerSize[1] + 0.1f); // Make the controller slightly larger than the rectangle it's in
+            controllerObject.transform.SetParent (grid.transform);
+            controllerObject.transform.localPosition = new Vector3 (centerControllerCoordinates[0], 1.5f, centerControllerCoordinates[1]);
+
+            // We fetch and initialize its script
+            lightControllers[numLightControllers] = controllerObject.GetComponent<LightController>();
+            lightControllers[numLightControllers].Initialize (maxLitUpDistance, numRectangles * 2,
+                                                              controllerCorners[0] + gridXZPosition,
+                                                              controllerCorners[1] + gridXZPosition);
+
+            // Then we add it to the lists of north, south, east, or west light controllers if they intersect with the grid's edges
+            if (bottomLeft[0] == 0 || bottomLeft[1] == 0 || topRight[0] == numRows - 1 || topRight[1] == numCols - 1) {
+                edgeLightControllers[numEdgeLightControllers++] = lightControllers[numLightControllers];
+            }
+
+            // Then we iterate over existing controllers to see where they intersect
+            for (int c = 0; c < numLightControllers; c++) {
+                lightControllers[numLightControllers].CheckNeighbourhood(lightControllers[c]);
+            }
+
+            // And finally we increment the number of controllers that have been drawn
+            numLightControllers++;
+        }
+    }
+    
     void DrawLights (GameObject grid, Vector2[] effectiveGridCorners) {
         // For the moment, this function will attempt to tile the entire grid with lights every "spaceBetweenLights" meters, starting at (0.5, 0.5), and not drawing any lights that would be in non-traversable areas or that would intersect with walls
         // The lights are 0.5 x 0.5
@@ -1439,6 +1534,11 @@ public class Backrooms : UdonSharpBehaviour
                         2.99f,
                         effectiveGridCorners[0][1] + (float) (minPadding + i * spaceBetweenLights));
                     light.name = "Light " + (numLights++);
+
+                    // Check which light controllers this light is in
+                    for (int lc = 0; lc < numLightControllers; lc++) {
+                        lightControllers[lc].CheckLightContainment(light);
+                    }
                 }
             }
         }

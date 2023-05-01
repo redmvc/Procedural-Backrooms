@@ -23,6 +23,7 @@ public class RoomGrid : UdonSharpBehaviour
     public bool[][] rectangles;
     public double[] rows;
     public double[] columns;
+    private LightController[] edgeLightControllers;
 
     // Rng seeds to generate neighbours
     private int[] northRngSeeds;
@@ -44,7 +45,7 @@ public class RoomGrid : UdonSharpBehaviour
 
     void Start() {}
 
-    public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController, bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols) {
+    public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController, bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols, LightController[] edgeLightControllers, int numEdgeLightControllers) {
         this.root = root;
         this.gridCorners = gridCorners;
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
@@ -79,6 +80,11 @@ public class RoomGrid : UdonSharpBehaviour
             this.columns[j] = columns[j];
         }
 
+        this.edgeLightControllers = new LightController[numEdgeLightControllers];
+        for (int i = 0; i < numEdgeLightControllers; i++) {
+            this.edgeLightControllers[i] = edgeLightControllers[i];
+        }
+
         northRngSeeds = new int[20];
         eastRngSeeds = new int[20];
         southRngSeeds = new int[20];
@@ -93,6 +99,22 @@ public class RoomGrid : UdonSharpBehaviour
 
     public void SetFences(GameObject organiser) {
         this.fenceOrganiser = organiser;
+    }
+
+    public LightController[] GetEdgeLightControllers ()
+    {
+        return edgeLightControllers;
+    }
+
+    public void AddNeighbouringGridLightControllers (RoomGrid neighbouringGrid)
+    {
+        // Check where our light controllers overlap with our neighbour's
+        LightController[] neighboursControllers = neighbouringGrid.GetEdgeLightControllers ();
+        for (int i = 0; i < edgeLightControllers.Length; i++) {
+            for (int j = 0; j < neighboursControllers.Length; j++) {
+                edgeLightControllers[i].CheckNeighbourhood (neighboursControllers[j]);
+            }
+        }
     }
 
     public void DestroyNeighbour(int dir) {
