@@ -23,6 +23,8 @@ public class RoomGrid : UdonSharpBehaviour
     public bool[][] rectangles;
     public double[] rows;
     public double[] columns;
+
+    // Rng seeds to generate neighbours
     private int[] northRngSeeds;
     private int currentNorthSeed = 0;
     private int[] eastRngSeeds;
