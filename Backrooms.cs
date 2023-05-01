@@ -60,7 +60,9 @@ public class Backrooms : UdonSharpBehaviour
     [UdonSynced] int rngSeed;
     private bool initialSetupDone = false;
 
-    private void InitializeGrid()
+    // ----------------------------------------------------------
+    // Grid generation
+    private void InitializeGrid ()
     {
         // Generates a grid of "gridSideSize" x "gridSideSize" and stores it in "columns", "rows", and "rectangles"
 
@@ -164,7 +166,7 @@ public class Backrooms : UdonSharpBehaviour
         }
     }
 
-    private bool ValidateGrid(Vector2[][] probeCoordinates, int numProbes, bool forceProbe = false)
+    private bool ValidateGrid (Vector2[][] probeCoordinates, int numProbes, bool forceProbe = false)
     {
         // This function explores the current generated grid starting from each of the probe coordinates and regenerates the "rectangles" variable from that probe
     
@@ -483,6 +485,592 @@ public class Backrooms : UdonSharpBehaviour
         return true;
     }
 
+    bool JustifyGrid () {
+        // Removes "padding" of the grid (i.e. entire rows or columns at the borders that are empty)
+        // First we find what the minimum and maximum coordinates reachable on the grid are
+        int startingRow = numRows, endingRow = 0;
+        int startingCol = numCols, endingCol = 0;
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (rectangles[i][j]) {
+                    if (startingRow == numRows) {
+                        startingRow = i;
+                    }
+                    endingRow = i;
+
+                    startingCol = Math.Min(startingCol, j);
+                    endingCol = Math.Max(endingCol, j);
+                }
+            }
+        }
+
+        if (startingRow == 0 && endingRow == numRows - 1 && startingCol == 0 && endingCol == numCols - 1) {
+            return true;
+        }
+
+        double numerator = 0, denominator = 0;
+        for (int i = 0; i < numRows; i++) {
+            denominator += rows[i];
+            if (i >= startingRow && i <= endingRow) {
+                numerator += rows[i];
+            }
+        }
+        double rowNormalisationFactor = numerator/denominator;
+
+        numerator = 0; denominator = 0;
+        for (int j = 0; j < numCols; j++) {
+            denominator += columns[j];
+            if (j >= startingCol && j <= endingCol) {
+                numerator += columns[j];
+            }
+        }
+        double colNormalisationFactor = numerator/denominator;
+
+        // Finally, we adjust the rectangles arrays
+        numRows = endingRow - startingRow + 1;
+        if (numRows <= 0) {
+            // grid has no valid paths
+            return false;
+        }
+        double[] newRows = new double[numRows];
+        numCols = endingCol - startingCol + 1;
+        if (numCols <= 0) {
+            // grid has no valid paths
+            return false;
+        }
+        double[] newCols = new double[numCols];
+        bool[][] newRectangles = new bool[numRows][];
+        for (int i = 0; i < numRows; i++) {
+            newRows[i] = rows[i + startingRow] / rowNormalisationFactor;
+            newRectangles[i] = new bool[numCols];
+            for (int j = 0; j < numCols; j++) {
+                newRectangles[i][j] = rectangles[i + startingRow][j + startingCol];
+            }
+        }
+        for (int j = 0; j < numCols; j++) {
+            newCols[j] = columns[j + startingCol] / colNormalisationFactor;
+        }
+
+        rows = newRows;
+        columns = newCols;
+        rectangles = newRectangles;
+        // return newGridCorners;
+        return true;
+    }
+
+    RoomGrid GenerateGrid (GameObject gridRoot) {
+        // Starting grid
+        return GenerateGrid(
+            gridRoot,
+            new Vector2[1][] {
+                new Vector2[2] {
+                    new Vector2((float) ((gridSideSize - minRowColSize) / 2), (float) ((gridSideSize - minRowColSize) / 2)),
+                    new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
+                }
+            },
+            1, true, true);
+    }
+
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes = true) {
+        // Non-starting grid
+        return GenerateGrid (gridRoot, probeCoordinates, numProbes, spawnMeshes, false);
+    }
+
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes, bool isStartingGrid) {
+        double traversableFraction = 0;
+        int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
+        while (traversableFraction < minTraversableFraction) {
+            numTries++;
+            InitializeGrid();
+
+            if (isStartingGrid) {
+                // For the initial grid, I'll forcibly add a large rectangle smack-dab in the middle
+                double cumulativeSize = 0;
+                int minMidRow = -1, maxMidRow = -1;
+                for (int i = 0; i < numRows; i++) {
+                    cumulativeSize += rows[i];
+                    if (minMidRow != -1 && cumulativeSize >= gridSideSize / 2 + 10) {
+                        maxMidRow = i;
+                        break;
+                    } else if (minMidRow == -1 && cumulativeSize >= gridSideSize / 2 - 10) {
+                        minMidRow = i;
+                    }
+                }
+
+                cumulativeSize = 0;
+                int minMidCol = -1, maxMidCol = -1;
+                for (int i = 0; i < numCols; i++) {
+                    cumulativeSize += columns[i];
+                    if (minMidCol != -1 && cumulativeSize >= gridSideSize / 2 + 10) {
+                        maxMidCol = i;
+                        break;
+                    } else if (minMidCol == -1 && cumulativeSize >= gridSideSize / 2 - 10) {
+                        minMidCol = i;
+                    }
+                }
+
+                for (int i = minMidRow; i <= maxMidRow; i++) {
+                    for (int j = minMidCol; j <= maxMidCol; j++) {
+                        rectangles[i][j] = true;
+                    }
+                }
+            }
+            
+            // Now validate that there exist reachable cells from the probe coordinates
+            if (ValidateGrid(probeCoordinates, numProbes, numTries > maxValidationTriesBeforeForcing)) { 
+                double totalArea = numRows * numCols;
+                // double totalArea = gridSideSize * gridSideSize;
+                double traversableArea = 0;
+                for (int i = 0; i < numRows; i++) {
+                    for (int j = 0; j < numCols; j++) {
+                        if (rectangles[i][j]) {
+                            traversableArea += 1;
+                            // traversableArea += rows[i] * columns[j];
+                        }
+                    }
+                }
+
+                traversableFraction = traversableArea / totalArea;
+            }
+        }
+
+        Vector2[] effectiveGridCorners = {new Vector2 (- gridSideSize / 2, - gridSideSize / 2), new Vector2 (gridSideSize / 2, gridSideSize / 2)};
+        
+        if (spawnMeshes) {
+            // I won't spawn the meshes if I'm not the owner and this grid has not been spawned
+            DrawFloorAndCeiling(gridRoot, effectiveGridCorners); 
+            DrawLights(gridRoot, effectiveGridCorners);
+            DrawWalls(gridRoot, effectiveGridCorners[0]);
+        }
+
+        RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
+        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols);
+        grid.GenerateExits();
+
+        return grid;
+    }
+
+    RoomGrid GenerateNorthNeighbour (RoomGrid originGrid) {
+        if (originGrid.northGrid != null) {
+            // Don't generate if I already exist
+            return originGrid.northGrid;
+        }
+
+        GameObject gridRoot = GameObject.Instantiate(gridInstance);
+        gridRoot.transform.SetParent(transform);
+        gridRoot.transform.localPosition = Vector3.zero;
+
+        GridExit[] northExits = originGrid.GetNorthExits();
+        Vector2[][] probeCoordinates = new Vector2[northExits.Length][];
+        for (int i = 0; i < northExits.Length; i++) {
+            Vector2[] exit = northExits[i].ToVector2();
+            probeCoordinates[i] = new Vector2[2] {
+                new Vector2(exit[0][0], 0f),
+                new Vector2(exit[1][0], 0f)
+            };
+        }
+
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, northExits.Length);
+
+        originGrid.northGrid = newGrid;
+        newGrid.southGrid = originGrid;
+
+        gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
+
+        return newGrid;
+    }
+
+    RoomGrid GenerateSouthNeighbour (RoomGrid originGrid) {
+        if (originGrid.southGrid != null) {
+            // Don't generate if I already exist
+            return originGrid.southGrid;
+        }
+
+        GameObject gridRoot = GameObject.Instantiate(gridInstance);
+        gridRoot.transform.SetParent(transform);
+        gridRoot.transform.localPosition = Vector3.zero;
+
+        GridExit[] southExits = originGrid.GetSouthExits();
+        Vector2[][] probeCoordinates = new Vector2[southExits.Length][];
+        for (int i = 0; i < southExits.Length; i++) {
+            Vector2[] exit = southExits[i].ToVector2();
+            probeCoordinates[i] = new Vector2[2] {
+                new Vector2(exit[0][0], gridSideSize),
+                new Vector2(exit[1][0], gridSideSize)
+            };
+        }
+
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, southExits.Length);
+
+        originGrid.southGrid = newGrid;
+        newGrid.northGrid = originGrid;
+
+        gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
+
+        return newGrid;
+    }
+
+    RoomGrid GenerateEastNeighbour (RoomGrid originGrid) {
+        if (originGrid.eastGrid != null) {
+            // Don't generate if I already exist
+            return originGrid.eastGrid;
+        }
+
+        GameObject gridRoot = GameObject.Instantiate(gridInstance);
+        gridRoot.transform.SetParent(transform);
+        gridRoot.transform.localPosition = Vector3.zero;
+
+        GridExit[] eastExits = originGrid.GetEastExits();
+        Vector2[][] probeCoordinates = new Vector2[eastExits.Length][];
+        for (int i = 0; i < eastExits.Length; i++) {
+            Vector2[] exit = eastExits[i].ToVector2();
+            probeCoordinates[i] = new Vector2[2] {
+                new Vector2(0f, exit[0][1]),
+                new Vector2(0f, exit[1][1])
+            };
+        }
+
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, eastExits.Length);
+
+        originGrid.eastGrid = newGrid;
+        newGrid.westGrid = originGrid;
+
+        gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
+
+        return newGrid;
+    }
+
+    RoomGrid GenerateWestNeighbour (RoomGrid originGrid) {
+        if (originGrid.westGrid != null) {
+            // Don't generate if I already exist
+            return originGrid.westGrid;
+        }
+
+        GameObject gridRoot = GameObject.Instantiate(gridInstance);
+        gridRoot.transform.SetParent(transform);
+        gridRoot.transform.localPosition = Vector3.zero;
+
+        GridExit[] westExits = originGrid.GetWestExits(); 
+        Vector2[][] probeCoordinates = new Vector2[westExits.Length][];
+        for (int i = 0; i < westExits.Length; i++) {
+            Vector2[] exit = westExits[i].ToVector2();
+            probeCoordinates[i] = new Vector2[2] {
+                new Vector2(gridSideSize, exit[0][1]),
+                new Vector2(gridSideSize, exit[1][1])
+            };
+        }
+
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, westExits.Length);
+
+        originGrid.westGrid = newGrid;
+        newGrid.eastGrid = originGrid;
+
+        gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
+
+        return newGrid;
+    }
+
+    // ----------------------------------------------------------
+    // Grid exploration
+    public void ExploreGrid (RoomGrid newGrid, int seed) {
+        // Triggered when you first explore a grid coming from another grid, should:
+        // 0. Initialise the rng generator with a seed
+        // 1. Decide on an unexplored neighbour to generate and then wall off the other two
+        // 1.1. Verifying that there isn't already a neighbour there (which will not be marked as a neighbour)
+        // 2. Delete any neighbours that are four steps away
+        // 3. Create the unexplored neighbour
+        // 4. Delete the trigger object
+
+        UnityEngine.Random.InitState(seed);
+
+        // First we check which direction we came from
+        RoomGrid originGrid;
+        int originDirection;
+        if (newGrid.northGrid != null) {
+            originGrid = newGrid.northGrid;
+            originDirection = North;
+        } else if (newGrid.eastGrid != null) {
+            originGrid = newGrid.eastGrid;
+            originDirection = East;
+        } else if (newGrid.southGrid != null) {
+            originGrid = newGrid.southGrid;
+            originDirection = South;
+        } else {
+            originGrid = newGrid.westGrid;
+            originDirection = West;
+        }
+
+        int numAvailableDirections = 3;
+        int alreadyExistingDirection = NoDirection;
+        // Then we check whether there are any unavailable directions from where we are (so anything that would be three steps away)
+        switch (originDirection) {
+            case North:
+                // We came from the North, so we gotta check whether the North has an eastern (or western) neighbour with a southern neighbour
+                if (originGrid.eastGrid != null && originGrid.eastGrid.southGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = East;
+                } else if (originGrid.westGrid != null && originGrid.westGrid.southGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = West;
+                }
+                break;
+            case East:
+                if (originGrid.northGrid != null && originGrid.northGrid.westGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = North;
+                } else if (originGrid.southGrid != null && originGrid.southGrid.westGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = South;
+                }
+                break;
+            case South:
+                if (originGrid.eastGrid != null && originGrid.eastGrid.northGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = East;
+                } else if (originGrid.westGrid != null && originGrid.westGrid.northGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = West;
+                }
+                break;
+            case West:
+            default:
+                if (originGrid.northGrid != null && originGrid.northGrid.eastGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = North;
+                } else if (originGrid.southGrid != null && originGrid.southGrid.eastGrid != null) {
+                    numAvailableDirections = 2;
+                    alreadyExistingDirection = South;
+                }
+                break;
+        }
+
+        // Next we look at which directions are available to create a new neighbour in and pick one at random
+        int[] availableDirections = new int[numAvailableDirections];
+        int d = 0;
+        for (int i = 0; i < 4; i++) {
+            if (directions[i] != originDirection && directions[i] != alreadyExistingDirection) {
+                availableDirections[d++] = directions[i];
+            }
+        }
+
+        int directionToCreateNeighbourIn = availableDirections[UnityEngine.Random.Range((int) 0, numAvailableDirections)];
+
+        // Now we find neighbours that are four steps away and delete them
+        int stepNum = 1;
+        int stepDirection = OppositeDirection(originDirection);
+        RoomGrid stepGrid = originGrid;
+        while (stepNum < 3 && stepNum > -1) {
+            switch (stepDirection) {
+                case North:
+                    // We are North of this grid, so we gotta check its non-north neighbours
+                    if (stepGrid.eastGrid != null) {
+                        stepGrid = stepGrid.eastGrid;
+                        stepDirection = West;
+                        stepNum++;
+                    } else if (stepGrid.westGrid != null) {
+                        stepGrid = stepGrid.westGrid;
+                        stepDirection = East;
+                        stepNum++;
+                    } else if (stepGrid.southGrid != null) {
+                        stepGrid = stepGrid.southGrid;
+                        stepDirection = North;
+                        stepNum++;
+                    } else {
+                        stepNum = -1;
+                    }
+                    break;
+                case East:
+                    if (stepGrid.southGrid != null) {
+                        stepGrid = stepGrid.southGrid;
+                        stepDirection = North;
+                        stepNum++;
+                    } else if (stepGrid.westGrid != null) {
+                        stepGrid = stepGrid.westGrid;
+                        stepDirection = East;
+                        stepNum++;
+                    } else if (stepGrid.northGrid != null) {
+                        stepGrid = stepGrid.northGrid;
+                        stepDirection = South;
+                        stepNum++;
+                    } else {
+                        stepNum = -1;
+                    }
+                    break;
+                case South:
+                    if (stepGrid.eastGrid != null) {
+                        stepGrid = stepGrid.eastGrid;
+                        stepDirection = West;
+                        stepNum++;
+                    } else if (stepGrid.westGrid != null) {
+                        stepGrid = stepGrid.westGrid;
+                        stepDirection = East;
+                        stepNum++;
+                    } else if (stepGrid.northGrid != null) {
+                        stepGrid = stepGrid.northGrid;
+                        stepDirection = South;
+                        stepNum++;
+                    } else {
+                        stepNum = -1;
+                    }
+                    break;
+                case West:
+                default:
+                    if (stepGrid.southGrid != null) {
+                        stepGrid = stepGrid.southGrid;
+                        stepDirection = North;
+                        stepNum++;
+                    } else if (stepGrid.eastGrid != null) {
+                        stepGrid = stepGrid.eastGrid;
+                        stepDirection = West;
+                        stepNum++;
+                    } else if (stepGrid.northGrid != null) {
+                        stepGrid = stepGrid.northGrid;
+                        stepDirection = South;
+                        stepNum++;
+                    } else {
+                        stepNum = -1;
+                    }
+                    break;
+            }
+        }
+        if (stepNum != -1) {
+            // We reached the third step away, so now we check whether this grid has any neighbours other than where we came from and destroy them if so
+            switch (stepDirection) {
+                case North:
+                    if (stepGrid.eastGrid != null) {
+                        stepGrid.DestroyNeighbour(East);
+                    } else if (stepGrid.westGrid != null) {
+                        stepGrid.DestroyNeighbour(West);
+                    } else if (stepGrid.southGrid != null) {
+                        stepGrid.DestroyNeighbour(South);
+                    }
+                    break;
+                case East:
+                    if (stepGrid.southGrid != null) {
+                        stepGrid.DestroyNeighbour(South);
+                    } else if (stepGrid.westGrid != null) {
+                        stepGrid.DestroyNeighbour(West);
+                    } else if (stepGrid.northGrid != null) {
+                        stepGrid.DestroyNeighbour(North);
+                    }
+                    break;
+                case South:
+                    if (stepGrid.eastGrid != null) {
+                        stepGrid.DestroyNeighbour(East);
+                    } else if (stepGrid.westGrid != null) {
+                        stepGrid.DestroyNeighbour(West);
+                    } else if (stepGrid.northGrid != null) {
+                        stepGrid.DestroyNeighbour(North);
+                    }
+                    break;
+                case West:
+                default:
+                    if (stepGrid.southGrid != null) {
+                        stepGrid.DestroyNeighbour(South);
+                    } else if (stepGrid.eastGrid != null) {
+                        stepGrid.DestroyNeighbour(East);
+                    } else if (stepGrid.northGrid != null) {
+                        stepGrid.DestroyNeighbour(North);
+                    }
+                    break;
+            }
+        }
+    
+        // Create the unexplored neighbour
+        RoomGrid createdGrid;
+        switch (directionToCreateNeighbourIn) {
+            case North:
+                createdGrid = GenerateNorthNeighbour (newGrid);
+                break;
+            case East:
+                createdGrid = GenerateEastNeighbour (newGrid);
+                break;
+            case South:
+                createdGrid = GenerateSouthNeighbour (newGrid);
+                break;
+            case West:
+            default:
+                createdGrid = GenerateWestNeighbour (newGrid);
+                break;
+        }
+
+        int[] fencesToCreate = new int[2];
+        d = 0;
+        for (int i = 0; i < 4; i++) {
+            if (directions[i] != directionToCreateNeighbourIn && directions[i] != originDirection) {
+                fencesToCreate[d++] = directions[i];
+            }
+        }
+        GenerateFences (newGrid, fencesToCreate);
+        createdGrid.CreateExplorationTrigger();
+        newGrid.DestroyExplorationTrigger();
+    }
+
+    public void DestroyStartingGrid (RoomGrid newTeleportingGrid) 
+    {
+        startingGrid = newTeleportingGrid;
+        if (!initialGridWasDestroyed) {
+            // This is the first time the starting grid is destroyed, need to warn the teleporter that will take you to a different grid
+            initialGridWasDestroyed = true;
+        }
+
+        // Now we need to choose the coordinates of where the teleporter will take us
+        double[] startingGridRows = startingGrid.rows;
+        int startingGridNumRows = startingGridRows.Length;
+        double[] startingGridColumns = startingGrid.columns;
+        int startingGridNumCols = startingGridColumns.Length;
+        bool[][] startingGridRectangles = startingGrid.rectangles;
+
+        // We'll try to find a random location twenty times and if we can't we'll just look for it sequentially
+        const int maxTries = 20;
+        int candidateI = -1, candidateJ = -1;
+        for (int t = 0; t < maxTries; t++) {
+            int i = UnityEngine.Random.Range(0, startingGridNumRows);
+            int j = UnityEngine.Random.Range(0, startingGridNumCols);
+            if (startingGridRectangles[i][j]) {
+                candidateI = i;
+                candidateJ = j;
+                break;
+            }
+        }
+        if (candidateI == -1) {
+            // Didn't find a random location
+            for (int i = 0; i < startingGridNumRows; i++) {
+                for (int j = 0; j < startingGridNumCols; j++) {
+                    if (startingGridRectangles[i][j]) {
+                        candidateI = i;
+                        candidateJ = j;
+                        break;
+                    }
+                }
+
+                if (candidateI != -1) {
+                    break;
+                }
+            }
+        }
+
+        if (candidateI == -1) {
+            // This should just never happen
+            Debug.LogError("Destroy starting grid function failed to generate coordinates.");
+            return;
+        }
+
+        teleportXCoordinate = 0; teleportZCoordinate = 0;
+        for (int i = 0; i < candidateI; i++) {
+            teleportZCoordinate += startingGridRows[i];
+        }
+        for (int j = 0; j < candidateJ; j++) {
+            teleportXCoordinate += startingGridColumns[j];
+        }
+        teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.z;
+        teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
+
+        // These variables will be synced with the teleporter automatically
+    }
+
+    // ----------------------------------------------------------
+    // Grid construction/mesh drawing
     private void BuildWall (GameObject wallsOrganiser, Vector3 position, double size, int direction) {
         Vector3 rotation = new Vector3(0f, 0f, 0f);
         if (direction == East) {
@@ -879,291 +1467,6 @@ public class Backrooms : UdonSharpBehaviour
         // TODO the logic here still isn't amazing, you get weird dark corridors sometimes that logically seem like they should have lights, but the effect isn't bad so I'll keep it for now
     }
     
-    bool JustifyGrid () {
-        // Removes "padding" of the grid (i.e. entire rows or columns at the borders that are empty)
-        // First we find what the minimum and maximum coordinates reachable on the grid are
-        int startingRow = numRows, endingRow = 0;
-        int startingCol = numCols, endingCol = 0;
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                if (rectangles[i][j]) {
-                    if (startingRow == numRows) {
-                        startingRow = i;
-                    }
-                    endingRow = i;
-
-                    startingCol = Math.Min(startingCol, j);
-                    endingCol = Math.Max(endingCol, j);
-                }
-            }
-        }
-
-        if (startingRow == 0 && endingRow == numRows - 1 && startingCol == 0 && endingCol == numCols - 1) {
-            return true;
-        }
-
-        double numerator = 0, denominator = 0;
-        for (int i = 0; i < numRows; i++) {
-            denominator += rows[i];
-            if (i >= startingRow && i <= endingRow) {
-                numerator += rows[i];
-            }
-        }
-        double rowNormalisationFactor = numerator/denominator;
-
-        numerator = 0; denominator = 0;
-        for (int j = 0; j < numCols; j++) {
-            denominator += columns[j];
-            if (j >= startingCol && j <= endingCol) {
-                numerator += columns[j];
-            }
-        }
-        double colNormalisationFactor = numerator/denominator;
-
-        // Finally, we adjust the rectangles arrays
-        numRows = endingRow - startingRow + 1;
-        if (numRows <= 0) {
-            // grid has no valid paths
-            return false;
-        }
-        double[] newRows = new double[numRows];
-        numCols = endingCol - startingCol + 1;
-        if (numCols <= 0) {
-            // grid has no valid paths
-            return false;
-        }
-        double[] newCols = new double[numCols];
-        bool[][] newRectangles = new bool[numRows][];
-        for (int i = 0; i < numRows; i++) {
-            newRows[i] = rows[i + startingRow] / rowNormalisationFactor;
-            newRectangles[i] = new bool[numCols];
-            for (int j = 0; j < numCols; j++) {
-                newRectangles[i][j] = rectangles[i + startingRow][j + startingCol];
-            }
-        }
-        for (int j = 0; j < numCols; j++) {
-            newCols[j] = columns[j + startingCol] / colNormalisationFactor;
-        }
-
-        rows = newRows;
-        columns = newCols;
-        rectangles = newRectangles;
-        // return newGridCorners;
-        return true;
-    }
-
-    RoomGrid GenerateGrid (GameObject gridRoot) {
-        // Starting grid
-        return GenerateGrid(
-            gridRoot,
-            new Vector2[1][] {
-                new Vector2[2] {
-                    new Vector2((float) ((gridSideSize - minRowColSize) / 2), (float) ((gridSideSize - minRowColSize) / 2)),
-                    new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
-                }
-            },
-            1, true, true);
-    }
-
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes = true) {
-        // Non-starting grid
-        return GenerateGrid (gridRoot, probeCoordinates, numProbes, spawnMeshes, false);
-    }
-
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes, bool isStartingGrid) {
-        double traversableFraction = 0;
-        int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
-        while (traversableFraction < minTraversableFraction) {
-            numTries++;
-            InitializeGrid();
-
-            if (isStartingGrid) {
-                // For the initial grid, I'll forcibly add a large rectangle smack-dab in the middle
-                double cumulativeSize = 0;
-                int minMidRow = -1, maxMidRow = -1;
-                for (int i = 0; i < numRows; i++) {
-                    cumulativeSize += rows[i];
-                    if (minMidRow != -1 && cumulativeSize >= gridSideSize / 2 + 10) {
-                        maxMidRow = i;
-                        break;
-                    } else if (minMidRow == -1 && cumulativeSize >= gridSideSize / 2 - 10) {
-                        minMidRow = i;
-                    }
-                }
-
-                cumulativeSize = 0;
-                int minMidCol = -1, maxMidCol = -1;
-                for (int i = 0; i < numCols; i++) {
-                    cumulativeSize += columns[i];
-                    if (minMidCol != -1 && cumulativeSize >= gridSideSize / 2 + 10) {
-                        maxMidCol = i;
-                        break;
-                    } else if (minMidCol == -1 && cumulativeSize >= gridSideSize / 2 - 10) {
-                        minMidCol = i;
-                    }
-                }
-
-                for (int i = minMidRow; i <= maxMidRow; i++) {
-                    for (int j = minMidCol; j <= maxMidCol; j++) {
-                        rectangles[i][j] = true;
-                    }
-                }
-            }
-            
-            // Now validate that there exist reachable cells from the probe coordinates
-            if (ValidateGrid(probeCoordinates, numProbes, numTries > maxValidationTriesBeforeForcing)) { 
-                double totalArea = numRows * numCols;
-                // double totalArea = gridSideSize * gridSideSize;
-                double traversableArea = 0;
-                for (int i = 0; i < numRows; i++) {
-                    for (int j = 0; j < numCols; j++) {
-                        if (rectangles[i][j]) {
-                            traversableArea += 1;
-                            // traversableArea += rows[i] * columns[j];
-                        }
-                    }
-                }
-
-                traversableFraction = traversableArea / totalArea;
-            }
-        }
-
-        Vector2[] effectiveGridCorners = {new Vector2 (- gridSideSize / 2, - gridSideSize / 2), new Vector2 (gridSideSize / 2, gridSideSize / 2)};
-        
-        if (spawnMeshes) {
-            // I won't spawn the meshes if I'm not the owner and this grid has not been spawned
-            DrawFloorAndCeiling(gridRoot, effectiveGridCorners); 
-            DrawLights(gridRoot, effectiveGridCorners);
-            DrawWalls(gridRoot, effectiveGridCorners[0]);
-        }
-
-        RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols);
-        grid.GenerateExits();
-
-        return grid;
-    }
-
-    RoomGrid GenerateNorthNeighbour (RoomGrid originGrid) {
-        if (originGrid.northGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.northGrid;
-        }
-
-        GameObject gridRoot = GameObject.Instantiate(gridInstance);
-        gridRoot.transform.SetParent(transform);
-        gridRoot.transform.localPosition = Vector3.zero;
-
-        GridExit[] northExits = originGrid.GetNorthExits();
-        Vector2[][] probeCoordinates = new Vector2[northExits.Length][];
-        for (int i = 0; i < northExits.Length; i++) {
-            Vector2[] exit = northExits[i].ToVector2();
-            probeCoordinates[i] = new Vector2[2] {
-                new Vector2(exit[0][0], 0f),
-                new Vector2(exit[1][0], 0f)
-            };
-        }
-
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, northExits.Length);
-
-        originGrid.northGrid = newGrid;
-        newGrid.southGrid = originGrid;
-
-        gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
-
-        return newGrid;
-    }
-
-    RoomGrid GenerateSouthNeighbour (RoomGrid originGrid) {
-        if (originGrid.southGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.southGrid;
-        }
-
-        GameObject gridRoot = GameObject.Instantiate(gridInstance);
-        gridRoot.transform.SetParent(transform);
-        gridRoot.transform.localPosition = Vector3.zero;
-
-        GridExit[] southExits = originGrid.GetSouthExits();
-        Vector2[][] probeCoordinates = new Vector2[southExits.Length][];
-        for (int i = 0; i < southExits.Length; i++) {
-            Vector2[] exit = southExits[i].ToVector2();
-            probeCoordinates[i] = new Vector2[2] {
-                new Vector2(exit[0][0], gridSideSize),
-                new Vector2(exit[1][0], gridSideSize)
-            };
-        }
-
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, southExits.Length);
-
-        originGrid.southGrid = newGrid;
-        newGrid.northGrid = originGrid;
-
-        gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
-
-        return newGrid;
-    }
-
-    RoomGrid GenerateEastNeighbour (RoomGrid originGrid) {
-        if (originGrid.eastGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.eastGrid;
-        }
-
-        GameObject gridRoot = GameObject.Instantiate(gridInstance);
-        gridRoot.transform.SetParent(transform);
-        gridRoot.transform.localPosition = Vector3.zero;
-
-        GridExit[] eastExits = originGrid.GetEastExits();
-        Vector2[][] probeCoordinates = new Vector2[eastExits.Length][];
-        for (int i = 0; i < eastExits.Length; i++) {
-            Vector2[] exit = eastExits[i].ToVector2();
-            probeCoordinates[i] = new Vector2[2] {
-                new Vector2(0f, exit[0][1]),
-                new Vector2(0f, exit[1][1])
-            };
-        }
-
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, eastExits.Length);
-
-        originGrid.eastGrid = newGrid;
-        newGrid.westGrid = originGrid;
-
-        gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
-
-        return newGrid;
-    }
-
-    RoomGrid GenerateWestNeighbour (RoomGrid originGrid) {
-        if (originGrid.westGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.westGrid;
-        }
-
-        GameObject gridRoot = GameObject.Instantiate(gridInstance);
-        gridRoot.transform.SetParent(transform);
-        gridRoot.transform.localPosition = Vector3.zero;
-
-        GridExit[] westExits = originGrid.GetWestExits(); 
-        Vector2[][] probeCoordinates = new Vector2[westExits.Length][];
-        for (int i = 0; i < westExits.Length; i++) {
-            Vector2[] exit = westExits[i].ToVector2();
-            probeCoordinates[i] = new Vector2[2] {
-                new Vector2(gridSideSize, exit[0][1]),
-                new Vector2(gridSideSize, exit[1][1])
-            };
-        }
-
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, westExits.Length);
-
-        originGrid.westGrid = newGrid;
-        newGrid.eastGrid = originGrid;
-
-        gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
-
-        return newGrid;
-    }
-
     void GenerateFences (RoomGrid grid, int[] directionsToDraw, GameObject existingFenceOrganiser = null) {
         // Generate fencing walls around a grid
         GameObject gridRoot = grid.GetRoot();
@@ -1203,319 +1506,9 @@ public class Backrooms : UdonSharpBehaviour
         GenerateFences (grid, new int[1] {directionToDraw}, existingFenceOrganiser);
     }
 
-    int OppositeDirection (int dir) {
-        switch (dir) {
-            case North:
-                // We came from the North, so we gotta check whether the North has an eastern (or western) neighbour with a southern neighbour
-                return South;
-            case East:
-                return West;
-            case South:
-                return North;
-            case West:
-            default:
-                return East;
-        }
-    }
-
-    public void ExploreGrid(RoomGrid newGrid, int seed) {
-        // Triggered when you first explore a grid coming from another grid, should:
-        // 0. Initialise the rng generator with a seed
-        // 1. Decide on an unexplored neighbour to generate and then wall off the other two
-        // 1.1. Verifying that there isn't already a neighbour there (which will not be marked as a neighbour)
-        // 2. Delete any neighbours that are four steps away
-        // 3. Create the unexplored neighbour
-        // 4. Delete the trigger object
-
-        UnityEngine.Random.InitState(seed);
-
-        // First we check which direction we came from
-        RoomGrid originGrid;
-        int originDirection;
-        if (newGrid.northGrid != null) {
-            originGrid = newGrid.northGrid;
-            originDirection = North;
-        } else if (newGrid.eastGrid != null) {
-            originGrid = newGrid.eastGrid;
-            originDirection = East;
-        } else if (newGrid.southGrid != null) {
-            originGrid = newGrid.southGrid;
-            originDirection = South;
-        } else {
-            originGrid = newGrid.westGrid;
-            originDirection = West;
-        }
-
-        int numAvailableDirections = 3;
-        int alreadyExistingDirection = NoDirection;
-        // Then we check whether there are any unavailable directions from where we are (so anything that would be three steps away)
-        switch (originDirection) {
-            case North:
-                // We came from the North, so we gotta check whether the North has an eastern (or western) neighbour with a southern neighbour
-                if (originGrid.eastGrid != null && originGrid.eastGrid.southGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = East;
-                } else if (originGrid.westGrid != null && originGrid.westGrid.southGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = West;
-                }
-                break;
-            case East:
-                if (originGrid.northGrid != null && originGrid.northGrid.westGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = North;
-                } else if (originGrid.southGrid != null && originGrid.southGrid.westGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = South;
-                }
-                break;
-            case South:
-                if (originGrid.eastGrid != null && originGrid.eastGrid.northGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = East;
-                } else if (originGrid.westGrid != null && originGrid.westGrid.northGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = West;
-                }
-                break;
-            case West:
-            default:
-                if (originGrid.northGrid != null && originGrid.northGrid.eastGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = North;
-                } else if (originGrid.southGrid != null && originGrid.southGrid.eastGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = South;
-                }
-                break;
-        }
-
-        // Next we look at which directions are available to create a new neighbour in and pick one at random
-        int[] availableDirections = new int[numAvailableDirections];
-        int d = 0;
-        for (int i = 0; i < 4; i++) {
-            if (directions[i] != originDirection && directions[i] != alreadyExistingDirection) {
-                availableDirections[d++] = directions[i];
-            }
-        }
-
-        int directionToCreateNeighbourIn = availableDirections[UnityEngine.Random.Range((int) 0, numAvailableDirections)];
-
-        // Now we find neighbours that are four steps away and delete them
-        int stepNum = 1;
-        int stepDirection = OppositeDirection(originDirection);
-        RoomGrid stepGrid = originGrid;
-        while (stepNum < 3 && stepNum > -1) {
-            switch (stepDirection) {
-                case North:
-                    // We are North of this grid, so we gotta check its non-north neighbours
-                    if (stepGrid.eastGrid != null) {
-                        stepGrid = stepGrid.eastGrid;
-                        stepDirection = West;
-                        stepNum++;
-                    } else if (stepGrid.westGrid != null) {
-                        stepGrid = stepGrid.westGrid;
-                        stepDirection = East;
-                        stepNum++;
-                    } else if (stepGrid.southGrid != null) {
-                        stepGrid = stepGrid.southGrid;
-                        stepDirection = North;
-                        stepNum++;
-                    } else {
-                        stepNum = -1;
-                    }
-                    break;
-                case East:
-                    if (stepGrid.southGrid != null) {
-                        stepGrid = stepGrid.southGrid;
-                        stepDirection = North;
-                        stepNum++;
-                    } else if (stepGrid.westGrid != null) {
-                        stepGrid = stepGrid.westGrid;
-                        stepDirection = East;
-                        stepNum++;
-                    } else if (stepGrid.northGrid != null) {
-                        stepGrid = stepGrid.northGrid;
-                        stepDirection = South;
-                        stepNum++;
-                    } else {
-                        stepNum = -1;
-                    }
-                    break;
-                case South:
-                    if (stepGrid.eastGrid != null) {
-                        stepGrid = stepGrid.eastGrid;
-                        stepDirection = West;
-                        stepNum++;
-                    } else if (stepGrid.westGrid != null) {
-                        stepGrid = stepGrid.westGrid;
-                        stepDirection = East;
-                        stepNum++;
-                    } else if (stepGrid.northGrid != null) {
-                        stepGrid = stepGrid.northGrid;
-                        stepDirection = South;
-                        stepNum++;
-                    } else {
-                        stepNum = -1;
-                    }
-                    break;
-                case West:
-                default:
-                    if (stepGrid.southGrid != null) {
-                        stepGrid = stepGrid.southGrid;
-                        stepDirection = North;
-                        stepNum++;
-                    } else if (stepGrid.eastGrid != null) {
-                        stepGrid = stepGrid.eastGrid;
-                        stepDirection = West;
-                        stepNum++;
-                    } else if (stepGrid.northGrid != null) {
-                        stepGrid = stepGrid.northGrid;
-                        stepDirection = South;
-                        stepNum++;
-                    } else {
-                        stepNum = -1;
-                    }
-                    break;
-            }
-        }
-        if (stepNum != -1) {
-            // We reached the third step away, so now we check whether this grid has any neighbours other than where we came from and destroy them if so
-            switch (stepDirection) {
-                case North:
-                    if (stepGrid.eastGrid != null) {
-                        stepGrid.DestroyNeighbour(East);
-                    } else if (stepGrid.westGrid != null) {
-                        stepGrid.DestroyNeighbour(West);
-                    } else if (stepGrid.southGrid != null) {
-                        stepGrid.DestroyNeighbour(South);
-                    }
-                    break;
-                case East:
-                    if (stepGrid.southGrid != null) {
-                        stepGrid.DestroyNeighbour(South);
-                    } else if (stepGrid.westGrid != null) {
-                        stepGrid.DestroyNeighbour(West);
-                    } else if (stepGrid.northGrid != null) {
-                        stepGrid.DestroyNeighbour(North);
-                    }
-                    break;
-                case South:
-                    if (stepGrid.eastGrid != null) {
-                        stepGrid.DestroyNeighbour(East);
-                    } else if (stepGrid.westGrid != null) {
-                        stepGrid.DestroyNeighbour(West);
-                    } else if (stepGrid.northGrid != null) {
-                        stepGrid.DestroyNeighbour(North);
-                    }
-                    break;
-                case West:
-                default:
-                    if (stepGrid.southGrid != null) {
-                        stepGrid.DestroyNeighbour(South);
-                    } else if (stepGrid.eastGrid != null) {
-                        stepGrid.DestroyNeighbour(East);
-                    } else if (stepGrid.northGrid != null) {
-                        stepGrid.DestroyNeighbour(North);
-                    }
-                    break;
-            }
-        }
-    
-        // Create the unexplored neighbour
-        RoomGrid createdGrid;
-        switch (directionToCreateNeighbourIn) {
-            case North:
-                createdGrid = GenerateNorthNeighbour (newGrid);
-                break;
-            case East:
-                createdGrid = GenerateEastNeighbour (newGrid);
-                break;
-            case South:
-                createdGrid = GenerateSouthNeighbour (newGrid);
-                break;
-            case West:
-            default:
-                createdGrid = GenerateWestNeighbour (newGrid);
-                break;
-        }
-
-        int[] fencesToCreate = new int[2];
-        d = 0;
-        for (int i = 0; i < 4; i++) {
-            if (directions[i] != directionToCreateNeighbourIn && directions[i] != originDirection) {
-                fencesToCreate[d++] = directions[i];
-            }
-        }
-        GenerateFences (newGrid, fencesToCreate);
-        createdGrid.CreateExplorationTrigger();
-        newGrid.DestroyExplorationTrigger();
-    }
-
-    public void DestroyStartingGrid(RoomGrid newTeleportingGrid) 
-    {
-        startingGrid = newTeleportingGrid;
-        if (!initialGridWasDestroyed) {
-            // This is the first time the starting grid is destroyed, need to warn the teleporter that will take you to a different grid
-            initialGridWasDestroyed = true;
-        }
-
-        // Now we need to choose the coordinates of where the teleporter will take us
-        double[] startingGridRows = startingGrid.rows;
-        int startingGridNumRows = startingGridRows.Length;
-        double[] startingGridColumns = startingGrid.columns;
-        int startingGridNumCols = startingGridColumns.Length;
-        bool[][] startingGridRectangles = startingGrid.rectangles;
-
-        // We'll try to find a random location twenty times and if we can't we'll just look for it sequentially
-        const int maxTries = 20;
-        int candidateI = -1, candidateJ = -1;
-        for (int t = 0; t < maxTries; t++) {
-            int i = UnityEngine.Random.Range(0, startingGridNumRows);
-            int j = UnityEngine.Random.Range(0, startingGridNumCols);
-            if (startingGridRectangles[i][j]) {
-                candidateI = i;
-                candidateJ = j;
-                break;
-            }
-        }
-        if (candidateI == -1) {
-            // Didn't find a random location
-            for (int i = 0; i < startingGridNumRows; i++) {
-                for (int j = 0; j < startingGridNumCols; j++) {
-                    if (startingGridRectangles[i][j]) {
-                        candidateI = i;
-                        candidateJ = j;
-                        break;
-                    }
-                }
-
-                if (candidateI != -1) {
-                    break;
-                }
-            }
-        }
-
-        if (candidateI == -1) {
-            // This should just never happen
-            Debug.LogError("Destroy starting grid function failed to generate coordinates.");
-            return;
-        }
-
-        teleportXCoordinate = 0; teleportZCoordinate = 0;
-        for (int i = 0; i < candidateI; i++) {
-            teleportZCoordinate += startingGridRows[i];
-        }
-        for (int j = 0; j < candidateJ; j++) {
-            teleportXCoordinate += startingGridColumns[j];
-        }
-        teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.z;
-        teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
-
-        // These variables will be synced with the teleporter automatically
-    }
-
-    public override void OnDeserialization()
+    // ----------------------------------------------------------
+    // Initial setup
+    public override void OnDeserialization ()
     {
         // TODO implement nondeterminism (re-exploring the past)
         if (!initialSetupDone) {
@@ -1525,16 +1518,7 @@ public class Backrooms : UdonSharpBehaviour
         }
     }
 
-    void Start()
-    {
-        if (!Networking.IsOwner(transform.gameObject)) return;
-
-        rngSeed = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
-        RequestSerialization();
-        SetUp();
-    }
-
-    void SetUp()
+    void SetUp ()
     {
         // Deal with the networking things
         UnityEngine.Random.InitState(rngSeed);
@@ -1627,6 +1611,32 @@ public class Backrooms : UdonSharpBehaviour
                 flashlights[f].GetComponent<Rigidbody>().useGravity = true;
                 flashlights[f].GetComponent<Rigidbody>().isKinematic = false;
             }
+        }
+    }
+    
+    void Start ()
+    {
+        if (!Networking.IsOwner(transform.gameObject)) return;
+
+        rngSeed = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
+        RequestSerialization();
+        SetUp();
+    }
+    
+    // ----------------------------------------------------------
+    // Helper functions
+    int OppositeDirection (int dir) {
+        switch (dir) {
+            case North:
+                // We came from the North, so we gotta check whether the North has an eastern (or western) neighbour with a southern neighbour
+                return South;
+            case East:
+                return West;
+            case South:
+                return North;
+            case West:
+            default:
+                return East;
         }
     }
 }
