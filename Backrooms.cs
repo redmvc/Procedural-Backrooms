@@ -760,7 +760,8 @@ public class Backrooms : UdonSharpBehaviour
     void DrawLights (GameObject grid, Vector2[] effectiveGridCorners) {
         // For the moment, this function will attempt to tile the entire grid with lights every "spaceBetweenLights" meters, starting at (0.5, 0.5), and not drawing any lights that would be in non-traversable areas or that would intersect with walls
         // The lights are 0.5 x 0.5
-        double minPadding = 0.5;
+        const double minPadding = 0.5;
+        const double gridEdgePadding = 0.25;
 
         GameObject lightsOrganiser = GameObject.Instantiate(emptyGameObject);
         lightsOrganiser.transform.SetParent(grid.transform);
@@ -768,8 +769,8 @@ public class Backrooms : UdonSharpBehaviour
         lightsOrganiser.name = "Lights";
 
         Vector2 effectiveGridSize = effectiveGridCorners [1] - effectiveGridCorners[0];
-        int numLightRows = (int) Math.Floor((effectiveGridSize[1] - 2 * minPadding) / spaceBetweenLights);
-        int numLightCols = (int) Math.Floor((effectiveGridSize[0] - 2 * minPadding) / spaceBetweenLights);
+        int numLightRows = (int) Math.Floor((effectiveGridSize[1] - 2 * (minPadding + gridEdgePadding)) / spaceBetweenLights);
+        int numLightCols = (int) Math.Floor((effectiveGridSize[0] - 2 * (minPadding + gridEdgePadding)) / spaceBetweenLights);
 
         bool[][] drawLights = new bool[numLightRows][];
         for (int i = 0; i < numLightRows; i++) {
@@ -793,24 +794,36 @@ public class Backrooms : UdonSharpBehaviour
                     if (j == 0 || !rectangles[i][j - 1]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         startingX += minPadding;
+                        if (j == 0) {
+                            startingX += gridEdgePadding;
+                        }
                     }
                     
                     double endingX = cumulativeX;
                     if (j == numCols - 1 || !rectangles[i][j + 1]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         endingX -= minPadding;
+                        if (j == numCols - 1) {
+                            endingX -= gridEdgePadding;
+                        }
                     }
                     
                     double startingY = cumulativeY - rows[i]; 
                     if (i == 0 || !rectangles[i - 1][j]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         startingY += minPadding;
+                        if (i == 0) {
+                            startingY += gridEdgePadding;
+                        }
                     }
                     
                     double endingY = cumulativeY;
                     if (i == numRows - 1 || !rectangles[i + 1][j]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         endingY -= minPadding;
+                        if (i == numRows - 1) {
+                            endingY -= gridEdgePadding;
+                        }
                     }
 
                     double x, y;
