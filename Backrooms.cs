@@ -785,6 +785,7 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.southGrid = newGrid;
         newGrid.northGrid = originGrid;
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
 
@@ -815,6 +816,7 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.eastGrid = newGrid;
         newGrid.westGrid = originGrid;
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
 
@@ -845,6 +847,7 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.westGrid = newGrid;
         newGrid.eastGrid = originGrid;
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
 
