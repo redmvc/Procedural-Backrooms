@@ -21,6 +21,7 @@ public class Backrooms : UdonSharpBehaviour
     public double minTraversableFraction = 0.1; // Total fraction of the grid that needs to be traversable
     public int maxValidationTriesBeforeForcing = 20;
 
+    // Grid construction tools
     public GameObject floorTile;
     public GameObject ceilingTile;
     public GameObject wallTile;
@@ -29,12 +30,12 @@ public class Backrooms : UdonSharpBehaviour
     public GameObject lightUnit;
     public double spaceBetweenLights = 5;
     public GameObject[] flashlights;
-
     public GameObject emptyGameObject;
     public GameObject gridInstance;
 
-    public RoomGrid startingGrid = null;
-    public bool initialGridWasDestroyed = false; // If the initial grid was destroyed then we need to set up a teleport to a new grid
+    // Functional variables
+    private RoomGrid startingGrid = null;
+    private bool initialGridWasDestroyed = false; // If the initial grid was destroyed then we need to set up a teleport to a new grid
     public double teleportXCoordinate = 0, teleportZCoordinate = 0;
 
     // ----------------------------------------------------------
@@ -771,7 +772,7 @@ public class Backrooms : UdonSharpBehaviour
     }
 
     // ----------------------------------------------------------
-    // Grid exploration
+    // Grid exploration and manipulation
     public void ExploreGrid (RoomGrid newGrid, int seed) {
         // Triggered when you first explore a grid coming from another grid, should:
         // 0. Initialise the rng generator with a seed
@@ -1069,6 +1070,11 @@ public class Backrooms : UdonSharpBehaviour
         // These variables will be synced with the teleporter automatically
     }
 
+    public RoomGrid GetStartingGrid ()
+    {
+        return startingGrid;
+    }
+    
     // ----------------------------------------------------------
     // Grid construction/mesh drawing
     private void BuildWall (GameObject wallsOrganiser, Vector3 position, double size, int direction) {
