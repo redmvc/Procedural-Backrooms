@@ -196,8 +196,8 @@ public class Backrooms : UdonSharpBehaviour
                         (int) Math.Max(0, centerCoordinates[1] - halfSize[1])
                     },
                 new int[2] {
-                        (int) Math.Min(numRows, centerCoordinates[0] + rectangleSize[0] - halfSize[0]) - 1,
-                        (int) Math.Min(numCols, centerCoordinates[1] + rectangleSize[1] - halfSize[1]) - 1
+                        (int) Math.Min(numRows - 1, centerCoordinates[0] + rectangleSize[0] - halfSize[0] - 1),
+                        (int) Math.Min(numCols - 1, centerCoordinates[1] + rectangleSize[1] - halfSize[1] - 1)
                     }
             };
         }
