@@ -60,7 +60,8 @@ public class Backrooms : UdonSharpBehaviour
     private bool[][] rectangles;
     private int[][][] lightControllersCoordinates;
     private LightController[] lightControllers;
-    private int numLightControllers;
+    private int numLightControllersPlanned;
+    private int numLightControllersCreated;
     private LightController[] edgeLightControllers; // Light controllers that touch the grid's edges
     private int numEdgeLightControllers = 0;
 
@@ -72,7 +73,7 @@ public class Backrooms : UdonSharpBehaviour
 
     // ----------------------------------------------------------
     // Grid generation
-    private void InitializeGrid (bool isStartingGrid)
+    private void InitializeGrid ()
     {
         // Generates a grid of "gridSideSize" x "gridSideSize" and stores it in "columns", "rows", and "rectangles"
 
@@ -133,11 +134,11 @@ public class Backrooms : UdonSharpBehaviour
             }
         }
 
-        lightControllersCoordinates = new int[numRectangles][][];
-        numLightControllers = 0;
-        // (For the starting grid, I generate one fewer rectangle here to generate another one in the middle later)
-        int effectiveNumRectangles = numRectangles - (isStartingGrid ? 1 : 0);
-        for (int r = 0; r < effectiveNumRectangles; r++) {
+        numLightControllersPlanned = numRectangles;
+        lightControllersCoordinates = new int[numRectangles + 1][][];
+        numLightControllersCreated = 0;
+        // I do one fewer rectangle than max to give space for the central rectangle of the starting grid or the forced probe of other grids
+        for (int r = 0; r < numRectangles; r++) {
             // We determine the sizes of the rectangles using "thickRectangleProbability" and "thickRectangleMaxGridNum"
             // Rectangles have a (1 - thickRectangleProbability) probability of being "thin" rectangles, which means they're either (1 x N) or (N x 1) in size, where N can be anywhere between 1 and numCols or numRows (depending on orientation), randomly
             // And otherwise they are "thick" rectangles, which are either (M x N) or (N X M) where N is defined as above and M is some value between 2 and thickRectangleMaxGridNum
@@ -360,6 +361,11 @@ public class Backrooms : UdonSharpBehaviour
                         explorationRectangles[i][j] = 0;
                     }
                 }
+
+                lightControllersCoordinates[numRectangles] = new int[2][];
+                lightControllersCoordinates[numRectangles][0] = new int[2] {minForcedRow, minForcedCol};
+                lightControllersCoordinates[numRectangles][1] = new int[2] {maxForcedRow, maxForcedCol};
+                numLightControllersPlanned += 1;
             } else {
                 return false;
             }
@@ -580,7 +586,7 @@ public class Backrooms : UdonSharpBehaviour
         rectangles = newRectangles;
 
         // Now we adjust the light controllers that might have gotten displaced
-        for (int r = 0; r < numRectangles; r++) {
+        for (int r = 0; r < numLightControllersPlanned; r++) {
             lightControllersCoordinates[r][0][0] -= startingRow;
             lightControllersCoordinates[r][1][0] -= startingRow;
             lightControllersCoordinates[r][0][1] -= startingCol;
@@ -613,7 +619,7 @@ public class Backrooms : UdonSharpBehaviour
         int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
         while (traversableFraction < minTraversableFraction) {
             numTries++;
-            InitializeGrid(isStartingGrid);
+            InitializeGrid();
 
             if (isStartingGrid) {
                 // For the initial grid, I'll forcibly add a large rectangle smack-dab in the middle
@@ -644,9 +650,10 @@ public class Backrooms : UdonSharpBehaviour
                 }
 
                 // And I add a light controller to the central rectangle
-                lightControllersCoordinates[numRectangles - 1] = new int[2][];
-                lightControllersCoordinates[numRectangles - 1][0] = new int[2]{minMidRow, minMidCol};
-                lightControllersCoordinates[numRectangles - 1][1] = new int[2]{maxMidRow, maxMidCol};
+                lightControllersCoordinates[numRectangles] = new int[2][];
+                lightControllersCoordinates[numRectangles][0] = new int[2]{minMidRow, minMidCol};
+                lightControllersCoordinates[numRectangles][1] = new int[2]{maxMidRow, maxMidCol};
+                numLightControllersPlanned += 1;
             }
             
             // Now validate that there exist reachable cells from the probe coordinates
@@ -1400,11 +1407,11 @@ public class Backrooms : UdonSharpBehaviour
         lightControllerOrganiser.name = "Light Controllers";
 
         // Draw the volumes that will be used to control which lights are on
-        numLightControllers = 0;
-        lightControllers = new LightController[numRectangles];
+        numLightControllersCreated = 0;
+        lightControllers = new LightController[numLightControllersPlanned];
         numEdgeLightControllers = 0;
-        edgeLightControllers = new LightController[numRectangles];
-        for (int r = 0; r < numRectangles; r++) {
+        edgeLightControllers = new LightController[numLightControllersPlanned];
+        for (int r = 0; r < numLightControllersPlanned; r++) {
             // First we check whether this controller should be drawn at all, in the finalized version of the grid
             int[][] controllerCells = lightControllersCoordinates[r];
             int[] bottomLeft = controllerCells[0];
@@ -1434,23 +1441,23 @@ public class Backrooms : UdonSharpBehaviour
             controllerObject.transform.localPosition = new Vector3 (centerControllerCoordinates[0], 1.5f, centerControllerCoordinates[1]);
 
             // We fetch and initialize its script
-            lightControllers[numLightControllers] = controllerObject.GetComponent<LightController>();
-            lightControllers[numLightControllers].Initialize (maxLitUpDistance, numRectangles * 2,
+            lightControllers[numLightControllersCreated] = controllerObject.GetComponent<LightController>();
+            lightControllers[numLightControllersCreated].Initialize (maxLitUpDistance, numRectangles * 2,
                                                               controllerCorners[0] + gridXZPosition,
                                                               controllerCorners[1] + gridXZPosition);
 
             // Then we add it to the lists of north, south, east, or west light controllers if they intersect with the grid's edges
             if (bottomLeft[0] == 0 || bottomLeft[1] == 0 || topRight[0] == numRows - 1 || topRight[1] == numCols - 1) {
-                edgeLightControllers[numEdgeLightControllers++] = lightControllers[numLightControllers];
+                edgeLightControllers[numEdgeLightControllers++] = lightControllers[numLightControllersCreated];
             }
 
             // Then we iterate over existing controllers to see where they intersect
-            for (int c = 0; c < numLightControllers; c++) {
-                lightControllers[numLightControllers].CheckNeighbourhood(lightControllers[c]);
+            for (int c = 0; c < numLightControllersCreated; c++) {
+                lightControllers[numLightControllersCreated].CheckNeighbourhood(lightControllers[c]);
             }
 
             // And finally we increment the number of controllers that have been drawn
-            numLightControllers++;
+            numLightControllersCreated++;
         }
     }
     
@@ -1544,7 +1551,7 @@ public class Backrooms : UdonSharpBehaviour
                     light.name = "Light " + (numLights++);
 
                     // Check which light controllers this light is in
-                    for (int lc = 0; lc < numLightControllers; lc++) {
+                    for (int lc = 0; lc < numLightControllersCreated; lc++) {
                         lightControllers[lc].CheckLightContainment(light);
                     }
                 }
