@@ -1728,13 +1728,15 @@ public class Backrooms : UdonSharpBehaviour
                     }
                 }
 
-                if (candidateI == -1) {
+                if (candidateI == -1 || candidateJ == -1) {
                     // Shouldn't happen
                     Debug.LogError("Error spawning flashlight.");
                     continue;
                 }
 
                 double XCoordinate = 0, ZCoordinate = 0;
+                candidateI = Math.Min(candidateI, numRows - 1);
+                candidateJ = Math.Min(candidateJ, numCols - 1);
                 if (candidateI > 0) {
                     ZCoordinate = cumulativeRows[candidateI - 1];
                 }
