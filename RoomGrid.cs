@@ -15,7 +15,6 @@ public class RoomGrid : UdonSharpBehaviour
     // Definition variables
     private GameObject root;
     private Backrooms backroomsController;
-    private Vector2[] gridCorners;
     private float horizontalSize, verticalSize;
     private Vector2[][] northExits, eastExits, southExits, westExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
@@ -44,7 +43,6 @@ public class RoomGrid : UdonSharpBehaviour
 
     public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController, bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols, LightController[] edgeLightControllers, int numEdgeLightControllers) {
         this.root = root;
-        this.gridCorners = gridCorners;
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
         this.horizontalSize = gridCorners[1][0] - gridCorners[0][0];
         this.backroomsController = backroomsController;
