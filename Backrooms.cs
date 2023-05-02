@@ -64,6 +64,7 @@ public class Backrooms : UdonSharpBehaviour
     private int numLightControllersCreated;
     private LightController[] edgeLightControllers; // Light controllers that touch the grid's edges
     private int numEdgeLightControllers = 0;
+    private GameObject northEdgeWalls, eastEdgeWalls, southEdgeWalls, westEdgeWalls;
 
     // ----------------------------------------------------------
     // Networking variables
@@ -724,8 +725,9 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.initialize(gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols, edgeLightControllers, numEdgeLightControllers);
-        grid.GenerateExits();
+        grid.initialize (gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols, edgeLightControllers, numEdgeLightControllers,
+                         northEdgeWalls, eastEdgeWalls, southEdgeWalls, westEdgeWalls);
+        grid.GenerateExits ();
 
         return grid;
     }
@@ -757,6 +759,7 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
+        originGrid.DisableEdgeWalls (new int[3]{South, East, West});
 
         return newGrid;
     }
@@ -788,6 +791,7 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
+        originGrid.DisableEdgeWalls (new int[3]{North, East, West});
 
         return newGrid;
     }
@@ -819,6 +823,7 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
+        originGrid.DisableEdgeWalls (new int[3]{North, South, West});
 
         return newGrid;
     }
@@ -850,6 +855,7 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
+        originGrid.DisableEdgeWalls (new int[3]{North, East, South});
 
         return newGrid;
     }
@@ -1210,15 +1216,40 @@ public class Backrooms : UdonSharpBehaviour
         // Let's now spawn all of the walls
         GameObject wallsOrganiser = GameObject.Instantiate(emptyGameObject);
         wallsOrganiser.transform.SetParent(grid.transform);
-        wallsOrganiser.transform.localPosition = new Vector3(0f, 0f, 0f);
+        wallsOrganiser.transform.localPosition = Vector3.zero;
         wallsOrganiser.name = "Walls";
 
+        GameObject edgeWallsOrganiser = GameObject.Instantiate(emptyGameObject);
+        edgeWallsOrganiser.transform.SetParent(grid.transform);
+        edgeWallsOrganiser.transform.localPosition = Vector3.zero;
+        edgeWallsOrganiser.name = "Edge Walls";
+
+        northEdgeWalls = GameObject.Instantiate(emptyGameObject);
+        northEdgeWalls.transform.SetParent(edgeWallsOrganiser.transform);
+        northEdgeWalls.transform.localPosition = Vector3.zero;
+        northEdgeWalls.name = "North Edge Walls";
+
+        eastEdgeWalls = GameObject.Instantiate(emptyGameObject);
+        eastEdgeWalls.transform.SetParent(edgeWallsOrganiser.transform);
+        eastEdgeWalls.transform.localPosition = Vector3.zero;
+        eastEdgeWalls.name = "East Edge Walls";
+        
+        southEdgeWalls = GameObject.Instantiate(emptyGameObject);
+        southEdgeWalls.transform.SetParent(edgeWallsOrganiser.transform);
+        southEdgeWalls.transform.localPosition = Vector3.zero;
+        southEdgeWalls.name = "South Edge Walls";
+
+        westEdgeWalls = GameObject.Instantiate(emptyGameObject);
+        westEdgeWalls.transform.SetParent(edgeWallsOrganiser.transform);
+        westEdgeWalls.transform.localPosition = Vector3.zero;
+        westEdgeWalls.name = "West Edge Walls";
+
         // First the horizontal ones
+        double edgeStartingCoordinate, edgeEndingCoordinate;
+
         double southYCoordinate, northYCoordinate;
         double northFacingStartingXCoordinate, northFacingEndingXCoordinate;
         double southFacingStartingXCoordinate, southFacingEndingXCoordinate;
-        double edgeStartingCoordinate, edgeEndingCoordinate;
-
         for (int i = 0; i < numRows; i++) {
             southYCoordinate = cumulativeRows[i] - rows[i];
             northYCoordinate = cumulativeRows[i];
@@ -1233,9 +1264,9 @@ public class Backrooms : UdonSharpBehaviour
                 if (rectangles[i][j]) {
                     if (!Double.IsNaN(edgeStartingCoordinate)) {
                         if (i == 0) {
-                            BuildSouthFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), southYCoordinate);
+                            BuildSouthFacingWall (southEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), southYCoordinate);
                         } else {
-                            BuildNorthFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), northYCoordinate);
+                            BuildNorthFacingWall (northEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), northYCoordinate);
                         }
                         edgeStartingCoordinate = double.NaN;
                     }
@@ -1309,9 +1340,9 @@ public class Backrooms : UdonSharpBehaviour
             }
             if (!Double.IsNaN(edgeStartingCoordinate)) {
                 if (i == 0) {
-                    BuildSouthFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), southYCoordinate);
+                    BuildSouthFacingWall (southEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), southYCoordinate);
                 } else {
-                    BuildNorthFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), northYCoordinate);
+                    BuildNorthFacingWall (northEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), northYCoordinate);
                 }
                 edgeStartingCoordinate = double.NaN;
             }
@@ -1335,9 +1366,9 @@ public class Backrooms : UdonSharpBehaviour
                 if (rectangles[i][j]) {
                     if (!Double.IsNaN(edgeStartingCoordinate)) {
                         if (j == 0) {
-                            BuildWestFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), westXCoordinate);
+                            BuildWestFacingWall (westEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), westXCoordinate);
                         } else {
-                            BuildEastFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), eastXCoordinate);
+                            BuildEastFacingWall (eastEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), eastXCoordinate);
                         }
                         edgeStartingCoordinate = double.NaN;
                     }
@@ -1413,9 +1444,9 @@ public class Backrooms : UdonSharpBehaviour
             }
             if (!Double.IsNaN(edgeStartingCoordinate)) {
                 if (j == 0) {
-                    BuildWestFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), westXCoordinate);
+                    BuildWestFacingWall (westEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), westXCoordinate);
                 } else {
-                    BuildEastFacingWall (wallsOrganiser, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), eastXCoordinate);
+                    BuildEastFacingWall (eastEdgeWalls, southWestCorner, new Vector2((float) edgeStartingCoordinate, (float) edgeEndingCoordinate), eastXCoordinate);
                 }
                 edgeStartingCoordinate = double.NaN;
             }

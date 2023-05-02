@@ -18,6 +18,7 @@ public class RoomGrid : UdonSharpBehaviour
     private float horizontalSize, verticalSize;
     private Vector2[][] northExits, eastExits, southExits, westExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
+    private GameObject northEdgeWalls, eastEdgeWalls, southEdgeWalls, westEdgeWalls;
     public bool[][] rectangles;
     public double[] rows;
     public double[] columns;
@@ -41,7 +42,12 @@ public class RoomGrid : UdonSharpBehaviour
 
     void Start() {}
 
-    public void initialize(GameObject root, Vector2[] gridCorners, Backrooms backroomsController, bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols, LightController[] edgeLightControllers, int numEdgeLightControllers) {
+    public void initialize(GameObject root, Vector2[] gridCorners,
+                           Backrooms backroomsController,
+                           bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols,
+                           LightController[] edgeLightControllers, int numEdgeLightControllers,
+                           GameObject northEdgeWalls, GameObject eastEdgeWalls, GameObject southEdgeWalls, GameObject westEdgeWalls)
+    {
         this.root = root;
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
         this.horizontalSize = gridCorners[1][0] - gridCorners[0][0];
@@ -73,6 +79,11 @@ public class RoomGrid : UdonSharpBehaviour
         for (int i = 0; i < numEdgeLightControllers; i++) {
             this.edgeLightControllers[i] = edgeLightControllers[i];
         }
+
+        this.northEdgeWalls = northEdgeWalls;
+        this.eastEdgeWalls = eastEdgeWalls;
+        this.southEdgeWalls = southEdgeWalls;
+        this.westEdgeWalls = westEdgeWalls;
 
         northRngSeeds = new int[20];
         eastRngSeeds = new int[20];
@@ -120,6 +131,7 @@ public class RoomGrid : UdonSharpBehaviour
                 }
                 this.northGrid.destroy();
                 backroomsController.GenerateFence(this, Backrooms.North, this.fenceOrganiser);
+                this.DisableEdgeWall (Backrooms.North);
                 break;
             case Backrooms.East:
                 if (startingGrid == this.eastGrid) {
@@ -127,6 +139,7 @@ public class RoomGrid : UdonSharpBehaviour
                 }
                 this.eastGrid.destroy();
                 backroomsController.GenerateFence(this, Backrooms.East, this.fenceOrganiser);
+                this.DisableEdgeWall (Backrooms.East);
                 break;
             case Backrooms.South:
                 if (startingGrid == this.southGrid) {
@@ -134,6 +147,7 @@ public class RoomGrid : UdonSharpBehaviour
                 }
                 this.southGrid.destroy();
                 backroomsController.GenerateFence(this, Backrooms.South, this.fenceOrganiser);
+                this.DisableEdgeWall (Backrooms.South);
                 break;
             case Backrooms.West:
             default:
@@ -142,6 +156,7 @@ public class RoomGrid : UdonSharpBehaviour
                 }
                 this.westGrid.destroy();
                 backroomsController.GenerateFence(this, Backrooms.West, this.fenceOrganiser);
+                this.DisableEdgeWall (Backrooms.West);
                 break;
         }
         
@@ -179,6 +194,59 @@ public class RoomGrid : UdonSharpBehaviour
     public void DestroyExplorationTrigger() {
         GameObject.Destroy(this.explorationTrigger);
         this.explorationTrigger = null;
+    }
+
+    public void DisableEdgeWall (int direction)
+    {
+        DisableEdgeWalls (new int[1] {direction});
+    }
+
+    public void DisableEdgeWalls (int[] directions)
+    {
+        ToggleEdgeWalls (directions, false);
+    }
+
+    public void EnableEdgeWall (int direction)
+    {
+        EnableEdgeWalls (new int[1] {direction});
+    }
+
+    public void EnableEdgeWalls (int[] directions)
+    {
+        ToggleEdgeWalls (directions, true);
+    }
+
+    private void ToggleEdgeWalls (int[] directions, bool state)
+    {
+        for (int i = 0; i < directions.Length; i++) {
+            switch (directions[i]) {
+                case Backrooms.North:
+                    if (! state && this.northGrid != null) { // Don't disable edge walls that currently border a neighbour
+                        break;
+                    }
+                    northEdgeWalls.SetActive (state);
+                    break;
+                case Backrooms.East:
+                    if (! state && this.eastGrid != null) { // Don't disable edge walls that currently border a neighbour
+                        break;
+                    }
+                    eastEdgeWalls.SetActive (state);
+                    break;
+                case Backrooms.South:
+                    if (! state && this.southGrid != null) { // Don't disable edge walls that currently border a neighbour
+                        break;
+                    }
+                    southEdgeWalls.SetActive (state);
+                    break;
+                case Backrooms.West:
+                default:
+                    if (! state && this.westGrid != null) { // Don't disable edge walls that currently border a neighbour
+                        break;
+                    }
+                    westEdgeWalls.SetActive (state);
+                    break;
+            }
+        }
     }
 
     public GameObject GetRoot() {return root;}
