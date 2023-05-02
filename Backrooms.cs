@@ -940,10 +940,11 @@ public class Backrooms : UdonSharpBehaviour
         int directionToCreateNeighbourIn = availableDirections[UnityEngine.Random.Range((int) 0, numAvailableDirections)];
 
         // Now we find neighbours that are four steps away and delete them
+        const int maxTotalNumberOfGrids = 5;
         int stepNum = 1;
         int stepDirection = OppositeDirection(originDirection);
         RoomGrid stepGrid = originGrid;
-        while (stepNum < 3 && stepNum > -1) {
+        while (stepNum < maxTotalNumberOfGrids - 2 && stepNum > -1) {
             switch (stepDirection) {
                 case North:
                     // We are North of this grid, so we gotta check its non-north neighbours
