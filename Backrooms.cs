@@ -1765,56 +1765,7 @@ public class Backrooms : UdonSharpBehaviour
         // Owner will move flashlights to random locations in the starting grid
         for (int f = 1; f < flashlights.Length; f++) {
             // The first flashlight is the "landing" flashlight and won't be placed with the others
-
-            // Attempt 20 times to move the flashlight somewhere random, otherwise do it sequentially
-            const int maxTries = 20;
-            int candidateI = -1, candidateJ = -1;
-            rectangles = startingGrid.rectangles;
-            rows = startingGrid.rows;
-            numRows = rows.Length;
-            columns = startingGrid.columns;
-            numCols = columns.Length;
-            for (int t = 0; t < maxTries; t++) {
-                int i = UnityEngine.Random.Range (0, numRows);
-                int j = UnityEngine.Random.Range (0, numCols);
-                if (rectangles[i][j]) {
-                    candidateI = i;
-                    candidateJ = j;
-                    break;
-                }
-            }
-            if (candidateI == -1) {
-                for (int i = 0; i < numRows; i++) {
-                    for (int j = 0; j < numCols; j++) {
-                        if (rectangles[i][j]) {
-                            candidateI = i;
-                            candidateJ = j;
-                            break;
-                        }
-                    }
-                }
-                if (candidateI != -1) {
-                    break;
-                }
-            }
-
-            if (candidateI == -1 || candidateJ == -1) {
-                // Shouldn't happen
-                Debug.LogError("Error spawning flashlight.");
-                continue;
-            }
-
-            double XCoordinate = 0, ZCoordinate = 0;
-            candidateI = Math.Min(candidateI, numRows - 1);
-            candidateJ = Math.Min(candidateJ, numCols - 1);
-            if (candidateI > 0) {
-                ZCoordinate = cumulativeRows[candidateI - 1];
-            }
-            if (candidateJ > 0) {
-                XCoordinate = cumulativeCols[candidateJ - 1];
-            }
-
-            flashlights[f].transform.localPosition = new Vector3((float) (XCoordinate + (columns[candidateJ] - gridSideSize) / 2), 1.5f, (float) (ZCoordinate + (rows[candidateI] - gridSideSize) / 2));
+            flashlights[f].transform.position = GenerateRandomCoordinatesOnStartingGrid ();
             flashlights[f].transform.rotation = Quaternion.Euler (UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f));
             flashlights[f].GetComponent<Rigidbody>().useGravity = true;
             flashlights[f].GetComponent<Rigidbody>().isKinematic = false;
