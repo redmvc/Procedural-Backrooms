@@ -13,7 +13,7 @@ public class Backrooms : UdonSharpBehaviour
     public double minRowColSize = 0.8;
     public double maxRowColSize = 5; 
 
-    private double horizontalRectangleProbability = 0.5;
+    private const double horizontalRectangleProbability = 0.5; // There's no reason for a directional bias to exist so this is a const but kept here in case I change my mind for some insane reason
     public double thickRectangleProbability = 0.1;
     public int thickRectangleMaxGridNum = 4;
 
