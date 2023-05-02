@@ -740,10 +740,10 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.SetParent(transform);
         gridRoot.transform.localPosition = Vector3.zero;
 
-        GridExit[] northExits = originGrid.GetNorthExits();
+        Vector2[][] northExits = originGrid.GetNorthExits();
         Vector2[][] probeCoordinates = new Vector2[northExits.Length][];
         for (int i = 0; i < northExits.Length; i++) {
-            Vector2[] exit = northExits[i].ToVector2();
+            Vector2[] exit = northExits[i];
             probeCoordinates[i] = new Vector2[2] {
                 new Vector2(exit[0][0], 0f),
                 new Vector2(exit[1][0], 0f)
@@ -771,10 +771,10 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.SetParent(transform);
         gridRoot.transform.localPosition = Vector3.zero;
 
-        GridExit[] southExits = originGrid.GetSouthExits();
+        Vector2[][] southExits = originGrid.GetSouthExits();
         Vector2[][] probeCoordinates = new Vector2[southExits.Length][];
         for (int i = 0; i < southExits.Length; i++) {
-            Vector2[] exit = southExits[i].ToVector2();
+            Vector2[] exit = southExits[i];
             probeCoordinates[i] = new Vector2[2] {
                 new Vector2(exit[0][0], gridSideSize),
                 new Vector2(exit[1][0], gridSideSize)
@@ -802,10 +802,10 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.SetParent(transform);
         gridRoot.transform.localPosition = Vector3.zero;
 
-        GridExit[] eastExits = originGrid.GetEastExits();
+        Vector2[][] eastExits = originGrid.GetEastExits();
         Vector2[][] probeCoordinates = new Vector2[eastExits.Length][];
         for (int i = 0; i < eastExits.Length; i++) {
-            Vector2[] exit = eastExits[i].ToVector2();
+            Vector2[] exit = eastExits[i];
             probeCoordinates[i] = new Vector2[2] {
                 new Vector2(0f, exit[0][1]),
                 new Vector2(0f, exit[1][1])
@@ -833,10 +833,10 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.SetParent(transform);
         gridRoot.transform.localPosition = Vector3.zero;
 
-        GridExit[] westExits = originGrid.GetWestExits(); 
+        Vector2[][] westExits = originGrid.GetWestExits(); 
         Vector2[][] probeCoordinates = new Vector2[westExits.Length][];
         for (int i = 0; i < westExits.Length; i++) {
-            Vector2[] exit = westExits[i].ToVector2();
+            Vector2[] exit = westExits[i];
             probeCoordinates[i] = new Vector2[2] {
                 new Vector2(gridSideSize, exit[0][1]),
                 new Vector2(gridSideSize, exit[1][1])

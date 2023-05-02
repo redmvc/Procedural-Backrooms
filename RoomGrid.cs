@@ -17,8 +17,7 @@ public class RoomGrid : UdonSharpBehaviour
     private Backrooms backroomsController;
     private Vector2[] gridCorners;
     private float horizontalSize, verticalSize;
-    private GridExit firstExit;
-    private int numExits;
+    private Vector2[][] northExits, eastExits, southExits, westExits;
     private int numNorthExits, numEastExits, numSouthExits, numWestExits;
     public bool[][] rectangles;
     public double[] rows;
@@ -36,9 +35,7 @@ public class RoomGrid : UdonSharpBehaviour
     private int currentWestSeed = 0;
 
     // Spawnable meshes
-    public GameObject gridExitInstance;
     public GameObject emptyGameObject;
-    private GameObject gridExitOrganiser;
     private GameObject fenceOrganiser;
     public GameObject explorationTriggerTile;
     private GameObject explorationTrigger;
@@ -57,16 +54,10 @@ public class RoomGrid : UdonSharpBehaviour
         this.eastGrid = null;
         this.westGrid = null;
 
-        this.firstExit = null;
-        this.numExits = 0;
+        this.northExits = new Vector2[100][]; this.eastExits = new Vector2[100][]; this.southExits = new Vector2[100][]; this.westExits = new Vector2[100][];
         this.numNorthExits = 0; this.numEastExits = 0; this.numSouthExits = 0; this.numWestExits = 0;
 
         this.fenceOrganiser = null;
-
-        gridExitOrganiser = GameObject.Instantiate(emptyGameObject);
-        gridExitOrganiser.transform.SetParent(transform);
-        gridExitOrganiser.transform.localPosition = Vector3.zero;
-        gridExitOrganiser.name = "Exits";
 
         this.explorationTrigger = null;
 
@@ -211,83 +202,41 @@ public class RoomGrid : UdonSharpBehaviour
         GameObject.Destroy(root);
     }
 
-    private void AddExit(GridExit newExit) {
-        if (firstExit == null) {
-            numExits = 1;
-            firstExit = newExit;
-        } else {
-            numExits += 1;
-            newExit.AddExit(firstExit);
-            firstExit = newExit;
-        }
-    }
-
     private void AddExit(Vector2 start, Vector2 end) {
-        GameObject gridExitObject = GameObject.Instantiate(gridExitInstance);
-        gridExitObject.transform.SetParent(gridExitOrganiser.transform);
-        GridExit newExit = gridExitObject.GetComponent<GridExit>();
-        newExit.initialize(start, end);
-        AddExit(newExit);
-    }
-
-    public GridExit GetExit (int idx) {
-        GridExit currExit = firstExit;
-        for (int i = 0; i < idx && i < numExits; i++)  {
-            currExit = currExit.GetNextExit();
-        }
-        return currExit;
-    }
-
-    public GridExit[] GetNorthExits() {
-        GridExit[] filteredExits = new GridExit[numNorthExits];
-        GridExit currExit = firstExit;
-        int j = 0;
-        for (int i = 0; i < numExits; i++) {
-            if (currExit.horizontal && currExit.fixedCoord > 0.1) {
-                filteredExits[j++] = currExit;
+        Vector2[] newExit = {start, end};
+        if (Math.Abs (end.x - start.x) < 0.1) {
+            // X coordinates are the same, this is a vertical exit
+            if (start.x < 0.1) {
+                // X close to the start, this is a western exit
+                westExits[numWestExits++] = newExit;
+            } else {
+                eastExits[numEastExits++] = newExit;
             }
-            currExit = currExit.GetNextExit();
+        } else {
+            // Y coordinates are the same, this is a horizontal exit
+            if (start.y < 0.1) {
+                // y close to the start, this is a southern exit
+                southExits[numSouthExits++] = newExit;
+            } else {
+                northExits[numNorthExits++] = newExit;
+            }
         }
-        return filteredExits;
     }
 
-    public GridExit[] GetSouthExits() {
-        GridExit[] filteredExits = new GridExit[numSouthExits];
-        GridExit currExit = firstExit;
-        int j = 0;
-        for (int i = 0; i < numExits; i++) {
-            if (currExit.horizontal && currExit.fixedCoord <= 0.1) {
-                filteredExits[j++] = currExit;
-            }
-            currExit = currExit.GetNextExit();
-        }
-        return filteredExits;
+    public Vector2[][] GetNorthExits() {
+        return northExits;
     }
 
-    public GridExit[] GetEastExits() {
-        GridExit[] filteredExits = new GridExit[numEastExits];
-        GridExit currExit = firstExit;
-        int j = 0;
-        for (int i = 0; i < numExits; i++) {
-            if (!currExit.horizontal && currExit.fixedCoord > 0.1) { 
-                filteredExits[j++] = currExit;
-            }
-            currExit = currExit.GetNextExit();
-        }
-        return filteredExits;
+    public Vector2[][] GetSouthExits() {
+        return southExits;
     }
 
-    public GridExit[] GetWestExits() {
-        GridExit[] filteredExits = new GridExit[numWestExits];
-        GridExit currExit = firstExit;
-        int j = 0;
-        for (int i = 0; i < numExits; i++) {
-            if (!currExit.horizontal && currExit.fixedCoord <= 0.1) {
-                filteredExits[j++] = currExit;
-            }
-            currExit = currExit.GetNextExit();
-        }
-        return filteredExits;
+    public Vector2[][] GetEastExits() {
+        return eastExits;
+    }
+
+    public Vector2[][] GetWestExits() {
+        return westExits;
     }
 
     public float GetVerticalSize() {
