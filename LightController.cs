@@ -91,12 +91,15 @@ public class LightController : UdonSharpBehaviour
                 mostRecentCounter = counter;
                 TurnLightsOn (messageSender);
             }
-        } else if (counter > 0) {
-            mostRecentCounter = counter;
-            TurnLightsOn (messageSender);
-        } else if (mostRecentCounter > 0 || lightsOn) {
-            mostRecentCounter = counter;
-            TurnLightsOff ();
+        } else {
+            mostRecentOrigin = origin;
+            if (counter > 0) {
+                mostRecentCounter = counter;
+                TurnLightsOn (messageSender);
+            } else if (mostRecentCounter > 0 || lightsOn) {
+                mostRecentCounter = counter;
+                TurnLightsOff ();
+            }
         }
     }
 
