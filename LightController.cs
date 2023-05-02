@@ -15,6 +15,7 @@ public class LightController : UdonSharpBehaviour
     private LightController mostRecentOrigin = null;
     private int mostRecentCounter = -1;
     private bool lightsOn = false;
+    private bool firstTime = true;
     void Start() {}
 
     public void Initialize (int maxLightDistance, int maxNumNeighbours, Vector2 LeftBottom, Vector2 RightTop)
@@ -89,36 +90,55 @@ public class LightController : UdonSharpBehaviour
             if (counter > mostRecentCounter) {
                 // Getting a message from the same origin I last got one but a higher counter
                 mostRecentCounter = counter;
-                TurnLightsOn (messageSender);
+                if (counter > 0) {
+                    TurnLightsOn (messageSender);
+                } else {
+                    TurnLightsOff (messageSender);
+                }
             }
         } else {
             mostRecentOrigin = origin;
             if (counter > 0) {
                 mostRecentCounter = counter;
                 TurnLightsOn (messageSender);
-            } else if (mostRecentCounter > 0 || lightsOn) {
+            } else {
                 mostRecentCounter = counter;
-                TurnLightsOff ();
+                TurnLightsOff (messageSender);
             }
         }
     }
 
     private void TurnLightsOn (LightController messageSender)
     {
-        lightsOn = true;
-        ToggleLights ();
+        if (!lightsOn) {
+            lightsOn = true;
+            ToggleLights ();
+        }
 
+        MessageNeighbours (messageSender);
+    }
+
+    private void TurnLightsOff (LightController messageSender)
+    {
+        if (lightsOn) {
+            lightsOn = false;
+            ToggleLights ();
+        }
+
+        if (firstTime && mostRecentCounter > - maxLightDistance) {
+            // Only send long turn-off messages the first time you receive a turn lights off message, to counteract the initial burst of light
+            firstTime = false;
+            MessageNeighbours (messageSender);
+        }
+    }
+
+    private void MessageNeighbours (LightController messageSender)
+    {
         for (int i = 0; i < numNeighbours; i++) {
             if (neighbours[i] != null && neighbours[i] != mostRecentOrigin && neighbours[i] != messageSender) {
                 neighbours[i].ProcessLights (mostRecentOrigin, this, mostRecentCounter - 1);
             }
         }
-    }
-
-    private void TurnLightsOff ()
-    {
-        lightsOn = false;
-        ToggleLights ();
     }
 
     private void ToggleLights ()
