@@ -1587,9 +1587,9 @@ public class Backrooms : UdonSharpBehaviour
                     light = GameObject.Instantiate(lightUnit);
                     light.transform.SetParent(lightsOrganiser.transform);
                     light.transform.localPosition = new Vector3(
-                        effectiveGridCorners[0][0] + (float) (minPadding + j * spaceBetweenLights),
+                        effectiveGridCorners[0][0] + (float) (minPadding + gridEdgePadding + j * spaceBetweenLights),
                         2.99f,
-                        effectiveGridCorners[0][1] + (float) (minPadding + i * spaceBetweenLights));
+                        effectiveGridCorners[0][1] + (float) (minPadding + gridEdgePadding + i * spaceBetweenLights));
                     light.name = "Light " + (numLights++);
 
                     // Check which light controllers this light is in
