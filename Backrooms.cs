@@ -1162,7 +1162,7 @@ public class Backrooms : UdonSharpBehaviour
     // ----------------------------------------------------------
     // Grid construction/mesh drawing
     private GameObject BuildWall (GameObject wallsOrganiser, Vector3 position, double size, int direction) {
-        Vector3 rotation = new Vector3(0f, 0f, 0f);
+        Vector3 rotation = Vector3.zero;
         if (direction == East) {
             rotation = new Vector3(0f, 90f, 0f);
         } else if (direction == South) {
