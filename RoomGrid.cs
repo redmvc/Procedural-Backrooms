@@ -224,27 +224,27 @@ public class RoomGrid : UdonSharpBehaviour
     }
 
     public Vector2[][] GetNorthExits() {
-        return northExits;
+        return this.northExits;
     }
 
     public Vector2[][] GetSouthExits() {
-        return southExits;
+        return this.southExits;
     }
 
     public Vector2[][] GetEastExits() {
-        return eastExits;
+        return this.eastExits;
     }
 
     public Vector2[][] GetWestExits() {
-        return westExits;
+        return this.westExits;
     }
 
     public float GetVerticalSize() {
-        return verticalSize;
+        return this.verticalSize;
     }
 
     public float GetHorizontalSize() {
-        return horizontalSize;
+        return this.horizontalSize;
     }
 
     public void GenerateExits () {
@@ -272,7 +272,6 @@ public class RoomGrid : UdonSharpBehaviour
                 // Non traversable southern rectangle, and I was drawing an exit from it
                 // The starting coordinate of this is (startingZeroCoord, 0) and ending is (cumulativeCoord, 0)
                 this.AddExit(new Vector2((float) startingZeroCoord, 0f), new Vector2((float) cumulativeCoord, 0f));
-                numSouthExits++;
                 startingZeroCoord = double.NaN;
             }
 
@@ -286,7 +285,6 @@ public class RoomGrid : UdonSharpBehaviour
                 // Non traversable northern rectangle, and I was drawing an exit from it
                 // The starting coordinate of this is (startingMaxCoord, verticalSize) and ending is (cumulativeCoord, verticalSize)
                 this.AddExit(new Vector2((float) startingMaxCoord, verticalSize), new Vector2((float) cumulativeCoord, verticalSize));
-                numNorthExits++;
                 startingMaxCoord = double.NaN;
             }
 
@@ -296,13 +294,11 @@ public class RoomGrid : UdonSharpBehaviour
             // Was drawing a southern exit and reached the end
             // The starting coordinate of this is (startingZeroCoord, 0) and ending is (cumulativeCoord, 0)
             this.AddExit(new Vector2((float) startingZeroCoord, 0f), new Vector2((float) cumulativeCoord, 0f));
-            numSouthExits++;
         }
         if (!Double.IsNaN(startingMaxCoord)) {
             // Was drawing a northern exit and reached the end
             // The starting coordinate of this is (startingMaxCoord, verticalSize) and ending is (cumulativeCoord, verticalSize)
             this.AddExit(new Vector2((float) startingMaxCoord, verticalSize), new Vector2((float) cumulativeCoord, verticalSize));
-            numNorthExits++;
             startingMaxCoord = double.NaN;
         }
 
@@ -327,7 +323,6 @@ public class RoomGrid : UdonSharpBehaviour
                 // Non traversable western rectangle, and I was drawing an exit from it
                 // The starting coordinate of this is (0, startingZeroCoord) and ending is (0, cumulativeCoord)
                 this.AddExit(new Vector2(0f, (float) startingZeroCoord), new Vector2(0f, (float) cumulativeCoord));
-                numWestExits++;
                 startingZeroCoord = double.NaN;
             }
 
@@ -341,7 +336,6 @@ public class RoomGrid : UdonSharpBehaviour
                 // Non traversable eastern rectangle, and I was drawing an exit from it
                 // The starting coordinate of this is (horizontalSize, startingZeroCoord) and ending is (horizontalSize, cumulativeCoord)
                 this.AddExit(new Vector2(horizontalSize, (float) startingMaxCoord), new Vector2(horizontalSize, (float) cumulativeCoord));
-                numEastExits++;
                 startingMaxCoord = double.NaN;
             }
 
@@ -351,13 +345,36 @@ public class RoomGrid : UdonSharpBehaviour
             // Reached the end and was drawing a western rectangle
             // The starting coordinate of this is (0, startingZeroCoord) and ending is (0, cumulativeCoord)
             this.AddExit(new Vector2(0f, (float) startingZeroCoord), new Vector2(0f, (float) cumulativeCoord));
-            numWestExits++;
         }
         if (!Double.IsNaN (startingMaxCoord)) {
             // Reached the end and was drawing an eastern rectangle
             // The starting coordinate of this is (horizontalSize, startingZeroCoord) and ending is (horizontalSize, cumulativeCoord)
             this.AddExit(new Vector2(horizontalSize, (float) startingMaxCoord), new Vector2(horizontalSize, (float) cumulativeCoord));
-            numEastExits++;
         }
+
+        // Now replace the exits with versions of them that don't have extra elements
+        Vector2[][] limitedExits = new Vector2[numNorthExits][];
+        for (int i = 0; i < numNorthExits; i++) {
+            limitedExits[i] = northExits[i];
+        }
+        northExits = limitedExits;
+
+        limitedExits = new Vector2[numEastExits][];
+        for (int i = 0; i < numEastExits; i++) {
+            limitedExits[i] = eastExits[i];
+        }
+        eastExits = limitedExits;
+
+        limitedExits = new Vector2[numSouthExits][];
+        for (int i = 0; i < numSouthExits; i++) {
+            limitedExits[i] = southExits[i];
+        }
+        southExits = limitedExits;
+
+        limitedExits = new Vector2[numWestExits][];
+        for (int i = 0; i < numWestExits; i++) {
+            limitedExits[i] = westExits[i];
+        }
+        westExits = limitedExits;
     }
 }
