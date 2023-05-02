@@ -1098,6 +1098,8 @@ public class Backrooms : UdonSharpBehaviour
         newGrid.DestroyExplorationTrigger();
     }
 
+    public bool InitialGridWasDestroyed () {return initialGridWasDestroyed;}
+
     public void DestroyStartingGrid (RoomGrid newTeleportingGrid) 
     {
         startingGrid = newTeleportingGrid;
