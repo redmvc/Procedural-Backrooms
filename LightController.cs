@@ -88,6 +88,13 @@ public class LightController : UdonSharpBehaviour
 
     public void ProcessLights (LightController origin, LightController messageSender, int counter)
     {
+        Vector3 myPosition = transform.position;
+        Vector3 originPosition = origin.transform.position;
+        if (Mathf.Abs (myPosition.x - originPosition.x) >= gridSideSize / 2 || Mathf.Abs (myPosition.y - originPosition.y) >= gridSideSize / 2) {
+            // If my origin is more than a grid away along either axis I'll turn my counter to 0
+            counter = 0;
+        }
+
         if (origin == mostRecentOrigin) {
             if (counter > mostRecentCounter) {
                 // Getting a message from the same origin I last got one but a higher counter
@@ -100,14 +107,6 @@ public class LightController : UdonSharpBehaviour
             }
         } else {
             mostRecentOrigin = origin;
-
-            Vector3 myPosition = transform.position;
-            Vector3 originPosition = origin.transform.position;
-            if (Mathf.Abs (myPosition.x - originPosition.x) >= gridSideSize / 2 || Mathf.Abs (myPosition.y - originPosition.y) >= gridSideSize / 2) {
-                // If my origin is more than a grid away along either axis I'll turn my counter to 0
-                counter = 0;
-            }
-
             mostRecentCounter = counter;
             if (counter > 0) {
                 TurnLightsOn (messageSender);
