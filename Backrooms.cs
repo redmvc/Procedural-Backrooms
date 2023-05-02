@@ -40,7 +40,7 @@ public class Backrooms : UdonSharpBehaviour
     // Functional variables
     private RoomGrid startingGrid = null;
     private bool initialGridWasDestroyed = false; // If the initial grid was destroyed then we need to set up a teleport to a new grid
-    public double teleportXCoordinate = 0, teleportZCoordinate = 0;
+    private Vector3 teleportCoordinates;
 
     // ----------------------------------------------------------
     // Constants
@@ -1100,6 +1100,8 @@ public class Backrooms : UdonSharpBehaviour
 
     public bool InitialGridWasDestroyed () {return initialGridWasDestroyed;}
 
+    public Vector3 GetTeleportCoordinates () {return teleportCoordinates;}
+
     public void DestroyStartingGrid (RoomGrid newTeleportingGrid) 
     {
         startingGrid = newTeleportingGrid;
@@ -1150,7 +1152,7 @@ public class Backrooms : UdonSharpBehaviour
             return;
         }
 
-        teleportXCoordinate = 0; teleportZCoordinate = 0;
+        double teleportXCoordinate = 0, teleportZCoordinate = 0;
         for (int i = 0; i < candidateI; i++) {
             teleportZCoordinate += startingGridRows[i];
         }
@@ -1160,7 +1162,9 @@ public class Backrooms : UdonSharpBehaviour
         teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.z;
         teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
 
-        // These variables will be synced with the teleporter automatically
+        teleportCoordinates = new Vector3 ((float) teleportXCoordinate, 3f, (float) teleportZCoordinate);
+
+        // These variables will be synced with the teleporter
     }
 
     public RoomGrid GetStartingGrid ()
