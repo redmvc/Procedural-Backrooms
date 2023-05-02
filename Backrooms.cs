@@ -1212,7 +1212,7 @@ public class Backrooms : UdonSharpBehaviour
         return BuildWall(wallsOrganiser, new Vector3((float) xCoordinate + southWestCorner[0], 0f, (float) (yCoordinates[0] + size / 2) + southWestCorner[1]), size, West);
     }
     
-    private void DrawWalls (GameObject grid, Vector2 southWestCorner, bool wallEdges = false) {
+    private void DrawWalls (GameObject grid, Vector2 southWestCorner) {
         // Let's now spawn all of the walls
         GameObject wallsOrganiser = GameObject.Instantiate(emptyGameObject);
         wallsOrganiser.transform.SetParent(grid.transform);
@@ -1271,7 +1271,7 @@ public class Backrooms : UdonSharpBehaviour
                         edgeStartingCoordinate = double.NaN;
                     }
                     
-                    if (i > 0 || wallEdges) {
+                    if (i > 0) {
                         // Walls facing north
                         if (i == 0 || !rectangles[i - 1][j]) {
                             // There is a wall to the south of where I am
@@ -1286,7 +1286,7 @@ public class Backrooms : UdonSharpBehaviour
                             northFacingStartingXCoordinate = double.NaN;
                         }
                     }
-                    if (i < numRows - 1 || wallEdges) {
+                    if (i < numRows - 1) {
                         // Walls facing south
                         if (i == numRows - 1 || !rectangles[i + 1][j]) {
                             if (Double.IsNaN(southFacingStartingXCoordinate)) {
@@ -1373,7 +1373,7 @@ public class Backrooms : UdonSharpBehaviour
                         edgeStartingCoordinate = double.NaN;
                     }
 
-                    if (j > 0 || wallEdges) {
+                    if (j > 0) {
                         // Walls facing east
                         if (j == 0 || !rectangles[i][j - 1]) {
                             // There is a wall to the west of where I am
@@ -1388,7 +1388,7 @@ public class Backrooms : UdonSharpBehaviour
                             eastFacingStartingYCoordinate = double.NaN;
                         }
                     }
-                    if (j < numCols - 1 || wallEdges) {
+                    if (j < numCols - 1) {
                         // Walls facing west
                         if (j == numCols - 1 || !rectangles[i][j + 1]) {
                             if (Double.IsNaN(westFacingStartingYCoordinate)) {
