@@ -20,6 +20,8 @@ public class Backrooms : UdonSharpBehaviour
     public int numRectangles = 30;
     public double minTraversableFraction = 0.1; // Total fraction of the grid that needs to be traversable
     public int maxValidationTriesBeforeForcing = 20;
+    
+    private const int maxTotalNumberOfGrids = 5; // This may become a parameter at some point but for now it is not
 
     // Grid construction tools
     public GameObject floorTile;
@@ -946,7 +948,6 @@ public class Backrooms : UdonSharpBehaviour
         int directionToCreateNeighbourIn = availableDirections[UnityEngine.Random.Range((int) 0, numAvailableDirections)];
 
         // Now we find neighbours that are four steps away and delete them
-        const int maxTotalNumberOfGrids = 5;
         int stepNum = 1;
         int stepDirection = OppositeDirection(originDirection);
         RoomGrid stepGrid = originGrid;
