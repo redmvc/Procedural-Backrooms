@@ -1111,6 +1111,12 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         // Now we need to choose the coordinates of where the teleporter will take us
+        teleportCoordinates = GenerateRandomCoordinatesOnStartingGrid ();
+    }
+
+    private Vector3 GenerateRandomCoordinatesOnStartingGrid ()
+    {
+        // Generate random coordinates on the starting grid
         double[] startingGridRows = startingGrid.rows;
         int startingGridNumRows = startingGridRows.Length;
         double[] startingGridColumns = startingGrid.columns;
@@ -1148,8 +1154,8 @@ public class Backrooms : UdonSharpBehaviour
 
         if (candidateI == -1) {
             // This should just never happen
-            Debug.LogError("Destroy starting grid function failed to generate coordinates.");
-            return;
+            Debug.LogError("Failed to generate coordinates on starting grid.");
+            return Vector3.zero;
         }
 
         double teleportXCoordinate = 0, teleportZCoordinate = 0;
@@ -1162,9 +1168,7 @@ public class Backrooms : UdonSharpBehaviour
         teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.z;
         teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
 
-        teleportCoordinates = new Vector3 ((float) teleportXCoordinate, 3f, (float) teleportZCoordinate);
-
-        // These variables will be synced with the teleporter
+        return new Vector3 ((float) teleportXCoordinate, 3f, (float) teleportZCoordinate);
     }
 
     public RoomGrid GetStartingGrid ()
