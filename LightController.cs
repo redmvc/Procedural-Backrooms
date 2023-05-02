@@ -96,7 +96,7 @@ public class LightController : UdonSharpBehaviour
                 if (counter > 0) {
                     TurnLightsOn (messageSender);
                 } else {
-                    TurnLightsOff ();
+                    TurnLightsOff (messageSender);
                 }
             }
         } else {
@@ -105,7 +105,7 @@ public class LightController : UdonSharpBehaviour
             if (counter > 0) {
                 TurnLightsOn (messageSender);
             } else {
-                TurnLightsOff ();
+                TurnLightsOff (messageSender);
             }
         }
     }
@@ -120,10 +120,16 @@ public class LightController : UdonSharpBehaviour
         MessageNeighbours (messageSender);
     }
 
-    private void TurnLightsOff ()
+    private void TurnLightsOff (LightController messageSender)
     {
-        lightsOn = false;
-        ToggleLights ();
+        if (lightsOn) {
+            lightsOn = false;
+            ToggleLights ();
+        }
+
+        if (mostRecentCounter > -1) {
+            MessageNeighbours (messageSender);
+        }
     }
 
     private void MessageNeighbours (LightController messageSender)
