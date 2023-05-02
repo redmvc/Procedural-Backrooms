@@ -129,7 +129,7 @@ public class RoomGrid : UdonSharpBehaviour
                 if (startingGrid == this.northGrid) {
                     backroomsController.DestroyStartingGrid(this);
                 }
-                this.northGrid.destroy();
+                this.northGrid.Destroy ();
                 backroomsController.GenerateFence(this, Backrooms.North, this.fenceOrganiser);
                 this.DisableEdgeWall (Backrooms.North);
                 break;
@@ -137,7 +137,7 @@ public class RoomGrid : UdonSharpBehaviour
                 if (startingGrid == this.eastGrid) {
                     backroomsController.DestroyStartingGrid(this);
                 }
-                this.eastGrid.destroy();
+                this.eastGrid.Destroy ();
                 backroomsController.GenerateFence(this, Backrooms.East, this.fenceOrganiser);
                 this.DisableEdgeWall (Backrooms.East);
                 break;
@@ -145,7 +145,7 @@ public class RoomGrid : UdonSharpBehaviour
                 if (startingGrid == this.southGrid) {
                     backroomsController.DestroyStartingGrid(this);
                 }
-                this.southGrid.destroy();
+                this.southGrid.Destroy ();
                 backroomsController.GenerateFence(this, Backrooms.South, this.fenceOrganiser);
                 this.DisableEdgeWall (Backrooms.South);
                 break;
@@ -154,7 +154,7 @@ public class RoomGrid : UdonSharpBehaviour
                 if (startingGrid == this.westGrid) {
                     backroomsController.DestroyStartingGrid(this);
                 }
-                this.westGrid.destroy();
+                this.westGrid.Destroy ();
                 backroomsController.GenerateFence(this, Backrooms.West, this.fenceOrganiser);
                 this.DisableEdgeWall (Backrooms.West);
                 break;
@@ -251,7 +251,7 @@ public class RoomGrid : UdonSharpBehaviour
 
     public GameObject GetRoot() {return root;}
 
-    public void destroy() {
+    public void Destroy () {
         if (northGrid != null) {
             northGrid.southGrid = null;
         }
