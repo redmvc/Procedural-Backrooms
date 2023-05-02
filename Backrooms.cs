@@ -8,7 +8,7 @@ using System;
 public class Backrooms : UdonSharpBehaviour
 {
     // Parameters
-    public int gridSideSize = 100;
+    public double gridSideSize = 100;
 
     public double minRowColSize = 0.8;
     public double maxRowColSize = 5; 
@@ -713,7 +713,7 @@ public class Backrooms : UdonSharpBehaviour
             }
         }
 
-        Vector2[] effectiveGridCorners = {new Vector2 (- gridSideSize / 2, - gridSideSize / 2), new Vector2 (gridSideSize / 2, gridSideSize / 2)};
+        Vector2[] effectiveGridCorners = {new Vector2 (- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2 ((float) gridSideSize / 2, (float) gridSideSize / 2)};
         
         if (spawnMeshes) {
             // I won't spawn the meshes if I'm not the owner and this grid has not been spawned
@@ -776,8 +776,8 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < southExits.Length; i++) {
             Vector2[] exit = southExits[i];
             probeCoordinates[i] = new Vector2[2] {
-                new Vector2(exit[0].x, gridSideSize),
-                new Vector2(exit[1].x, gridSideSize)
+                new Vector2(exit[0].x, (float) gridSideSize),
+                new Vector2(exit[1].x, (float) gridSideSize)
             };
         }
 
@@ -838,8 +838,8 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < westExits.Length; i++) {
             Vector2[] exit = westExits[i];
             probeCoordinates[i] = new Vector2[2] {
-                new Vector2(gridSideSize, exit[0].y),
-                new Vector2(gridSideSize, exit[1].y)
+                new Vector2((float) gridSideSize, exit[0].y),
+                new Vector2((float) gridSideSize, exit[1].y)
             };
         }
 
@@ -1622,17 +1622,17 @@ public class Backrooms : UdonSharpBehaviour
             dir = directionsToDraw[i];
             switch(dir) {
                 case North:
-                    BuildSouthFacingWall(fenceOrganiser, new Vector2(- gridSideSize / 2, - gridSideSize / 2), new Vector2(0, gridSideSize), gridSideSize);
+                    BuildSouthFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), (float) gridSideSize);
                     break;
                 case East:
-                    BuildWestFacingWall(fenceOrganiser, new Vector2(- gridSideSize / 2, - gridSideSize / 2), new Vector2(0, gridSideSize), gridSideSize);
+                    BuildWestFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), (float) gridSideSize);
                     break;
                 case South:
-                    BuildNorthFacingWall(fenceOrganiser, new Vector2(- gridSideSize / 2, - gridSideSize / 2), new Vector2(0, gridSideSize), 0);
+                    BuildNorthFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), 0);
                     break;
                 case West:
                 default:
-                    BuildEastFacingWall(fenceOrganiser, new Vector2(- gridSideSize / 2, - gridSideSize / 2), new Vector2(0, gridSideSize), 0);
+                    BuildEastFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), 0);
                     break;
             }
         }
