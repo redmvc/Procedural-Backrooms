@@ -127,7 +127,7 @@ public class LightController : UdonSharpBehaviour
             ToggleLights ();
         }
 
-        if (mostRecentCounter > -1) {
+        if (mostRecentCounter > -1 && messageSender != null) {
             MessageNeighbours (messageSender);
         }
     }
