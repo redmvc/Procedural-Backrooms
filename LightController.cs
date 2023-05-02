@@ -90,7 +90,7 @@ public class LightController : UdonSharpBehaviour
     {
         Vector3 myPosition = transform.position;
         Vector3 originPosition = origin.transform.position;
-        if (Mathf.Abs (myPosition.x - originPosition.x) >= gridSideSize / 2 || Mathf.Abs (myPosition.y - originPosition.y) >= gridSideSize / 2) {
+        if (Mathf.Abs (myPosition.x - originPosition.x) >= gridSideSize / 2 || Mathf.Abs (myPosition.z - originPosition.z) >= gridSideSize / 2) {
             // If my origin is more than a grid away along either axis I'll turn my counter to 0
             counter = 0;
         }
