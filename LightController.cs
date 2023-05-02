@@ -8,7 +8,6 @@ public class LightController : UdonSharpBehaviour
 {
     private LightController[] neighbours;
     private int numNeighbours = 0;
-    private Vector2[] coordinates; // Bottom-left and top-right coordinates, respectively, in absolute value
     private double gridSideSize; // Will be used to calculate distance culling in addition to neighbourhood culling
     private int maxLightDistance;
     private GameObject[] lights;
@@ -16,10 +15,9 @@ public class LightController : UdonSharpBehaviour
     private LightController mostRecentOrigin = null;
     private int mostRecentCounter = -1;
     private bool lightsOn = false;
-    private bool firstTime = true;
     void Start() {}
 
-    public void Initialize (int maxLightDistance, int maxNumNeighbours, double gridSideSize, Vector2 LeftBottom, Vector2 RightTop)
+    public void Initialize (int maxLightDistance, int maxNumNeighbours, double gridSideSize)
     {
         this.maxLightDistance = maxLightDistance;
         this.neighbours = new LightController[maxNumNeighbours];
@@ -28,25 +26,24 @@ public class LightController : UdonSharpBehaviour
         }
 
         this.gridSideSize = gridSideSize;
-        this.coordinates = new Vector2[2] {LeftBottom, RightTop};
 
         this.lights = new GameObject[100];
     }
 
-    public Vector2[] GetCoordinates ()
-    {
-        return coordinates;
-    }
-
     private bool RectangleOverlap (Vector2[] otherRectangle)
     {
-        Vector2 myLeftBottom = coordinates[0];
-        Vector2 myRightTop = coordinates[1];
+        Vector3 myPos = transform.position;
+        Vector3 mySize = transform.localScale;
+        Vector3 myLeftBottom3d = myPos - mySize / 2;
+        Vector3 myRightTop3d = myPos + mySize / 2;
+
+        Vector2 myLeftBottom = new Vector2(myLeftBottom3d.x, myLeftBottom3d.z);
+        Vector2 myRightTop = new Vector2(myRightTop3d.x, myRightTop3d.z);
         Vector2 theirLeftBottom = otherRectangle[0];
         Vector2 theirRightTop = otherRectangle[1];
 
-        bool xOverlap = (myLeftBottom[0] <= theirRightTop[0]) && (theirLeftBottom[0] <= myRightTop[0]);
-        bool zOverlap = (myLeftBottom[1] <= theirRightTop[1]) && (theirLeftBottom[1] <= myRightTop[1]);
+        bool xOverlap = (myLeftBottom.x <= theirRightTop.x) && (theirLeftBottom.x <= myRightTop.x);
+        bool zOverlap = (myLeftBottom.y <= theirRightTop.y) && (theirLeftBottom.y <= myRightTop.y);
 
         return (xOverlap && zOverlap);
     }
@@ -54,7 +51,11 @@ public class LightController : UdonSharpBehaviour
     public void CheckNeighbourhood (LightController candidateNeighbour) 
     {
         // Check whether our coordinates overlap with the potential neighbour's
-        Vector2[] theirCoordinates = candidateNeighbour.GetCoordinates();
+        Vector3 theirPosition = candidateNeighbour.transform.position;
+        Vector3 theirSize = candidateNeighbour.transform.localScale;
+        Vector3[] theirCoordinates3d = {theirPosition - theirSize / 2, theirPosition + theirSize / 2};
+
+        Vector2[] theirCoordinates = {new Vector2(theirCoordinates3d[0].x, theirCoordinates3d[0].z), new Vector2(theirCoordinates3d[1].x, theirCoordinates3d[1].z)};
         if (RectangleOverlap (theirCoordinates)) {
             addNeighbour (candidateNeighbour);
             candidateNeighbour.addNeighbour (this);
@@ -88,13 +89,6 @@ public class LightController : UdonSharpBehaviour
 
     public void ProcessLights (LightController origin, LightController messageSender, int counter)
     {
-        Vector3 myPosition = transform.position;
-        Vector3 originPosition = origin.transform.position;
-        if (Mathf.Abs (myPosition.x - originPosition.x) >= gridSideSize / 2 || Mathf.Abs (myPosition.z - originPosition.z) >= gridSideSize / 2) {
-            // If my origin is more than a grid away along either axis I'll turn my counter to 0
-            counter = 0;
-        }
-
         if (origin == mostRecentOrigin) {
             if (counter > mostRecentCounter) {
                 // Getting a message from the same origin I last got one but a higher counter
@@ -102,7 +96,7 @@ public class LightController : UdonSharpBehaviour
                 if (counter > 0) {
                     TurnLightsOn (messageSender);
                 } else {
-                    TurnLightsOff (messageSender);
+                    TurnLightsOff ();
                 }
             }
         } else {
@@ -111,7 +105,7 @@ public class LightController : UdonSharpBehaviour
             if (counter > 0) {
                 TurnLightsOn (messageSender);
             } else {
-                TurnLightsOff (messageSender);
+                TurnLightsOff ();
             }
         }
     }
@@ -126,18 +120,10 @@ public class LightController : UdonSharpBehaviour
         MessageNeighbours (messageSender);
     }
 
-    private void TurnLightsOff (LightController messageSender)
+    private void TurnLightsOff ()
     {
-        if (lightsOn) {
-            lightsOn = false;
-            ToggleLights ();
-        }
-
-        if (firstTime && mostRecentCounter > - maxLightDistance) {
-            // Only send long turn-off messages the first time you receive a turn lights off message, to counteract the initial burst of light
-            firstTime = false;
-            MessageNeighbours (messageSender);
-        }
+        lightsOn = false;
+        ToggleLights ();
     }
 
     private void MessageNeighbours (LightController messageSender)

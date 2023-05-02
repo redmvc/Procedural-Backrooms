@@ -754,9 +754,9 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.northGrid = newGrid;
         newGrid.southGrid = originGrid;
-        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         return newGrid;
     }
@@ -785,9 +785,9 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.southGrid = newGrid;
         newGrid.northGrid = originGrid;
-        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         return newGrid;
     }
@@ -816,9 +816,9 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.eastGrid = newGrid;
         newGrid.westGrid = originGrid;
-        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         return newGrid;
     }
@@ -847,9 +847,9 @@ public class Backrooms : UdonSharpBehaviour
 
         originGrid.westGrid = newGrid;
         newGrid.eastGrid = originGrid;
-        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
+        originGrid.AddNeighbouringGridLightControllers (newGrid);
 
         return newGrid;
     }
@@ -1441,7 +1441,6 @@ public class Backrooms : UdonSharpBehaviour
 
     void DrawLightControllers (GameObject grid, Vector2 southWestCorner) {
         // TODO deal with light controllers that are entirely contained within others
-        Vector2 gridXZPosition = new Vector2(grid.transform.position.x, grid.transform.position.z);
         // Create a parent object
         GameObject lightControllerOrganiser = GameObject.Instantiate(emptyGameObject);
         lightControllerOrganiser.transform.SetParent(grid.transform);
@@ -1475,18 +1474,17 @@ public class Backrooms : UdonSharpBehaviour
             };
             Vector2 controllerSize = controllerCorners[1] - controllerCorners[0];
             Vector2 centerControllerCoordinates = controllerCorners[0] + 0.5f * controllerSize;
+            controllerSize = controllerSize + new Vector2(0.1f, 0.1f);
 
             // Then we spawn the controller
             GameObject controllerObject = GameObject.Instantiate(lightsController);
-            controllerObject.transform.localScale = new Vector3 (controllerSize[0] + 0.1f, 3.1f, controllerSize[1] + 0.1f); // Make the controller slightly larger than the rectangle it's in
+            controllerObject.transform.localScale = new Vector3 (controllerSize.x, 3.1f, controllerSize.y); // Make the controller slightly larger than the rectangle it's in
             controllerObject.transform.SetParent (lightControllerOrganiser.transform);
             controllerObject.transform.localPosition = new Vector3 (centerControllerCoordinates[0], 1.5f, centerControllerCoordinates[1]);
 
             // We fetch and initialize its script
             lightControllers[numLightControllersCreated] = controllerObject.GetComponent<LightController>();
-            lightControllers[numLightControllersCreated].Initialize (maxLitUpDistance, numRectangles * 2, gridSideSize,
-                                                                     controllerCorners[0] + gridXZPosition,
-                                                                     controllerCorners[1] + gridXZPosition);
+            lightControllers[numLightControllersCreated].Initialize (maxLitUpDistance, numRectangles * 2, gridSideSize);
 
             // Then we add it to the lists of north, south, east, or west light controllers if they intersect with the grid's edges
             if (bottomLeft[0] == 0 || bottomLeft[1] == 0 || topRight[0] == numRows - 1 || topRight[1] == numCols - 1) {
