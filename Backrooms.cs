@@ -1122,9 +1122,11 @@ public class Backrooms : UdonSharpBehaviour
                 // Let's see if the flashlight _is in fact_ on the old grid
                 Vector3 oldGridSouthWestCorner = oldGrid.transform.position + new Vector3 (- (float) gridSideSize / 2, 0f, - (float) gridSideSize / 2);
                 Vector3 flashlightPosition = flashlights[f].transform.position;
-                if (flashlightPosition.x >= oldGridSouthWestCorner.x && flashlightPosition.x <= oldGridSouthWestCorner.x + gridSideSize &&
+                if (flashlightPosition.y < 8 &&
+                    flashlightPosition.x >= oldGridSouthWestCorner.x && flashlightPosition.x <= oldGridSouthWestCorner.x + gridSideSize &&
                     flashlightPosition.z >= oldGridSouthWestCorner.z && flashlightPosition.z <= oldGridSouthWestCorner.z + gridSideSize) {
                     // Flashlight was in fact on the old grid
+                    // (Also if the flashlight is > 8 position that means that it's in the landing area so it should just stay there and not get respawned)
                     flashlights[f].transform.position = GenerateRandomCoordinatesOnStartingGrid ();
                 }
             }
@@ -1761,8 +1763,8 @@ public class Backrooms : UdonSharpBehaviour
         SetUp();
 
         // Owner will move flashlights to random locations in the starting grid
-        for (int f = 0; f < flashlights.Length; f++) {
-            // flashlights[f].transform.SetParent(startingGrid.transform); // Commented this out so that the flashlights will have their spawning locations within the shaft down to the backrooms so they get respawned there if needed
+        for (int f = 1; f < flashlights.Length; f++) {
+            // The first flashlight is the "landing" flashlight and won't be placed with the others
 
             // Attempt 20 times to move the flashlight somewhere random, otherwise do it sequentially
             const int maxTries = 20;
