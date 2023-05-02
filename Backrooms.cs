@@ -1161,7 +1161,7 @@ public class Backrooms : UdonSharpBehaviour
     
     // ----------------------------------------------------------
     // Grid construction/mesh drawing
-    private void BuildWall (GameObject wallsOrganiser, Vector3 position, double size, int direction) {
+    private GameObject BuildWall (GameObject wallsOrganiser, Vector3 position, double size, int direction) {
         Vector3 rotation = new Vector3(0f, 0f, 0f);
         if (direction == East) {
             rotation = new Vector3(0f, 90f, 0f);
@@ -1185,23 +1185,25 @@ public class Backrooms : UdonSharpBehaviour
 
         uniqueMaterial = skirtingBoard.GetComponent<Renderer>().material;
         uniqueMaterial.mainTextureScale = new Vector2((float) size * 2 + ((direction == North || direction == South) ? 4 * (float) skirtingBoardThickness : 0f), 1f);
+
+        return wall;
     }
 
-    private void BuildSouthFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 xCoordinates, double yCoordinate) {
+    private GameObject BuildSouthFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 xCoordinates, double yCoordinate) {
         double size = xCoordinates[1] - xCoordinates[0];
-        BuildWall(wallsOrganiser, new Vector3((float) (xCoordinates[0] + size / 2) + southWestCorner[0], 0f, (float) yCoordinate + southWestCorner[1]), size, South);
+        return BuildWall(wallsOrganiser, new Vector3((float) (xCoordinates[0] + size / 2) + southWestCorner[0], 0f, (float) yCoordinate + southWestCorner[1]), size, South);
     }
-    private void BuildNorthFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 xCoordinates, double yCoordinate) {
+    private GameObject BuildNorthFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 xCoordinates, double yCoordinate) {
         double size = xCoordinates[1] - xCoordinates[0];
-        BuildWall(wallsOrganiser, new Vector3((float) (xCoordinates[0] + size / 2) + southWestCorner[0], 0f, (float) yCoordinate + southWestCorner[1]), size, North);
+        return BuildWall(wallsOrganiser, new Vector3((float) (xCoordinates[0] + size / 2) + southWestCorner[0], 0f, (float) yCoordinate + southWestCorner[1]), size, North);
     }
-    private void BuildEastFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 yCoordinates, double xCoordinate) {
+    private GameObject BuildEastFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 yCoordinates, double xCoordinate) {
         double size = yCoordinates[1] - yCoordinates[0];
-        BuildWall(wallsOrganiser, new Vector3((float) xCoordinate + southWestCorner[0], 0f, (float) (yCoordinates[0] + size / 2) + southWestCorner[1]), size, East);
+        return BuildWall(wallsOrganiser, new Vector3((float) xCoordinate + southWestCorner[0], 0f, (float) (yCoordinates[0] + size / 2) + southWestCorner[1]), size, East);
     }
-    private void BuildWestFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 yCoordinates, double xCoordinate) {
+    private GameObject BuildWestFacingWall (GameObject wallsOrganiser, Vector2 southWestCorner, Vector2 yCoordinates, double xCoordinate) {
         double size = yCoordinates[1] - yCoordinates[0];
-        BuildWall(wallsOrganiser, new Vector3((float) xCoordinate + southWestCorner[0], 0f, (float) (yCoordinates[0] + size / 2) + southWestCorner[1]), size, West);
+        return BuildWall(wallsOrganiser, new Vector3((float) xCoordinate + southWestCorner[0], 0f, (float) (yCoordinates[0] + size / 2) + southWestCorner[1]), size, West);
     }
     
     private void DrawWalls (GameObject grid, Vector2 southWestCorner, bool wallEdges = false) {
