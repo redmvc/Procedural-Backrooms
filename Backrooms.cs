@@ -745,8 +745,8 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < northExits.Length; i++) {
             Vector2[] exit = northExits[i];
             probeCoordinates[i] = new Vector2[2] {
-                new Vector2(exit[0][0], 0f),
-                new Vector2(exit[1][0], 0f)
+                new Vector2(exit[0].x, 0f),
+                new Vector2(exit[1].x, 0f)
             };
         }
 
@@ -776,8 +776,8 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < southExits.Length; i++) {
             Vector2[] exit = southExits[i];
             probeCoordinates[i] = new Vector2[2] {
-                new Vector2(exit[0][0], gridSideSize),
-                new Vector2(exit[1][0], gridSideSize)
+                new Vector2(exit[0].x, gridSideSize),
+                new Vector2(exit[1].x, gridSideSize)
             };
         }
 
@@ -807,8 +807,8 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < eastExits.Length; i++) {
             Vector2[] exit = eastExits[i];
             probeCoordinates[i] = new Vector2[2] {
-                new Vector2(0f, exit[0][1]),
-                new Vector2(0f, exit[1][1])
+                new Vector2(0f, exit[0].y),
+                new Vector2(0f, exit[1].y)
             };
         }
 
@@ -838,8 +838,8 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < westExits.Length; i++) {
             Vector2[] exit = westExits[i];
             probeCoordinates[i] = new Vector2[2] {
-                new Vector2(gridSideSize, exit[0][1]),
-                new Vector2(gridSideSize, exit[1][1])
+                new Vector2(gridSideSize, exit[0].y),
+                new Vector2(gridSideSize, exit[1].y)
             };
         }
 
