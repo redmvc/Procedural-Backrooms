@@ -1104,6 +1104,8 @@ public class Backrooms : UdonSharpBehaviour
 
     public void DestroyStartingGrid (RoomGrid newTeleportingGrid) 
     {
+        // When a starting grid is deleted, I set up a teleporter on the ceiling of the backrooms to take the player to a new grid
+        RoomGrid oldGrid = startingGrid;
         startingGrid = newTeleportingGrid;
         if (!initialGridWasDestroyed) {
             // This is the first time the starting grid is destroyed, need to warn the teleporter that will take you to a different grid
@@ -1112,6 +1114,21 @@ public class Backrooms : UdonSharpBehaviour
 
         // Now we need to choose the coordinates of where the teleporter will take us
         teleportCoordinates = GenerateRandomCoordinatesOnStartingGrid ();
+
+        // Let's check whether the flashlights are gonna fall to their dooms
+        for (int f = 0; f < flashlights.Length; f++) {
+            if (!flashlights[f].GetComponent<VRC_Pickup> ().IsHeld && Networking.GetOwner (flashlights[f]) == Networking.LocalPlayer) {
+                // The flashlight is not being held by anyone and I am its owner - either I was the last person to pick it up, or I'm the instance owner, regardless it's from my PoV that the flashlight may have fallen to its down so I respawn it
+                // Let's see if the flashlight _is in fact_ on the old grid
+                Vector3 oldGridSouthWestCorner = oldGrid.transform.position + new Vector3 (- (float) gridSideSize / 2, 0f, - (float) gridSideSize / 2);
+                Vector3 flashlightPosition = flashlights[f].transform.position;
+                if (flashlightPosition.x >= oldGridSouthWestCorner.x && flashlightPosition.x <= oldGridSouthWestCorner.x + gridSideSize &&
+                    flashlightPosition.z >= oldGridSouthWestCorner.z && flashlightPosition.z <= oldGridSouthWestCorner.z + gridSideSize) {
+                    // Flashlight was in fact on the old grid
+                    flashlights[f].transform.position = GenerateRandomCoordinatesOnStartingGrid ();
+                }
+            }
+        }
     }
 
     private Vector3 GenerateRandomCoordinatesOnStartingGrid ()

@@ -22,13 +22,4 @@ public class BackroomsCeiling : UdonSharpBehaviour
             player.TeleportTo (backroomsController.GetTeleportCoordinates (), player.GetRotation ());
         }
     }
-
-    void OnTriggerEnter (Collider other) {
-        Debug.Log("Collided: " + other);
-        if (backroomsController.InitialGridWasDestroyed ()) {
-            Debug.Log("grid destroyed");
-            // Also teleport objects to the new grid
-            other.transform.position = backroomsController.GetTeleportCoordinates ();
-        }
-    }
 }
