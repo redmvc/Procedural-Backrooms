@@ -108,11 +108,10 @@ public class LightController : UdonSharpBehaviour
                 counter = 0;
             }
 
+            mostRecentCounter = counter;
             if (counter > 0) {
-                mostRecentCounter = counter;
                 TurnLightsOn (messageSender);
             } else {
-                mostRecentCounter = counter;
                 TurnLightsOff (messageSender);
             }
         }
