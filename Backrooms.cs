@@ -250,7 +250,7 @@ public class Backrooms : UdonSharpBehaviour
                     minCoord = Math.Min(Math.Max(cumulativeRows[i] - rows[i], probeCoordinate[0][0]), minCoord);
                 }
             }
-            if (maxCoord - minCoord >= minRowColSize - 0.1) { // Someday I will kill floating point errors
+            if (maxCoord - minCoord >= minRowColSize) {
                 walkableCoord = true;
             }
             
@@ -264,7 +264,7 @@ public class Backrooms : UdonSharpBehaviour
                     minCoord = Math.Min(Math.Max(cumulativeCols[j] - columns[j], probeCoordinate[0][1]), minCoord);
                 }
             }
-            if (maxCoord - minCoord >= minRowColSize - 0.1) {
+            if (maxCoord - minCoord >= minRowColSize) {
                 walkableCoord = true;
             }
 
