@@ -87,6 +87,15 @@ public class LightController : UdonSharpBehaviour
         if (player.IsValid() && player.isLocal) ProcessLights (this, this, maxLightDistance);
     }
 
+    public override void OnPlayerRespawn (VRCPlayerApi player)
+    {
+        if (!player.IsValid () || !player.isLocal) return;
+
+        // Player respawned using the menu, turn all lights off
+        mostRecentCounter = -1;
+        TurnLightsOff (null);
+    }
+
     public void ProcessLights (LightController origin, LightController messageSender, int counter)
     {
         if (origin == mostRecentOrigin) {
