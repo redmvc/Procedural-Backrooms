@@ -84,7 +84,7 @@ public class LightController : UdonSharpBehaviour
     public override void OnPlayerTriggerEnter(VRCPlayerApi player)
     {
         // Player entered me, time to toggle lights in me and my neighbours
-        ProcessLights (this, this, maxLightDistance);
+        if (player.IsValid() && player.isLocal) ProcessLights (this, this, maxLightDistance);
     }
 
     public void ProcessLights (LightController origin, LightController messageSender, int counter)
