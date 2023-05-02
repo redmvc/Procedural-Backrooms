@@ -159,7 +159,14 @@ public class LightController : UdonSharpBehaviour
             for (int j = 0; j < numLightUnitChildren; j++) {
                 Transform lightUnitChild = lightUnit.GetChild(j);
                 if (lightUnitChild.GetComponent<Light>() != null) {
+                    // Toggle the light
                     lightUnitChild.gameObject.SetActive(lightsOn);
+                } else if (lightsOn) {
+                    // Turn the emission of the light fixture on
+                    lightUnitChild.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.white);
+                } else {
+                    // Turn the emission of the light fixture off
+                    lightUnitChild.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.black);
                 }
             }
         }
