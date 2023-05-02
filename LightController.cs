@@ -9,6 +9,7 @@ public class LightController : UdonSharpBehaviour
     private LightController[] neighbours;
     private int numNeighbours = 0;
     private Vector2[] coordinates; // Bottom-left and top-right coordinates, respectively, in absolute value
+    private double gridSideSize; // Will be used to calculate distance culling in addition to neighbourhood culling
     private int maxLightDistance;
     private GameObject[] lights;
     private int numLights = 0;
@@ -18,7 +19,7 @@ public class LightController : UdonSharpBehaviour
     private bool firstTime = true;
     void Start() {}
 
-    public void Initialize (int maxLightDistance, int maxNumNeighbours, Vector2 LeftBottom, Vector2 RightTop)
+    public void Initialize (int maxLightDistance, int maxNumNeighbours, double gridSideSize, Vector2 LeftBottom, Vector2 RightTop)
     {
         this.maxLightDistance = maxLightDistance;
         this.neighbours = new LightController[maxNumNeighbours];
@@ -26,6 +27,7 @@ public class LightController : UdonSharpBehaviour
             this.neighbours[i] = null;
         }
 
+        this.gridSideSize = gridSideSize;
         this.coordinates = new Vector2[2] {LeftBottom, RightTop};
 
         this.lights = new GameObject[100];
@@ -98,6 +100,14 @@ public class LightController : UdonSharpBehaviour
             }
         } else {
             mostRecentOrigin = origin;
+
+            Vector3 myPosition = transform.position;
+            Vector3 originPosition = origin.transform.position;
+            if (Mathf.Abs (myPosition.x - originPosition.x) >= gridSideSize || Mathf.Abs (myPosition.y - originPosition.y) >= gridSideSize) {
+                // If my origin is more than a grid away along either axis I'll turn my counter to 0
+                counter = 0;
+            }
+
             if (counter > 0) {
                 mostRecentCounter = counter;
                 TurnLightsOn (messageSender);

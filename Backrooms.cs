@@ -1484,9 +1484,9 @@ public class Backrooms : UdonSharpBehaviour
 
             // We fetch and initialize its script
             lightControllers[numLightControllersCreated] = controllerObject.GetComponent<LightController>();
-            lightControllers[numLightControllersCreated].Initialize (maxLitUpDistance, numRectangles * 2,
-                                                              controllerCorners[0] + gridXZPosition,
-                                                              controllerCorners[1] + gridXZPosition);
+            lightControllers[numLightControllersCreated].Initialize (maxLitUpDistance, numRectangles * 2, gridSideSize,
+                                                                     controllerCorners[0] + gridXZPosition,
+                                                                     controllerCorners[1] + gridXZPosition);
 
             // Then we add it to the lists of north, south, east, or west light controllers if they intersect with the grid's edges
             if (bottomLeft[0] == 0 || bottomLeft[1] == 0 || topRight[0] == numRows - 1 || topRight[1] == numCols - 1) {
