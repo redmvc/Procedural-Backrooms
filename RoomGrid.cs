@@ -153,17 +153,21 @@ public class RoomGrid : UdonSharpBehaviour
     {
         switch (direction)  {
             case Backrooms.North:
-                this.northFence.SetActive (state);
+                if (this.northFence != null) this.northFence.SetActive (state);
+                else if (state) backroomsController.GenerateFence (this, Backrooms.North, this.fenceOrganiser);
                 break;
             case Backrooms.East:
-                this.eastFence.SetActive (state);
+                if (this.eastFence != null) this.eastFence.SetActive (state);
+                else if (state) backroomsController.GenerateFence (this, Backrooms.East, this.fenceOrganiser);
                 break;
             case Backrooms.South:
-                this.southFence.SetActive (state);
+                if (this.southFence != null) this.southFence.SetActive (state);
+                else if (state) backroomsController.GenerateFence (this, Backrooms.South, this.fenceOrganiser);
                 break;
             case Backrooms.West:
             default:
-                this.westFence.SetActive (state);
+                if (this.westFence != null) this.westFence.SetActive (state);
+                else if (state) backroomsController.GenerateFence (this, Backrooms.West, this.fenceOrganiser);
                 break;
         }
     }
