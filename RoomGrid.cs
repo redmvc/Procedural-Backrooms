@@ -197,7 +197,11 @@ public class RoomGrid : UdonSharpBehaviour
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.northGrid.Destroy ();
-                backroomsController.GenerateFence(this, Backrooms.North, this.fenceOrganiser);
+                if (this.northFence == null) {
+                    backroomsController.GenerateFence(this, Backrooms.North, this.fenceOrganiser);
+                } else {
+                    this.EnableFence (Backrooms.North);
+                }
                 this.DisableEdgeWall (Backrooms.North);
                 break;
             case Backrooms.East:
@@ -205,7 +209,11 @@ public class RoomGrid : UdonSharpBehaviour
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.eastGrid.Destroy ();
-                backroomsController.GenerateFence(this, Backrooms.East, this.fenceOrganiser);
+                if (this.eastFence == null) {
+                    backroomsController.GenerateFence(this, Backrooms.East, this.fenceOrganiser);
+                } else {
+                    this.EnableFence (Backrooms.East);
+                }
                 this.DisableEdgeWall (Backrooms.East);
                 break;
             case Backrooms.South:
@@ -213,7 +221,11 @@ public class RoomGrid : UdonSharpBehaviour
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.southGrid.Destroy ();
-                backroomsController.GenerateFence(this, Backrooms.South, this.fenceOrganiser);
+                if (this.southFence == null) {
+                    backroomsController.GenerateFence(this, Backrooms.South, this.fenceOrganiser);
+                } else {
+                    this.EnableFence (Backrooms.South);
+                }
                 this.DisableEdgeWall (Backrooms.South);
                 break;
             case Backrooms.West:
@@ -222,7 +234,11 @@ public class RoomGrid : UdonSharpBehaviour
                     backroomsController.DestroyStartingGrid(this);
                 }
                 this.westGrid.Destroy ();
-                backroomsController.GenerateFence(this, Backrooms.West, this.fenceOrganiser);
+                if (this.westFence == null) {
+                    backroomsController.GenerateFence(this, Backrooms.West, this.fenceOrganiser);
+                } else {
+                    this.EnableFence (Backrooms.West);
+                }
                 this.DisableEdgeWall (Backrooms.West);
                 break;
         }
