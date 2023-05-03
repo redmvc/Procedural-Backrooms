@@ -767,7 +767,6 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
-        originGrid.DisableEdgeWalls (new int[3]{South, East, West});
 
         return newGrid;
     }
@@ -801,7 +800,6 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3(0f, 0f, (originGrid.GetVerticalSize() + newGrid.GetVerticalSize()) / 2);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
-        originGrid.DisableEdgeWalls (new int[3]{North, East, West});
 
         return newGrid;
     }
@@ -835,7 +833,6 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition + new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
-        originGrid.DisableEdgeWalls (new int[3]{North, South, West});
 
         return newGrid;
     }
@@ -869,7 +866,6 @@ public class Backrooms : UdonSharpBehaviour
 
         gridRoot.transform.localPosition = originGrid.transform.localPosition - new Vector3((originGrid.GetHorizontalSize() + newGrid.GetHorizontalSize()) / 2, 0f, 0f);
         originGrid.AddNeighbouringGridLightControllers (newGrid);
-        originGrid.DisableEdgeWalls (new int[3]{North, East, South});
 
         return newGrid;
     }
@@ -904,62 +900,68 @@ public class Backrooms : UdonSharpBehaviour
             originDirection = West;
         }
 
+        // Then we check whether there are any unavailable directions from where we are
         int numAvailableDirections = 3;
-        int alreadyExistingDirection = NoDirection;
-        // Then we check whether there are any unavailable directions from where we are (so anything that would be three steps away)
-        switch (originDirection) {
-            case North:
-                // We came from the North, so we gotta check whether the North has an eastern (or western) neighbour with a southern neighbour
-                if (originGrid.eastGrid != null && originGrid.eastGrid.southGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = East;
-                } else if (originGrid.westGrid != null && originGrid.westGrid.southGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = West;
-                }
-                break;
-            case East:
-                if (originGrid.northGrid != null && originGrid.northGrid.westGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = North;
-                } else if (originGrid.southGrid != null && originGrid.southGrid.westGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = South;
-                }
-                break;
-            case South:
-                if (originGrid.eastGrid != null && originGrid.eastGrid.northGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = East;
-                } else if (originGrid.westGrid != null && originGrid.westGrid.northGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = West;
-                }
-                break;
-            case West:
-            default:
-                if (originGrid.northGrid != null && originGrid.northGrid.eastGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = North;
-                } else if (originGrid.southGrid != null && originGrid.southGrid.eastGrid != null) {
-                    numAvailableDirections = 2;
-                    alreadyExistingDirection = South;
-                }
-                break;
+        int[] alreadyExistingDirections = new int[3];
+        int[] myCoordinates = newGrid.GetGlobalCoordinates ();
+
+        if (originDirection != North && gridOfGrids[myCoordinates[0] + 1][myCoordinates[1]] != null) {
+            // There is a neighbour to my North and I did not come from there
+            alreadyExistingDirections[3 - numAvailableDirections] = North;
+            numAvailableDirections--;
+            gridOfGrids[myCoordinates[0] + 1][myCoordinates[1]].DisableFence (South);
+            gridOfGrids[myCoordinates[0] + 1][myCoordinates[1]].EnableEdgeWall (South);
+        }
+        if (originDirection != East && gridOfGrids[myCoordinates[0]][myCoordinates[1] + 1] != null) {
+            // There is a neighbour to my East and I did not come from there
+            alreadyExistingDirections[3 - numAvailableDirections] = East;
+            numAvailableDirections--;
+            gridOfGrids[myCoordinates[0]][myCoordinates[1] + 1].DisableFence (West);
+            gridOfGrids[myCoordinates[0]][myCoordinates[1] + 1].EnableEdgeWall (West);
+        }
+        if (originDirection != South && gridOfGrids[myCoordinates[0] - 1][myCoordinates[1]] != null) {
+            // There is a neighbour to my South and I did not come from there
+            alreadyExistingDirections[3 - numAvailableDirections] = South;
+            numAvailableDirections--;
+            gridOfGrids[myCoordinates[0] - 1][myCoordinates[1]].DisableFence (North);
+            gridOfGrids[myCoordinates[0] - 1][myCoordinates[1]].EnableEdgeWall (North);
+        }
+        if (originDirection != West && gridOfGrids[myCoordinates[0]][myCoordinates[1] - 1] != null) {
+            // There is a neighbour to my West and I did not come from there
+            alreadyExistingDirections[3 - numAvailableDirections] = West;
+            numAvailableDirections--;
+            gridOfGrids[myCoordinates[0]][myCoordinates[1] - 1].DisableFence (East);
+            gridOfGrids[myCoordinates[0]][myCoordinates[1] - 1].EnableEdgeWall (East);
+        }
+
+        if (numAvailableDirections <= 0) {
+            // This should never happen and is a big erreur
+            Debug.LogError ("Not enough available directions to explore!");
+            return;
         }
 
         // Next we look at which directions are available to create a new neighbour in and pick one at random
         int[] availableDirections = new int[numAvailableDirections];
         int d = 0;
         for (int i = 0; i < 4; i++) {
-            if (directions[i] != originDirection && directions[i] != alreadyExistingDirection) {
-                availableDirections[d++] = directions[i];
+            if (directions[i] != originDirection) {
+                bool directionAvailable = true;
+                for (int j = 0; j < (3 - numAvailableDirections); j++) {
+                    if (directions[i] == alreadyExistingDirections[j]) {
+                        directionAvailable = false;
+                        break;
+                    }
+                }
+
+                if (directionAvailable) {
+                    availableDirections[d++] = directions[i];
+                }
             }
         }
 
         int directionToCreateNeighbourIn = availableDirections[UnityEngine.Random.Range((int) 0, numAvailableDirections)];
 
-        // Now we find neighbours that are four steps away and delete them
+        // Now we find neighbours that are five steps away and delete them
         int stepNum = 1;
         int stepDirection = OppositeDirection(originDirection);
         RoomGrid stepGrid = originGrid;
@@ -1038,45 +1040,89 @@ public class Backrooms : UdonSharpBehaviour
             }
         }
         if (stepNum != -1) {
-            // We reached the third step away, so now we check whether this grid has any neighbours other than where we came from and destroy them if so
+            // We reached the fourth step away, so now we check whether this grid has any neighbours other than where we came from and destroy them if so
+            int[] stepGridCoordinates = stepGrid.GetGlobalCoordinates ();
+            int[] destroyedGridCoordinates = null;
             switch (stepDirection) {
                 case North:
                     if (stepGrid.eastGrid != null) {
                         stepGrid.DestroyNeighbour(East);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0], stepGridCoordinates[1] + 1};
                     } else if (stepGrid.westGrid != null) {
                         stepGrid.DestroyNeighbour(West);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0], stepGridCoordinates[1] - 1};
                     } else if (stepGrid.southGrid != null) {
                         stepGrid.DestroyNeighbour(South);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0] - 1, stepGridCoordinates[1]};
                     }
                     break;
                 case East:
                     if (stepGrid.southGrid != null) {
                         stepGrid.DestroyNeighbour(South);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0] - 1, stepGridCoordinates[1]};
                     } else if (stepGrid.westGrid != null) {
                         stepGrid.DestroyNeighbour(West);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0], stepGridCoordinates[1] - 1};
                     } else if (stepGrid.northGrid != null) {
                         stepGrid.DestroyNeighbour(North);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0] + 1, stepGridCoordinates[1]};
                     }
                     break;
                 case South:
                     if (stepGrid.eastGrid != null) {
                         stepGrid.DestroyNeighbour(East);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0], stepGridCoordinates[1] + 1};
                     } else if (stepGrid.westGrid != null) {
                         stepGrid.DestroyNeighbour(West);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0], stepGridCoordinates[1] - 1};
                     } else if (stepGrid.northGrid != null) {
                         stepGrid.DestroyNeighbour(North);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0] + 1, stepGridCoordinates[1]};
                     }
                     break;
                 case West:
                 default:
                     if (stepGrid.southGrid != null) {
                         stepGrid.DestroyNeighbour(South);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0] - 1, stepGridCoordinates[1]};
                     } else if (stepGrid.eastGrid != null) {
                         stepGrid.DestroyNeighbour(East);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0], stepGridCoordinates[1] + 1};
                     } else if (stepGrid.northGrid != null) {
                         stepGrid.DestroyNeighbour(North);
+                        destroyedGridCoordinates = new int[2] {stepGridCoordinates[0] + 1, stepGridCoordinates[1]};
                     }
                     break;
+            }
+
+            if (destroyedGridCoordinates != null) {
+                // Destroyed a grid, now get rid of it in the grid of grids then check its potential neighbours to set fences around it
+                gridOfGrids[destroyedGridCoordinates[0]][destroyedGridCoordinates[1]] = null;
+
+                RoomGrid candidateNeighbour = gridOfGrids[destroyedGridCoordinates[0] + 1][destroyedGridCoordinates[1]];
+                if (candidateNeighbour != null && candidateNeighbour != stepGrid) {
+                    // North neighbour exists
+                    candidateNeighbour.DisableEdgeWall (South);
+                    candidateNeighbour.EnableFence (South);
+                }
+                candidateNeighbour = gridOfGrids[destroyedGridCoordinates[0]][destroyedGridCoordinates[1] + 1];
+                if (candidateNeighbour != null && candidateNeighbour != stepGrid) {
+                    // East neighbour exists
+                    candidateNeighbour.DisableEdgeWall (West);
+                    candidateNeighbour.EnableFence (West);
+                }
+                candidateNeighbour = gridOfGrids[destroyedGridCoordinates[0] - 1][destroyedGridCoordinates[1]];
+                if (candidateNeighbour != null && candidateNeighbour != stepGrid) {
+                    // South neighbour exists
+                    candidateNeighbour.DisableEdgeWall (North);
+                    candidateNeighbour.EnableFence (North);
+                }
+                candidateNeighbour = gridOfGrids[destroyedGridCoordinates[0]][destroyedGridCoordinates[1] - 1];
+                if (candidateNeighbour != null && candidateNeighbour != stepGrid) {
+                    // West neighbour exists
+                    candidateNeighbour.DisableEdgeWall (East);
+                    candidateNeighbour.EnableFence (East);
+                }
             }
         }
     
@@ -1098,14 +1144,23 @@ public class Backrooms : UdonSharpBehaviour
                 break;
         }
 
-        int[] fencesToCreate = new int[2];
-        d = 0;
-        for (int i = 0; i < 4; i++) {
-            if (directions[i] != directionToCreateNeighbourIn && directions[i] != originDirection) {
-                fencesToCreate[d++] = directions[i];
-            }
+        GenerateFences (newGrid, directions); // Create fences in all directions then disable them selectively
+        if (gridOfGrids[myCoordinates[0] + 1][myCoordinates[1]] != null) {
+            newGrid.DisableFence (North);
+            newGrid.EnableEdgeWall (North);
         }
-        GenerateFences (newGrid, fencesToCreate);
+        if (gridOfGrids[myCoordinates[0]][myCoordinates[1] + 1] != null) {
+            newGrid.DisableFence (East);
+            newGrid.EnableEdgeWall (East);
+        }
+        if (gridOfGrids[myCoordinates[0] - 1][myCoordinates[1]] != null) {
+            newGrid.DisableFence (South);
+            newGrid.EnableEdgeWall (South);
+        }
+        if (gridOfGrids[myCoordinates[0]][myCoordinates[1] - 1] != null) {
+            newGrid.DisableFence (West);
+            newGrid.EnableEdgeWall (West);
+        }
         createdGrid.CreateExplorationTrigger();
         newGrid.DestroyExplorationTrigger();
     }
@@ -1756,25 +1811,28 @@ public class Backrooms : UdonSharpBehaviour
         // Create its first neighbour
         int randomNeighbour = UnityEngine.Random.Range((int) 0, (int) 4);
         RoomGrid createdGrid;
+        int[] wallDirections;
         switch (directions[randomNeighbour]) {
             case North:
                 createdGrid = GenerateNorthNeighbour(startingGrid);
-                GenerateFences (startingGrid, new int[3]{East, South, West});
+                wallDirections = new int[3] {East, South, West};
                 break;
             case East:
                 createdGrid = GenerateEastNeighbour(startingGrid);
-                GenerateFences (startingGrid, new int[3]{North, South, West});
+                wallDirections = new int[3] {North, South, West};
                 break;
             case South:
                 createdGrid = GenerateSouthNeighbour(startingGrid);
-                GenerateFences (startingGrid, new int[3]{North, East, West});
+                wallDirections = new int[3] {North, East, West};
                 break;
             case West:
             default:
                 createdGrid = GenerateWestNeighbour(startingGrid);
-                GenerateFences (startingGrid, new int[3]{North, East, South});
+                wallDirections = new int[3] {North, East, South};
                 break;
         }
+        GenerateFences (startingGrid, wallDirections);
+        startingGrid.DisableEdgeWalls (wallDirections);
         createdGrid.CreateExplorationTrigger();
     }
     
