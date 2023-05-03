@@ -42,7 +42,7 @@ public class RoomGrid : UdonSharpBehaviour
 
     void Start() {}
 
-    public void initialize(GameObject root, Vector2[] gridCorners,
+    public void Initialize(GameObject root, Vector2[] gridCorners,
                            Backrooms backroomsController,
                            bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols,
                            LightController[] edgeLightControllers, int numEdgeLightControllers,
