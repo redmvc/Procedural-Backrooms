@@ -1692,21 +1692,26 @@ public class Backrooms : UdonSharpBehaviour
         }
         
         int dir;
+        GameObject wall;
         for (int i = 0; i < directionsToDraw.Length; i++) {
             dir = directionsToDraw[i];
             switch(dir) {
                 case North:
-                    BuildSouthFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), (float) gridSideSize);
+                    wall = BuildSouthFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), (float) gridSideSize);
+                    grid.SetFenceDirection (North, wall);
                     break;
                 case East:
-                    BuildWestFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), (float) gridSideSize);
+                    wall = BuildWestFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), (float) gridSideSize);
+                    grid.SetFenceDirection (East, wall);
                     break;
                 case South:
-                    BuildNorthFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), 0);
+                    wall = BuildNorthFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), 0);
+                    grid.SetFenceDirection (South, wall);
                     break;
                 case West:
                 default:
-                    BuildEastFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), 0);
+                    wall = BuildEastFacingWall(fenceOrganiser, new Vector2(- (float) gridSideSize / 2, - (float) gridSideSize / 2), new Vector2(0, (float) gridSideSize), 0);
+                    grid.SetFenceDirection (West, wall);
                     break;
             }
         }

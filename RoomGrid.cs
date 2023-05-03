@@ -24,6 +24,8 @@ public class RoomGrid : UdonSharpBehaviour
     public double[] columns;
     private LightController[] edgeLightControllers;
     private int[] globalCoordinates;
+    private GameObject fenceOrganiser;
+    private GameObject northFence, eastFence, southFence, westFence;
 
     // Rng seeds to generate neighbours
     private int[] northRngSeeds;
@@ -37,7 +39,6 @@ public class RoomGrid : UdonSharpBehaviour
 
     // Spawnable meshes
     public GameObject emptyGameObject;
-    private GameObject fenceOrganiser;
     public GameObject explorationTriggerTile;
     private GameObject explorationTrigger;
 
@@ -65,6 +66,7 @@ public class RoomGrid : UdonSharpBehaviour
         this.numNorthExits = 0; this.numEastExits = 0; this.numSouthExits = 0; this.numWestExits = 0;
 
         this.fenceOrganiser = null;
+        this.northFence = null; this.eastFence = null; this.southFence = null; this.westFence = null;
 
         this.explorationTrigger = null;
 
@@ -102,8 +104,68 @@ public class RoomGrid : UdonSharpBehaviour
 
     public int[] GetGlobalCoordinates () {return this.globalCoordinates;}
 
-    public void SetFences(GameObject organiser) {
+    public void SetFences (GameObject organiser) {
         this.fenceOrganiser = organiser;
+    }
+
+    public void SetFenceDirection (int direction, GameObject fence)
+    {
+        switch (direction) {
+            case Backrooms.North:
+                if (this.northFence != null) {
+                    GameObject.Destroy (this.northFence);
+                }
+                this.northFence = fence;
+                break;
+            case Backrooms.East:
+                if (this.eastFence != null) {
+                    GameObject.Destroy (this.eastFence);
+                }
+                this.eastFence = fence;
+                break;
+            case Backrooms.South:
+                if (this.southFence != null) {
+                    GameObject.Destroy (this.southFence);
+                }
+                this.southFence = fence;
+                break;
+            case Backrooms.West:
+            default:
+                if (this.westFence != null) {
+                    GameObject.Destroy (this.westFence);
+                }
+                this.westFence = fence;
+                break;
+        }
+    }
+
+    public void DisableFence (int direction)
+    {
+        this.ToggleFence (direction, false);
+    }
+
+    public void EnableFence (int direction)
+    {
+        this.ToggleFence (direction, true);
+    }
+
+    private void ToggleFence (int direction, bool state)
+    {
+        switch (direction)  {
+            case Backrooms.North:
+                this.northFence.SetActive (state);
+                break;
+            case Backrooms.East:
+                this.eastFence.SetActive (state);
+                break;
+            case Backrooms.South:
+                this.southFence.SetActive (state);
+                break;
+            case Backrooms.West:
+            default:
+                this.westFence.SetActive (state);
+                break;
+        }
     }
 
     public LightController[] GetEdgeLightControllers ()
