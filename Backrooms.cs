@@ -1767,8 +1767,6 @@ public class Backrooms : UdonSharpBehaviour
             // The first flashlight is the "landing" flashlight and won't be placed with the others
             flashlights[f].transform.position = GenerateRandomCoordinatesOnStartingGrid ();
             flashlights[f].transform.rotation = Quaternion.Euler (UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f));
-            flashlights[f].GetComponent<Rigidbody>().useGravity = true;
-            flashlights[f].GetComponent<Rigidbody>().isKinematic = false;
         }
     }
     
