@@ -23,6 +23,7 @@ public class RoomGrid : UdonSharpBehaviour
     public double[] rows;
     public double[] columns;
     private LightController[] edgeLightControllers;
+    private int[] globalCoordinates;
 
     // Rng seeds to generate neighbours
     private int[] northRngSeeds;
@@ -42,16 +43,18 @@ public class RoomGrid : UdonSharpBehaviour
 
     void Start() {}
 
-    public void Initialize(GameObject root, Vector2[] gridCorners,
-                           Backrooms backroomsController,
-                           bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols,
-                           LightController[] edgeLightControllers, int numEdgeLightControllers,
-                           GameObject northEdgeWalls, GameObject eastEdgeWalls, GameObject southEdgeWalls, GameObject westEdgeWalls)
+    public void Initialize (GameObject root, Vector2[] gridCorners,
+                            Backrooms backroomsController,
+                            bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols,
+                            LightController[] edgeLightControllers, int numEdgeLightControllers,
+                            GameObject northEdgeWalls, GameObject eastEdgeWalls, GameObject southEdgeWalls, GameObject westEdgeWalls,
+                            int[] globalCoordinates)
     {
         this.root = root;
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
         this.horizontalSize = gridCorners[1][0] - gridCorners[0][0];
         this.backroomsController = backroomsController;
+        this.globalCoordinates = globalCoordinates;
 
         this.northGrid = null;
         this.southGrid = null;
@@ -96,6 +99,8 @@ public class RoomGrid : UdonSharpBehaviour
             westRngSeeds[i] = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
         }
     }
+
+    public int[] GetGlobalCoordinates () {return this.globalCoordinates;}
 
     public void SetFences(GameObject organiser) {
         this.fenceOrganiser = organiser;

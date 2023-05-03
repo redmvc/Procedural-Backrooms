@@ -41,6 +41,7 @@ public class Backrooms : UdonSharpBehaviour
     private RoomGrid startingGrid = null;
     private bool initialGridWasDestroyed = false; // If the initial grid was destroyed then we need to set up a teleport to a new grid
     private Vector3 teleportCoordinates;
+    private RoomGrid[][] gridOfGrids;
 
     // ----------------------------------------------------------
     // Constants
@@ -638,7 +639,7 @@ public class Backrooms : UdonSharpBehaviour
         return true;
     }
 
-    RoomGrid GenerateGrid (GameObject gridRoot) {
+    RoomGrid GenerateGrid (GameObject gridRoot, int[] globalCoordinates) {
         // Starting grid
         return GenerateGrid(
             gridRoot,
@@ -648,15 +649,17 @@ public class Backrooms : UdonSharpBehaviour
                     new Vector2((float) ((gridSideSize + minRowColSize) / 2), (float) ((gridSideSize + minRowColSize) / 2))
                 }
             },
-            1, true, true);
+            1,
+            globalCoordinates,
+            true, true);
     }
 
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes = true) {
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, int[] globalCoordinates, bool spawnMeshes = true) {
         // Non-starting grid
-        return GenerateGrid (gridRoot, probeCoordinates, numProbes, spawnMeshes, false);
+        return GenerateGrid (gridRoot, probeCoordinates, numProbes, globalCoordinates, spawnMeshes, false);
     }
 
-    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, bool spawnMeshes, bool isStartingGrid) {
+    RoomGrid GenerateGrid (GameObject gridRoot, Vector2[][] probeCoordinates, int numProbes, int[] globalCoordinates, bool spawnMeshes, bool isStartingGrid) {
         double traversableFraction = 0;
         int numTries = 0; // If the number of tries gets high enough I'll try to force a probe in the validation grid
         while (traversableFraction < minTraversableFraction) {
@@ -728,8 +731,9 @@ public class Backrooms : UdonSharpBehaviour
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
         grid.Initialize (gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols, edgeLightControllers, numEdgeLightControllers,
-                         northEdgeWalls, eastEdgeWalls, southEdgeWalls, westEdgeWalls);
+                         northEdgeWalls, eastEdgeWalls, southEdgeWalls, westEdgeWalls, globalCoordinates);
         grid.GenerateExits ();
+        gridOfGrids[globalCoordinates[0]][globalCoordinates[1]] = grid;
 
         return grid;
     }
@@ -754,7 +758,9 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, northExits.Length);
+        int[] originCoordinates = originGrid.GetGlobalCoordinates();
+        int[] newCoordinates = {originCoordinates [0] + 1, originCoordinates[1]};
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, northExits.Length, newCoordinates);
 
         originGrid.northGrid = newGrid;
         newGrid.southGrid = originGrid;
@@ -786,7 +792,9 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, southExits.Length);
+        int[] originCoordinates = originGrid.GetGlobalCoordinates();
+        int[] newCoordinates = {originCoordinates [0] - 1, originCoordinates[1]};
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, southExits.Length, newCoordinates);
 
         originGrid.southGrid = newGrid;
         newGrid.northGrid = originGrid;
@@ -818,7 +826,9 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, eastExits.Length);
+        int[] originCoordinates = originGrid.GetGlobalCoordinates();
+        int[] newCoordinates = {originCoordinates [0], originCoordinates[1] + 1};
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, eastExits.Length, newCoordinates);
 
         originGrid.eastGrid = newGrid;
         newGrid.westGrid = originGrid;
@@ -850,7 +860,9 @@ public class Backrooms : UdonSharpBehaviour
             };
         }
 
-        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, westExits.Length);
+        int[] originCoordinates = originGrid.GetGlobalCoordinates();
+        int[] newCoordinates = {originCoordinates [0], originCoordinates[1] - 1};
+        RoomGrid newGrid = GenerateGrid (gridRoot, probeCoordinates, westExits.Length, newCoordinates);
 
         originGrid.westGrid = newGrid;
         newGrid.eastGrid = originGrid;
@@ -1727,7 +1739,14 @@ public class Backrooms : UdonSharpBehaviour
         gridRoot.transform.SetParent(transform);
         gridRoot.transform.position = transform.position;
 
-        startingGrid = GenerateGrid(gridRoot);
+        gridOfGrids = new RoomGrid[101][];
+        for (int i = 0; i < 101; i++) {
+            gridOfGrids[i] = new RoomGrid[101];
+            for (int j = 0; j < 101; j++) {
+                gridOfGrids[i][j] = null;
+            }
+        }
+        startingGrid = GenerateGrid(gridRoot, new int[2] {50, 50});
 
         // Create its first neighbour
         int randomNeighbour = UnityEngine.Random.Range((int) 0, (int) 4);
