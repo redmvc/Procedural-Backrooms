@@ -479,7 +479,7 @@ public class Backrooms : UdonSharpBehaviour
 
             if (candidateI == -1) {
                 // Something got real fucked up here
-                Debug.LogError ("Couldn't find a valid rectangle when generating extra paths.");
+                Debug.LogWarning ("Couldn't find a valid rectangle when generating extra paths.");
                 return false;
             }
 
