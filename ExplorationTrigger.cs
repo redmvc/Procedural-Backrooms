@@ -18,13 +18,9 @@ public class ExplorationTrigger : UdonSharpBehaviour
         this.rngSeed = seed;
     }
 
-    public override void OnPlayerTriggerEnter(VRCPlayerApi player) {
-        this.ExploreGrid(player);
-    }
+    public override void OnPlayerTriggerEnter(VRCPlayerApi player) {this.ExploreGrid(player);}
 
     public void ExploreGrid(VRCPlayerApi player) {
-        if (player.IsValid() && player.isLocal) {
-            this.parentBackrooms.ExploreGrid(parentGrid, rngSeed);
-        }
+        if (player.IsValid() && player.isLocal) this.parentBackrooms.ExploreGrid(parentGrid, rngSeed);
     }
 }

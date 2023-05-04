@@ -21,9 +21,7 @@ public class LightController : UdonSharpBehaviour
     {
         this.maxLightDistance = maxLightDistance;
         this.neighbours = new LightController[maxNumNeighbours];
-        for (int i = 0; i < maxNumNeighbours; i++) {
-            this.neighbours[i] = null;
-        }
+        for (int i = 0; i < maxNumNeighbours; i++) this.neighbours[i] = null;
 
         this.gridSideSize = gridSideSize;
 
@@ -72,9 +70,7 @@ public class LightController : UdonSharpBehaviour
         Vector2 lightCoordinates = new Vector2 (candidateLight.transform.position.x, candidateLight.transform.position.z);
         Vector2[] lightRectangleCoordinates = {lightCoordinates - new Vector2(0.25f, 0.25f), lightCoordinates + new Vector2(0.25f, 0.25f)};
 
-        if (RectangleOverlap (lightRectangleCoordinates)) {
-            addLight (candidateLight);
-        }
+        if (RectangleOverlap (lightRectangleCoordinates)) addLight (candidateLight);
     }
 
     private void addLight (GameObject light) {
@@ -98,25 +94,13 @@ public class LightController : UdonSharpBehaviour
 
     public void ProcessLights (LightController origin, LightController messageSender, int counter)
     {
-        if (origin == mostRecentOrigin) {
-            if (counter > mostRecentCounter) {
-                // Getting a message from the same origin I last got one but a higher counter
-                mostRecentCounter = counter;
-                if (counter > 0) {
-                    TurnLightsOn (messageSender);
-                } else {
-                    TurnLightsOff (messageSender);
-                }
-            }
-        } else {
-            mostRecentOrigin = origin;
-            mostRecentCounter = counter;
-            if (counter > 0) {
-                TurnLightsOn (messageSender);
-            } else {
-                TurnLightsOff (messageSender);
-            }
-        }
+        // If I get a message from the same origin I already did with a lower counter I don't want to propagate it
+        if (origin == mostRecentOrigin && counter <= mostRecentCounter) return;
+
+        mostRecentOrigin = origin;
+        mostRecentCounter = counter;
+        if (counter > 0) TurnLightsOn (messageSender);
+        else TurnLightsOff (messageSender);
     }
 
     private void TurnLightsOn (LightController messageSender)
@@ -136,9 +120,7 @@ public class LightController : UdonSharpBehaviour
             ToggleLights ();
         }
 
-        if (mostRecentCounter > -1 && messageSender != null) {
-            MessageNeighbours (messageSender);
-        }
+        if (mostRecentCounter > -1 && messageSender != null) MessageNeighbours (messageSender);
     }
 
     private void MessageNeighbours (LightController messageSender)

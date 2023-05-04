@@ -176,18 +176,12 @@ public class Backrooms : UdonSharpBehaviour
                 halfSize[1] = rectangleSize[1] - halfSize[1];
             }
             for (int i = - halfSize[0]; i < rectangleSize[0] - halfSize[0]; i++) {
-                if (centerCoordinates[0] + i < 0) {
-                    continue;
-                } else if (centerCoordinates[0] + i >= numRows) {
-                    break;
-                }
+                if (centerCoordinates[0] + i < 0) continue;
+                else if (centerCoordinates[0] + i >= numRows) break;
 
                 for (int j = - halfSize[1];  j < rectangleSize[1] - halfSize[1]; j++) {
-                    if (centerCoordinates[1] + j < 0) {
-                        continue;
-                    } else if (centerCoordinates[1] + j >= numCols) {
-                        break;
-                    }
+                    if (centerCoordinates[1] + j < 0) continue;
+                    else if (centerCoordinates[1] + j >= numCols) break;
 
                     // The "rectangles" array is set to "true" for the cells that are traversable and "false" elsewhere
                     rectangles[centerCoordinates[0] + i][centerCoordinates[1] + j] = true;
@@ -220,9 +214,7 @@ public class Backrooms : UdonSharpBehaviour
         // - If they are, I mark them as traversable and then any "unexplored but gonna explore next" neighbouring cells are marked as "gonna explore next"
         // - Once there are no more "gonna explore next" cells I convert the explored areas into the validated grid
 
-        if (!JustifyGrid()) {
-            return false;
-        }
+        if (!JustifyGrid()) return false;
 
         bool[][] validatedRectangles = new bool[numRows][]; // This will be the new validated grid I return at the end
         int[][] explorationRectangles = new int[numRows][]; // This will be used to perform the exploration: -1 means unexplored, 0 means unexplored but will explore next, 1 means explored
@@ -251,9 +243,7 @@ public class Backrooms : UdonSharpBehaviour
                     minCoord = Math.Min(Math.Max(cumulativeRows[i] - rows[i], probeCoordinate[0][0]), minCoord);
                 }
             }
-            if (maxCoord - minCoord >= minRowColSize) {
-                walkableCoord = true;
-            }
+            if (maxCoord - minCoord >= minRowColSize) walkableCoord = true;
             
             int[] probeCols = new int[numCols];
             int nProbeCols = 0;
@@ -265,9 +255,7 @@ public class Backrooms : UdonSharpBehaviour
                     minCoord = Math.Min(Math.Max(cumulativeCols[j] - columns[j], probeCoordinate[0][1]), minCoord);
                 }
             }
-            if (maxCoord - minCoord >= minRowColSize) {
-                walkableCoord = true;
-            }
+            if (maxCoord - minCoord >= minRowColSize) walkableCoord = true;
 
             if (walkableCoord) {
                 for (int i = 0; i < nProbeRows; i++) {
@@ -280,99 +268,98 @@ public class Backrooms : UdonSharpBehaviour
                 }
             }
         }
+
         if (!hasValidProbe) {
-            if (forceProbe) {
-                // I will attempt to forcibly add rectangles around one of the probe coordinates
-                Vector2[] probeForced = probeCoordinates[UnityEngine.Random.Range((int) 0, numProbes)];
-                int minForcedRow = 0, maxForcedRow = 0, minForcedCol = 0, maxForcedCol = 0;
-                for (int i = 0; i < numRows; i++) {
-                    // Find the first i coordinate that contains that probe
-                    if (cumulativeRows[i] > probeForced[0][1]) {
-                        for (int j = 0; j < numCols; j++) {
-                            // Find the first j coordinate that contains the probe
-                            if (cumulativeCols[j] > probeForced[0][0]) {
-                                // Now I'm gonna set a bunch of rectangles starting here to valid
-                                if (probeForced[1][0] - probeForced[0][0] < 0.1) { // yayyyy floating points
-                                    // Vertical probe
-                                    if (i > 0) {
-                                        minForcedRow = i - 1;
-                                    } else {
-                                        minForcedRow = i;
-                                    }
-                                    if (i < numRows - 1) {
-                                        maxForcedRow = i + 2;
-                                    } else {
-                                        maxForcedRow = i + 1;
-                                    }
+            if (!forceProbe) return false; // forceProbe determines whether I will forcibly create an entrance into this grid
+            
+            // I will attempt to forcibly add rectangles around one of the probe coordinates
+            Vector2[] probeForced = probeCoordinates[UnityEngine.Random.Range(0, numProbes)];
+            int minForcedRow = 0, maxForcedRow = 0, minForcedCol = 0, maxForcedCol = 0;
+            for (int i = 0; i < numRows; i++) {
+                // Find the first i coordinate that contains that probe
+                if (cumulativeRows[i] <= probeForced[0][1]) continue;
 
-                                    if (j == 0) {
-                                        minForcedCol = 0;
-                                        maxForcedCol = (int) (numCols / 2);
-                                    } else if (j == numCols - 1) {
-                                        minForcedCol = (int) (numCols / 2); 
-                                        maxForcedCol = numCols;
-                                    } else {
-                                        // We could only possibly get here if this is the starting grid
-                                        Debug.LogWarning("WARNING: starting grid forced probe. j = " + j + " numCols = " + numCols);
-                                        Debug.Log(probeForced[0]);
-                                        Debug.Log(probeForced[1]);
-                                        minForcedCol = (int) (numCols / 4);
-                                        maxForcedCol = 3 * minForcedCol;
-                                    }
-                                } else {
-                                    // Horizontal probe
-                                    if (j > 0) {
-                                        minForcedCol = j - 1;
-                                    } else {
-                                        minForcedCol = j;
-                                    }
-                                    if (j < numCols - 1) {
-                                        maxForcedCol = j + 2;
-                                    } else {
-                                        maxForcedCol = j + 1;
-                                    }
-
-                                    if (i == 0) {
-                                        minForcedRow = 0;
-                                        maxForcedRow = (int) (numRows / 2);
-                                    } else if (i == numRows - 1) {
-                                        minForcedRow = (int) (numRows / 2);
-                                        maxForcedRow = numRows;
-                                    } else {
-                                        // We could only possibly get here if this is the starting grid
-                                        Debug.LogWarning("WARNING: starting grid forced probe. i = " + i + " numRows = " + numRows);
-                                        Debug.Log(probeForced[0]);
-                                        Debug.Log(probeForced[1]);
-                                        minForcedRow = (int) (numRows / 4);
-                                        maxForcedRow = 3 * minForcedRow;
-                                    }
-                                }
-
-                                break;
-                            }
+                for (int j = 0; j < numCols; j++) {
+                    // Find the first j coordinate that contains the probe
+                    if (cumulativeCols[j] <= probeForced[0][0]) continue;
+                    
+                    // Now I'm gonna set a bunch of rectangles starting here to valid
+                    if (probeForced[1][0] - probeForced[0][0] < 0.1) { // yayyyy floating points
+                        // Vertical probe
+                        if (i > 0) {
+                            minForcedRow = i - 1;
+                        } else {
+                            minForcedRow = i;
                         }
-                        break;
-                    }
-                }
+                        if (i < numRows - 1) {
+                            maxForcedRow = i + 2;
+                        } else {
+                            maxForcedRow = i + 1;
+                        }
 
-                minForcedRow = Math.Max(minForcedRow, 0);
-                maxForcedRow = Math.Min(maxForcedRow, numRows);
-                minForcedCol = Math.Max(minForcedCol, 0);
-                maxForcedCol = Math.Min(maxForcedCol, numCols);
-                for (int i = minForcedRow; i < maxForcedRow; i++) {
-                    for (int j = minForcedCol; j < maxForcedCol; j++) {
-                        rectangles[i][j] = true;
-                        explorationRectangles[i][j] = 0;
-                    }
-                }
+                        if (j == 0) {
+                            minForcedCol = 0;
+                            maxForcedCol = (int) (numCols / 2);
+                        } else if (j == numCols - 1) {
+                            minForcedCol = (int) (numCols / 2); 
+                            maxForcedCol = numCols;
+                        } else {
+                            // We could only possibly get here if this is the starting grid
+                            Debug.LogWarning("WARNING: starting grid forced probe. j = " + j + " numCols = " + numCols);
+                            Debug.Log(probeForced[0]);
+                            Debug.Log(probeForced[1]);
+                            minForcedCol = (int) (numCols / 4);
+                            maxForcedCol = 3 * minForcedCol;
+                        }
+                    } else {
+                        // Horizontal probe
+                        if (j > 0) {
+                            minForcedCol = j - 1;
+                        } else {
+                            minForcedCol = j;
+                        }
+                        if (j < numCols - 1) {
+                            maxForcedCol = j + 2;
+                        } else {
+                            maxForcedCol = j + 1;
+                        }
 
-                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
-                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minForcedRow, minForcedCol};
-                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxForcedRow - 1, maxForcedCol - 1};
-                numLightControllersPlanned += 1;
-            } else {
-                return false;
+                        if (i == 0) {
+                            minForcedRow = 0;
+                            maxForcedRow = (int) (numRows / 2);
+                        } else if (i == numRows - 1) {
+                            minForcedRow = (int) (numRows / 2);
+                            maxForcedRow = numRows;
+                        } else {
+                            // We could only possibly get here if this is the starting grid
+                            Debug.LogWarning("WARNING: starting grid forced probe. i = " + i + " numRows = " + numRows);
+                            Debug.Log(probeForced[0]);
+                            Debug.Log(probeForced[1]);
+                            minForcedRow = (int) (numRows / 4);
+                            maxForcedRow = 3 * minForcedRow;
+                        }
+                    }
+
+                    break;
+                }
+                break;
             }
+
+            minForcedRow = Math.Max(minForcedRow, 0);
+            maxForcedRow = Math.Min(maxForcedRow, numRows);
+            minForcedCol = Math.Max(minForcedCol, 0);
+            maxForcedCol = Math.Min(maxForcedCol, numCols);
+            for (int i = minForcedRow; i < maxForcedRow; i++) {
+                for (int j = minForcedCol; j < maxForcedCol; j++) {
+                    rectangles[i][j] = true;
+                    explorationRectangles[i][j] = 0;
+                }
+            }
+
+            lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+            lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minForcedRow, minForcedCol};
+            lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxForcedRow - 1, maxForcedCol - 1};
+            numLightControllersPlanned += 1;
         }
 
         // Next we start exploring
@@ -381,32 +368,25 @@ public class Backrooms : UdonSharpBehaviour
             hasCellsToExplore = false;
             for (int i = 0; i < numRows; i++) {
                 for (int j = 0; j < numCols; j++) {
-                    if (explorationRectangles[i][j] == 0) {
-                        // This is a cell to explore
-                        explorationRectangles[i][j] = 1; // Mark it as explored
-                        if (rectangles[i][j]) {
-                            // It is traversable
-                            validatedRectangles[i][j] = true; // Mark it as traversable in the validated grid
-                            
-                            // A preceding cell is unexplored, I'll mark it as to-explore and tell the loop to restart
-                            if (i > 0 && explorationRectangles[i - 1][j] == -1)  {
-                                explorationRectangles[i - 1][j] = 0;
-                                hasCellsToExplore = true;
-                            }
-                            if (j > 0 && explorationRectangles[i][j - 1] == -1)  {
-                                explorationRectangles[i][j - 1] = 0;
-                                hasCellsToExplore = true;
-                            }
+                    if (explorationRectangles[i][j] != 0) continue; // Check if this is a cell to explore
+                    explorationRectangles[i][j] = 1; // Mark it as explored
 
-                            // A non-preceding cell is unexplored, I'll mark it as to-explore and we'll get to it in the future of the loop
-                            if (i < numRows - 1 && explorationRectangles[i + 1][j] == -1)  {
-                                explorationRectangles[i + 1][j] = 0;
-                            }
-                            if (j < numCols - 1 && explorationRectangles[i][j + 1] == -1)  {
-                                explorationRectangles[i][j + 1] = 0;
-                            }
-                        }
+                    if (!rectangles[i][j]) continue; // Check whether the cell is traversable
+                    validatedRectangles[i][j] = true; // Mark it as traversable in the validated grid
+                    
+                    // Check if a preceding cell is unexplored, and if so I'll mark it as to-explore and tell the loop to restart
+                    if (i > 0 && explorationRectangles[i - 1][j] == -1)  {
+                        explorationRectangles[i - 1][j] = 0;
+                        hasCellsToExplore = true;
                     }
+                    if (j > 0 && explorationRectangles[i][j - 1] == -1)  {
+                        explorationRectangles[i][j - 1] = 0;
+                        hasCellsToExplore = true;
+                    }
+
+                    // Check if a non-preceding cell is unexplored, and if so I'll mark it as to-explore and we'll get to it in the future of the loop
+                    if (i < numRows - 1 && explorationRectangles[i + 1][j] == -1) explorationRectangles[i + 1][j] = 0;
+                    if (j < numCols - 1 && explorationRectangles[i][j + 1] == -1) explorationRectangles[i][j + 1] = 0;
                 }
             }
         }
@@ -416,139 +396,121 @@ public class Backrooms : UdonSharpBehaviour
         bool hasPathSouth = false;
         bool hasPathNorth = false;
         for (int j = 0; j < numCols; j++) {
-            if (rectangles[0][j]) {
-                hasPathSouth = true;
-            }
+            if (rectangles[0][j]) hasPathSouth = true;
+            if (rectangles[numRows - 1][j]) hasPathNorth = true;
 
-            if (rectangles[numRows - 1][j]) {
-                hasPathNorth = true;
-            }
-
-            if (hasPathSouth && hasPathNorth) {
-                break;
-            }
+            if (hasPathSouth && hasPathNorth) break;
         }
 
         bool hasPathWest = false;
         bool hasPathEast = false;
         for (int i = 0; i < numRows; i++) {
-            if (rectangles[i][0]) {
-                hasPathWest = true;
-            }
+            if (rectangles[i][0]) hasPathWest = true;
+            if (rectangles[i][numCols - 1]) hasPathEast = true;
 
-            if (rectangles[i][numCols - 1]) {
-                hasPathEast = true;
-            }
+            if (hasPathWest && hasPathEast) break;
+        }
 
-            if (hasPathWest && hasPathEast) {
-                break;
+        if (hasPathSouth && hasPathNorth && hasPathWest && hasPathEast) return true;
+        
+        // There is at least one direction that doesn't have a path
+        // I'll try 20 times to pick a random valid cell and if I can't I'll just traverse the array until I find one
+        const int numRandomTries = 20;
+        int candidateI = -1, candidateJ = -1;
+        for (int r = 0; r < numRandomTries; r++) {
+            candidateI = UnityEngine.Random.Range(0, numRows);
+            candidateJ = UnityEngine.Random.Range(0, numCols);
+            if (rectangles[candidateI][candidateJ]) break; // Found a valid cell
+            else candidateI = -1;
+        }
+
+        if (candidateI == -1) {
+            // Couldn't find a candidate randomly, will just traverse the grid until I do
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    if (rectangles[i][j]) {
+                        candidateI = i;
+                        candidateJ = j;
+                        break;
+                    }
+                }
+                if (candidateI != -1) break;
             }
         }
 
-        if (!hasPathSouth || !hasPathNorth || !hasPathWest || !hasPathEast) {
-            // There is at least one direction that doesn't have a path
-            // I'll try 20 times to pick a random valid cell and if I can't I'll just traverse the array until I find one
-            const int numRandomTries = 20;
-            int candidateI = -1, candidateJ = -1;
-            for (int r = 0; r < numRandomTries; r++) {
-                candidateI = UnityEngine.Random.Range(0, numRows);
-                candidateJ = UnityEngine.Random.Range(0, numCols);
-                if (rectangles[candidateI][candidateJ]) {
-                    // Found a valid cell
-                    break;
+        if (candidateI == -1) {
+            // Something got real fucked up here
+            Debug.LogWarning ("Couldn't find a valid rectangle when generating extra paths.");
+            return false;
+        }
+
+        // Now dig a path from each missing edge to this random candidate
+        if (!hasPathSouth) {
+            int maxIReached = candidateI;
+            for (int i = 0; i < candidateI; i++) {
+                if (!rectangles[i][candidateJ]) {
+                    rectangles[i][candidateJ] = true;
                 } else {
-                    candidateI = -1;
+                    maxIReached = i;
+                    break;
                 }
             }
 
-            if (candidateI == -1) {
-                // Couldn't find a candidate randomly, will just traverse the grid until I do
-                for (int i = 0; i < numRows; i++) {
-                    for (int j = 0; j < numCols; j++) {
-                        if (rectangles[i][j]) {
-                            candidateI = i;
-                            candidateJ = j;
-                            break;
-                        }
-                    }
-                    if (candidateI != -1) {
-                        break;
-                    }
+            lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+            lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {0, candidateJ};
+            lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxIReached, candidateJ};
+            numLightControllersPlanned++;
+        }
+
+        if (!hasPathNorth) {
+            int minIReached = candidateI;
+            for (int i = numRows - 1; i > candidateI; i--) {
+                if (!rectangles[i][candidateJ]) {
+                    rectangles[i][candidateJ] = true;
+                } else {
+                    minIReached = i;
+                    break;
                 }
             }
 
-            if (candidateI == -1) {
-                // Something got real fucked up here
-                Debug.LogWarning ("Couldn't find a valid rectangle when generating extra paths.");
-                return false;
-            }
+            lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+            lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minIReached, candidateJ};
+            lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {numRows - 1, candidateJ};
+            numLightControllersPlanned++;
+        }
 
-            // Now dig a path from each missing edge to this random candidate
-            if (!hasPathSouth) {
-                int maxIReached = candidateI;
-                for (int i = 0; i < candidateI; i++) {
-                    if (!rectangles[i][candidateJ]) {
-                        rectangles[i][candidateJ] = true;
-                    } else {
-                        maxIReached = i;
-                        break;
-                    }
+        if (!hasPathWest) {
+            int maxJReached = candidateJ;
+            for (int j = 0; j < candidateJ; j++) {
+                if (!rectangles[candidateI][j]) {
+                    rectangles[candidateI][j] = true;
+                } else {
+                    maxJReached = j;
+                    break;
                 }
-
-                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
-                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {0, candidateJ};
-                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {maxIReached, candidateJ};
-                numLightControllersPlanned++;
             }
-            if (!hasPathNorth) {
-                int minIReached = candidateI;
-                for (int i = numRows - 1; i > candidateI; i--) {
-                    if (!rectangles[i][candidateJ]) {
-                        rectangles[i][candidateJ] = true;
-                    } else {
-                        minIReached = i;
-                        break;
-                    }
+
+            lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+            lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {candidateI, 0};
+            lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {candidateI, maxJReached};
+            numLightControllersPlanned++;
+        }
+
+        if (!hasPathEast) {
+            int minJReached = candidateJ;
+            for (int j = numCols - 1; j > candidateJ; j--) {
+                if (!rectangles[candidateI][j]) {
+                    rectangles[candidateI][j] = true;
+                } else {
+                    minJReached = j;
+                    break;
                 }
-
-                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
-                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {minIReached, candidateJ};
-                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {numRows - 1, candidateJ};
-                numLightControllersPlanned++;
             }
 
-            if (!hasPathWest) {
-                int maxJReached = candidateJ;
-                for (int j = 0; j < candidateJ; j++) {
-                    if (!rectangles[candidateI][j]) {
-                        rectangles[candidateI][j] = true;
-                    } else {
-                        maxJReached = j;
-                        break;
-                    }
-                }
-
-                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
-                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {candidateI, 0};
-                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {candidateI, maxJReached};
-                numLightControllersPlanned++;
-            }
-            if (!hasPathEast) {
-                int minJReached = candidateJ;
-                for (int j = numCols - 1; j > candidateJ; j--) {
-                    if (!rectangles[candidateI][j]) {
-                        rectangles[candidateI][j] = true;
-                    } else {
-                        minJReached = j;
-                        break;
-                    }
-                }
-
-                lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
-                lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {candidateI, minJReached};
-                lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {candidateI, numCols - 1};
-                numLightControllersPlanned++;
-            }
+            lightControllersCoordinates[numLightControllersPlanned] = new int[2][];
+            lightControllersCoordinates[numLightControllersPlanned][0] = new int[2] {candidateI, minJReached};
+            lightControllersCoordinates[numLightControllersPlanned][1] = new int[2] {candidateI, numCols - 1};
+            numLightControllersPlanned++;
         }
 
         return true;
@@ -562,9 +524,7 @@ public class Backrooms : UdonSharpBehaviour
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 if (rectangles[i][j]) {
-                    if (startingRow == numRows) {
-                        startingRow = i;
-                    }
+                    if (startingRow == numRows) startingRow = i;
                     endingRow = i;
 
                     startingCol = Math.Min(startingCol, j);
@@ -573,36 +533,24 @@ public class Backrooms : UdonSharpBehaviour
             }
         }
 
-        if (startingRow == 0 && endingRow == numRows - 1 && startingCol == 0 && endingCol == numCols - 1) {
-            return true;
-        }
+        if (startingRow == 0 && endingRow == numRows - 1 && startingCol == 0 && endingCol == numCols - 1) return true;
 
         double numerator = 0;
-        for (int i = startingRow; i < endingRow + 1; i++) {
-            numerator += rows[i];
-        }
+        for (int i = startingRow; i < endingRow + 1; i++) numerator += rows[i];
         double rowNormalisationFactor = numerator/cumulativeRows[numRows - 1];
 
         numerator = 0;
-        for (int j = startingCol; j < endingCol + 1; j++) {
-            numerator += columns[j];
-        }
+        for (int j = startingCol; j < endingCol + 1; j++) numerator += columns[j];
         double colNormalisationFactor = numerator/cumulativeCols[numCols - 1];
 
         // Finally, we adjust the rectangles arrays
         numRows = endingRow - startingRow + 1;
-        if (numRows <= 0) {
-            // grid has no valid paths
-            return false;
-        }
+        if (numRows <= 0) return false; // grid has no valid paths
         double[] newRows = new double[numRows];
         cumulativeRows = new double[numRows];
 
         numCols = endingCol - startingCol + 1;
-        if (numCols <= 0) {
-            // grid has no valid paths
-            return false;
-        }
+        if (numCols <= 0) return false; // grid has no valid paths
         double[] newCols = new double[numCols];
         cumulativeCols = new double[numCols];
 
@@ -613,9 +561,7 @@ public class Backrooms : UdonSharpBehaviour
             cumul += newRows[i];
             cumulativeRows[i] = cumul;
             newRectangles[i] = new bool[numCols];
-            for (int j = 0; j < numCols; j++) {
-                newRectangles[i][j] = rectangles[i + startingRow][j + startingCol];
-            }
+            for (int j = 0; j < numCols; j++) newRectangles[i][j] = rectangles[i + startingRow][j + startingCol];
         }
         cumul = 0;
         for (int j = 0; j < numCols; j++) {
@@ -708,10 +654,8 @@ public class Backrooms : UdonSharpBehaviour
                 double traversableArea = 0;
                 for (int i = 0; i < numRows; i++) {
                     for (int j = 0; j < numCols; j++) {
-                        if (rectangles[i][j]) {
-                            traversableArea += 1;
-                            // traversableArea += rows[i] * columns[j];
-                        }
+                        if (rectangles[i][j]) traversableArea += 1;
+                        // if (rectangles[i][j]) traversableArea += rows[i] * columns[j];
                     }
                 }
 
@@ -739,10 +683,7 @@ public class Backrooms : UdonSharpBehaviour
     }
 
     RoomGrid GenerateNorthNeighbour (RoomGrid originGrid) {
-        if (originGrid.northGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.northGrid;
-        }
+        if (originGrid.northGrid != null) return originGrid.northGrid; // Don't generate if I already exist
 
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
         gridRoot.transform.SetParent(transform);
@@ -772,10 +713,7 @@ public class Backrooms : UdonSharpBehaviour
     }
 
     RoomGrid GenerateSouthNeighbour (RoomGrid originGrid) {
-        if (originGrid.southGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.southGrid;
-        }
+        if (originGrid.southGrid != null) return originGrid.southGrid; // Don't generate if I already exist
 
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
         gridRoot.transform.SetParent(transform);
@@ -805,10 +743,7 @@ public class Backrooms : UdonSharpBehaviour
     }
 
     RoomGrid GenerateEastNeighbour (RoomGrid originGrid) {
-        if (originGrid.eastGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.eastGrid;
-        }
+        if (originGrid.eastGrid != null) return originGrid.eastGrid; // Don't generate if I already exist
 
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
         gridRoot.transform.SetParent(transform);
@@ -838,10 +773,7 @@ public class Backrooms : UdonSharpBehaviour
     }
 
     RoomGrid GenerateWestNeighbour (RoomGrid originGrid) {
-        if (originGrid.westGrid != null) {
-            // Don't generate if I already exist
-            return originGrid.westGrid;
-        }
+        if (originGrid.westGrid != null) return originGrid.westGrid; // Don't generate if I already exist
 
         GameObject gridRoot = GameObject.Instantiate(gridInstance);
         gridRoot.transform.SetParent(transform);
@@ -953,9 +885,7 @@ public class Backrooms : UdonSharpBehaviour
                     }
                 }
 
-                if (directionAvailable) {
-                    availableDirections[d++] = directions[i];
-                }
+                if (directionAvailable) availableDirections[d++] = directions[i];
             }
         }
 
@@ -1174,10 +1104,7 @@ public class Backrooms : UdonSharpBehaviour
         // When a starting grid is deleted, I set up a teleporter on the ceiling of the backrooms to take the player to a new grid
         RoomGrid oldGrid = startingGrid;
         startingGrid = newTeleportingGrid;
-        if (!initialGridWasDestroyed) {
-            // This is the first time the starting grid is destroyed, need to warn the teleporter that will take you to a different grid
-            initialGridWasDestroyed = true;
-        }
+        if (!initialGridWasDestroyed) initialGridWasDestroyed = true; // This is the first time the starting grid is destroyed, need to warn the teleporter that will take you to a different grid
 
         // Now we need to choose the coordinates of where the teleporter will take us
         teleportCoordinates = GenerateRandomCoordinatesOnStartingGrid ();
@@ -1232,9 +1159,7 @@ public class Backrooms : UdonSharpBehaviour
                     }
                 }
 
-                if (candidateI != -1) {
-                    break;
-                }
+                if (candidateI != -1) break;
             }
         }
 
@@ -1245,34 +1170,25 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         double teleportXCoordinate = 0, teleportZCoordinate = 0;
-        for (int i = 0; i < candidateI; i++) {
-            teleportZCoordinate += startingGridRows[i];
-        }
-        for (int j = 0; j < candidateJ; j++) {
-            teleportXCoordinate += startingGridColumns[j];
-        }
+
+        for (int i = 0; i < candidateI; i++) teleportZCoordinate += startingGridRows[i];
         teleportZCoordinate += (startingGridRows[candidateI] - gridSideSize) / 2 + startingGrid.transform.position.z;
+
+        for (int j = 0; j < candidateJ; j++) teleportXCoordinate += startingGridColumns[j];
         teleportXCoordinate += (startingGridColumns[candidateJ] - gridSideSize) / 2 + startingGrid.transform.position.x;
 
         return new Vector3 ((float) teleportXCoordinate, 3f, (float) teleportZCoordinate);
     }
 
-    public RoomGrid GetStartingGrid ()
-    {
-        return startingGrid;
-    }
+    public RoomGrid GetStartingGrid () {return startingGrid;}
     
     // ----------------------------------------------------------
     // Grid construction/mesh drawing
     private GameObject BuildWall (GameObject wallsOrganiser, Vector3 position, double size, int direction) {
         Vector3 rotation = Vector3.zero;
-        if (direction == East) {
-            rotation = new Vector3(0f, 90f, 0f);
-        } else if (direction == South) {
-            rotation = new Vector3(0f, 180f, 0f);
-        } else if (direction == West) {
-            rotation = new Vector3(0f, 270f, 0f);
-        }
+        if (direction == East) rotation = new Vector3(0f, 90f, 0f);
+        else if (direction == South) rotation = new Vector3(0f, 180f, 0f);
+        else if (direction == West) rotation = new Vector3(0f, 270f, 0f);
 
         var wall = GameObject.Instantiate(wallTile);
         wall.transform.SetParent(wallsOrganiser.transform);
@@ -1663,36 +1579,28 @@ public class Backrooms : UdonSharpBehaviour
                     if (j == 0 || !rectangles[i][j - 1]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         startingX += minPadding;
-                        if (j == 0) {
-                            startingX += gridEdgePadding;
-                        }
+                        if (j == 0) startingX += gridEdgePadding;
                     }
                     
                     double endingX = cumulativeCols[j];
                     if (j == numCols - 1 || !rectangles[i][j + 1]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         endingX -= minPadding;
-                        if (j == numCols - 1) {
-                            endingX -= gridEdgePadding;
-                        }
+                        if (j == numCols - 1) endingX -= gridEdgePadding;
                     }
                     
                     double startingY = cumulativeRows[i] - rows[i]; 
                     if (i == 0 || !rectangles[i - 1][j]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         startingY += minPadding;
-                        if (i == 0) {
-                            startingY += gridEdgePadding;
-                        }
+                        if (i == 0) startingY += gridEdgePadding;
                     }
                     
                     double endingY = cumulativeRows[i];
                     if (i == numRows - 1 || !rectangles[i + 1][j]) {
                         // If I'm at the grid edge or next to a wall, I won't place any lights before the edge + 0.5m
                         endingY -= minPadding;
-                        if (i == numRows - 1) {
-                            endingY -= gridEdgePadding;
-                        }
+                        if (i == numRows - 1) endingY -= gridEdgePadding;
                     }
 
                     int minLightRow = (int) Math.Max (0, Math.Ceiling ((startingY - minPadding - gridEdgePadding) / spaceBetweenLights));
@@ -1722,9 +1630,7 @@ public class Backrooms : UdonSharpBehaviour
                     light.name = "Light " + (numLights++);
 
                     // Check which light controllers this light is in
-                    for (int lc = 0; lc < numLightControllersCreated; lc++) {
-                        lightControllers[lc].CheckLightContainment(light);
-                    }
+                    for (int lc = 0; lc < numLightControllersCreated; lc++) lightControllers[lc].CheckLightContainment(light);
                 }
             }
         }

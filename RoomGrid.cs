@@ -71,19 +71,15 @@ public class RoomGrid : UdonSharpBehaviour
         this.explorationTrigger = null;
 
         this.rectangles = rectangles;
+
         this.rows = new double[numRows];
-        for (int i = 0; i < numRows; i++) {
-            this.rows[i] = rows[i];
-        }
+        for (int i = 0; i < numRows; i++) this.rows[i] = rows[i];
+
         this.columns = new double[numCols];
-        for (int j = 0; j < numCols; j++) {
-            this.columns[j] = columns[j];
-        }
+        for (int j = 0; j < numCols; j++) this.columns[j] = columns[j];
 
         this.edgeLightControllers = new LightController[numEdgeLightControllers];
-        for (int i = 0; i < numEdgeLightControllers; i++) {
-            this.edgeLightControllers[i] = edgeLightControllers[i];
-        }
+        for (int i = 0; i < numEdgeLightControllers; i++) this.edgeLightControllers[i] = edgeLightControllers[i];
 
         this.northEdgeWalls = northEdgeWalls;
         this.eastEdgeWalls = eastEdgeWalls;
@@ -104,9 +100,7 @@ public class RoomGrid : UdonSharpBehaviour
 
     public int[] GetGlobalCoordinates () {return this.globalCoordinates;}
 
-    public void SetFences (GameObject organiser) {
-        this.fenceOrganiser = organiser;
-    }
+    public void SetFences (GameObject organiser) {this.fenceOrganiser = organiser;}
 
     public void SetFenceDirection (int direction, GameObject fence)
     {
@@ -139,15 +133,8 @@ public class RoomGrid : UdonSharpBehaviour
         }
     }
 
-    public void DisableFence (int direction)
-    {
-        this.ToggleFence (direction, false);
-    }
-
-    public void EnableFence (int direction)
-    {
-        this.ToggleFence (direction, true);
-    }
+    public void DisableFence (int direction) {this.ToggleFence (direction, false);}
+    public void EnableFence (int direction) {this.ToggleFence (direction, true);}
 
     private void ToggleFence (int direction, bool state)
     {
@@ -172,10 +159,7 @@ public class RoomGrid : UdonSharpBehaviour
         }
     }
 
-    public LightController[] GetEdgeLightControllers ()
-    {
-        return edgeLightControllers;
-    }
+    public LightController[] GetEdgeLightControllers () {return edgeLightControllers;}
 
     public void AddNeighbouringGridLightControllers (RoomGrid neighbouringGrid)
     {
@@ -283,25 +267,10 @@ public class RoomGrid : UdonSharpBehaviour
         this.explorationTrigger = null;
     }
 
-    public void DisableEdgeWall (int direction)
-    {
-        DisableEdgeWalls (new int[1] {direction});
-    }
-
-    public void DisableEdgeWalls (int[] directions)
-    {
-        ToggleEdgeWalls (directions, false);
-    }
-
-    public void EnableEdgeWall (int direction)
-    {
-        EnableEdgeWalls (new int[1] {direction});
-    }
-
-    public void EnableEdgeWalls (int[] directions)
-    {
-        ToggleEdgeWalls (directions, true);
-    }
+    public void DisableEdgeWall (int direction) {DisableEdgeWalls (new int[1] {direction});}
+    public void DisableEdgeWalls (int[] directions) {ToggleEdgeWalls (directions, false);}
+    public void EnableEdgeWall (int direction) {EnableEdgeWalls (new int[1] {direction});}
+    public void EnableEdgeWalls (int[] directions) {ToggleEdgeWalls (directions, true);}
 
     private void ToggleEdgeWalls (int[] directions, bool state)
     {
@@ -376,29 +345,14 @@ public class RoomGrid : UdonSharpBehaviour
         }
     }
 
-    public Vector2[][] GetNorthExits() {
-        return this.northExits;
-    }
+    public Vector2[][] GetNorthExits() {return this.northExits;}
+    public Vector2[][] GetSouthExits() {return this.southExits;}
+    public Vector2[][] GetEastExits() {return this.eastExits;}
 
-    public Vector2[][] GetSouthExits() {
-        return this.southExits;
-    }
+    public Vector2[][] GetWestExits() {return this.westExits;}
 
-    public Vector2[][] GetEastExits() {
-        return this.eastExits;
-    }
-
-    public Vector2[][] GetWestExits() {
-        return this.westExits;
-    }
-
-    public float GetVerticalSize() {
-        return this.verticalSize;
-    }
-
-    public float GetHorizontalSize() {
-        return this.horizontalSize;
-    }
+    public float GetVerticalSize() {return this.verticalSize;}
+    public float GetHorizontalSize() {return this.horizontalSize;}
 
     public void GenerateExits () {
         // generate a list of exits from the bool grid
