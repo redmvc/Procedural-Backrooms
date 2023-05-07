@@ -42,6 +42,23 @@ public class Flashlight : UdonSharpBehaviour
         if (playSound) this.clickSound.Play ();
     }
 
+    public void ForciblyTurnOff (bool lockFlashlight = true)
+    {
+        this.isLocked = lockFlashlight;
+        ForciblyToggle (false);
+    }
+
+    public void ForciblyTurnOn (bool lockFlashlight = true)
+    {
+        this.isLocked = lockFlashlight;
+        ForciblyToggle (true);
+    }
+
+    private void ForciblyToggle (bool activate)
+    {
+        if (this.isActive != activate) this.ToggleNetwork ();
+    }
+
     public void Lock (bool lockFlashlight)
     {
         this.isLocked = lockFlashlight;
