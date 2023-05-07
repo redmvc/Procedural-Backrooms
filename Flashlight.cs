@@ -9,6 +9,7 @@ public class Flashlight : UdonSharpBehaviour
     public new GameObject light;
     [UdonSynced] public bool isActive = true;
     private bool isActiveLocal = true;
+    private bool isLocked = false; // If the flashlight is locked the player can't change it
     public AudioSource clickSound;
 
     void Start() {}
@@ -20,6 +21,8 @@ public class Flashlight : UdonSharpBehaviour
 
     private void ToggleNetwork ()
     {
+        if (this.isLocked) return;
+
         this.isActive = !this.isActive;
         this.isActiveLocal = this.isActive;
         this.ToggleLight ();
@@ -37,5 +40,10 @@ public class Flashlight : UdonSharpBehaviour
     {
         this.light.SetActive (this.isActive);
         if (playSound) this.clickSound.Play ();
+    }
+
+    public void Lock (bool lockFlashlight)
+    {
+        this.isLocked = lockFlashlight;
     }
 }
