@@ -39,13 +39,13 @@ public class RoomGrid : UdonSharpBehaviour
 
     // Spawnable meshes
     public GameObject emptyGameObject;
-    public GameObject explorationTriggerTile;
+    private GameObject explorationTriggerPrefab;
     private GameObject explorationTrigger;
 
     void Start() {}
 
     public void Initialize (GameObject root, Vector2[] gridCorners,
-                            Backrooms backroomsController,
+                            Backrooms backroomsController, GameObject explorationTriggerPrefab,
                             bool[][] rectangles, double[] rows, int numRows, double[] columns, int numCols,
                             LightController[] edgeLightControllers, int numEdgeLightControllers,
                             GameObject northEdgeWalls, GameObject eastEdgeWalls, GameObject southEdgeWalls, GameObject westEdgeWalls,
@@ -55,6 +55,7 @@ public class RoomGrid : UdonSharpBehaviour
         this.verticalSize = gridCorners[1][1] - gridCorners[0][1];
         this.horizontalSize = gridCorners[1][0] - gridCorners[0][0];
         this.backroomsController = backroomsController;
+        this.explorationTriggerPrefab = explorationTriggerPrefab;
         this.globalCoordinates = globalCoordinates;
 
         this.northGrid = null;
@@ -235,7 +236,7 @@ public class RoomGrid : UdonSharpBehaviour
     }
 
     public void CreateExplorationTrigger() {
-        this.explorationTrigger = GameObject.Instantiate(explorationTriggerTile);
+        this.explorationTrigger = GameObject.Instantiate(explorationTriggerPrefab);
         this.explorationTrigger.transform.SetParent(transform);
         this.explorationTrigger.name = "Exploration Trigger";
 

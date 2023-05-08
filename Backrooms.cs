@@ -36,6 +36,7 @@ public class Backrooms : UdonSharpBehaviour
     public GameObject[] flashlights;
     public GameObject emptyGameObject;
     public GameObject gridInstance;
+    public GameObject explorationTriggerPrefab;
 
     // Functional variables
     private RoomGrid startingGrid = null;
@@ -674,7 +675,7 @@ public class Backrooms : UdonSharpBehaviour
         }
 
         RoomGrid grid = gridRoot.GetComponent<RoomGrid>();
-        grid.Initialize (gridRoot, effectiveGridCorners, this, rectangles, rows, numRows, columns, numCols, edgeLightControllers, numEdgeLightControllers,
+        grid.Initialize (gridRoot, effectiveGridCorners, this, explorationTriggerPrefab, rectangles, rows, numRows, columns, numCols, edgeLightControllers, numEdgeLightControllers,
                          northEdgeWalls, eastEdgeWalls, southEdgeWalls, westEdgeWalls, globalCoordinates);
         grid.GenerateExits ();
         gridOfGrids[globalCoordinates[0]][globalCoordinates[1]] = grid;
