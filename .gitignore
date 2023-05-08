@@ -2,3 +2,20 @@
 *.asset
 *.meta
 desktop.ini
+*.blend
+*.blend1
+Library/ArtifactDB
+Library/Artifacts/
+Library/BurstCache/
+Library/PackageCache/
+Library/PlayerDataCache/
+Library/ShaderCache/
+Library/StateCache/
+Library/TempArtifacts/
+Library/UdonSharpCache/
+Library/ArtifactDB-lock
+*.buildreport
+Library/ShaderCache.db
+Library/SourceAssetDB-lock
+Library/SourceAssetDB
+Assets/Meshes and Prefabs/Landing/Landing.fbx
