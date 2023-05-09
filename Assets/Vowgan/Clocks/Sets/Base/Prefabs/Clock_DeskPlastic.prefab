@@ -18,6 +18,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 881705191541257212, guid: 8f3b151b806ffd5449d1569ec7e20025,
         type: 3}
+    - target: {fileID: 942064653554831074, guid: 8f3b151b806ffd5449d1569ec7e20025,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
     - target: {fileID: 1755858514603029793, guid: 8f3b151b806ffd5449d1569ec7e20025,
         type: 3}
       propertyPath: useLocalTimeZone
@@ -42,8 +48,7 @@ PrefabInstance:
         type: 3}
       propertyPath: serializedProgramAsset
       value: 
-      objectReference: {fileID: 11400000, guid: b36a56caf82eadb49980c1d1ba5c3940,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 7469758452450158600, guid: 8f3b151b806ffd5449d1569ec7e20025,
         type: 3}
       propertyPath: serializedPublicVariablesBytesString
@@ -134,5 +139,11 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8551813017423116179, guid: 8f3b151b806ffd5449d1569ec7e20025,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4ddad8ecad3312b4f90617aa17f17c9e,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f3b151b806ffd5449d1569ec7e20025, type: 3}

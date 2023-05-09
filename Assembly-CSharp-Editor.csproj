@@ -234,157 +234,157 @@
         <HintPath>C:\Program Files\Unity\Hub\Editor\2019.4.31f1\Editor\Data\PlaybackEngines\AndroidPlayer\UnityEditor.Android.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Unsafe">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.burst@1.4.11\Unity.Burst.Unsafe.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.burst@1.4.11\Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="clipper_library">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.cinemachine@2.8.0\Runtime\ThirdParty\clipper_library.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.cinemachine@2.8.0\Runtime\ThirdParty\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Newtonsoft.Json">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="unityplastic">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.collab-proxy@1.6.0\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="WatsonTcp">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Editor\VRCSDK\Dependencies\VRChat\CreatorCompanion\WatsonTcp.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Editor\VRCSDK\Dependencies\VRChat\CreatorCompanion\WatsonTcp.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDK3.Dynamics.Contact.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Editor\VRCSDK\Plugins\VRC.SDK3.Dynamics.Contact.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Editor\VRCSDK\Plugins\VRC.SDK3.Dynamics.Contact.Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDK3.Dynamics.PhysBone.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Editor\VRCSDK\Plugins\VRC.SDK3.Dynamics.PhysBone.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Editor\VRCSDK\Plugins\VRC.SDK3.Dynamics.PhysBone.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Blake2Sharp">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\librsync\Blake2Sharp.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\librsync\Blake2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="librsync.net">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\librsync\librsync.net.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\librsync\librsync.net.dll</HintPath>
     </Reference>
     <Reference Include="Collections.Pooled">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\Collections.Pooled.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\Collections.Pooled.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Buffers.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Collections.Immutable.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Memory.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics.Vectors">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Numerics.Vectors.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Threading.Tasks.Extensions.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Collections">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\VRC.Collections.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Dependencies\Managed\VRC.Collections.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Dynamics">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.Dynamics.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.Dynamics.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDK3.Dynamics.Contact">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.SDK3.Dynamics.Contact.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.SDK3.Dynamics.Contact.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDK3.Dynamics.PhysBone">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.SDK3.Dynamics.PhysBone.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.SDK3.Dynamics.PhysBone.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Utility">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.Utility.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRC.Utility.dll</HintPath>
     </Reference>
     <Reference Include="VRCCore-Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRCCore-Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRCCore-Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDKBase-Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRCSDKBase-Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRCSDKBase-Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDKBase">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRCSDKBase.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.base\Runtime\VRCSDK\Plugins\VRCSDKBase.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\ICSharpCode.SharpZipLib.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="SemanticVersioning">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\SemanticVersioning.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\SemanticVersioning.dll</HintPath>
     </Reference>
     <Reference Include="Serilog">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\Serilog.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.Sinks.File">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\Serilog.Sinks.File.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\Serilog.Sinks.File.dll</HintPath>
     </Reference>
     <Reference Include="Serilog.Sinks.Unity3D">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\Serilog.Sinks.Unity3D.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\Serilog.Sinks.Unity3D.dll</HintPath>
     </Reference>
     <Reference Include="vpm-core-lib">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\vpm-core-lib.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\vpm-core-lib.dll</HintPath>
     </Reference>
     <Reference Include="YamlDotNet">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\YamlDotNet.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.core.vpm-resolver\Editor\Dependencies\YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="0Harmony">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.udonsharp\Runtime\Plugins\0Harmony.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.udonsharp\Runtime\Plugins\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encoding.CodePages">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.udonsharp\Runtime\Plugins\System.Text.Encoding.CodePages.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.udonsharp\Runtime\Plugins\System.Text.Encoding.CodePages.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Compiler">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.Compiler.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.EditorBindings">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.EditorBindings.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.EditorBindings.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Graph">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.Graph.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.Graph.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.UAssembly">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.UAssembly.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.UAssembly.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.VRCGraphModules">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.VRCGraphModules.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.VRCGraphModules.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.VRCTypeResolverModules">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.VRCTypeResolverModules.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Editor\Udon\External\VRC.Udon.VRCTypeResolverModules.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.ClientBindings">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.ClientBindings.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.ClientBindings.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Common">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.Common.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.Common.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Security">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.Security.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.Security.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.VM">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.VM.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.VM.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.VRCWrapperModules">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.VRCWrapperModules.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.VRCWrapperModules.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Wrapper">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.Wrapper.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\Udon\External\VRC.Udon.Wrapper.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDK3-Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\VRCSDK\Plugins\VRCSDK3-Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\VRCSDK\Plugins\VRCSDK3-Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDK3">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\VRCSDK\Plugins\VRCSDK3.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Packages\com.vrchat.worlds\Runtime\VRCSDK\Plugins\VRCSDK3.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2019.4.31f1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
@@ -744,154 +744,154 @@
         <HintPath>C:\Program Files\Unity\Hub\Editor\2019.4.31f1\Editor\Data\MonoBleedingEdge\lib\mono\unityscript\Boo.Lang.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.TestRunner">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEditor.TestRunner.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEditor.TestRunner.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TestRunner">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEngine.TestRunner.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEngine.TestRunner.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Cinemachine">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Cinemachine.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Cinemachine.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Serialization.OdinSerializer">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.Udon.Serialization.OdinSerializer.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.Udon.Serialization.OdinSerializer.dll</HintPath>
     </Reference>
     <Reference Include="vrchat.jordo.easyquestswitch.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\vrchat.jordo.easyquestswitch.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\vrchat.jordo.easyquestswitch.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRC.ClientSim.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.ClientSim.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.ClientSim.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Formats.Fbx.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Formats.Fbx.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Formats.Fbx.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UdonSharp.Runtime">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UdonSharp.Runtime.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UdonSharp.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="UdonSharp.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UdonSharp.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UdonSharp.Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.Udon.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.Udon.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="AudioLink">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\AudioLink.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\AudioLink.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.CollabProxy.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Postprocessing.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Postprocessing.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Postprocessing.Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDKBase.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UniTask.Addressables">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.Addressables.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.Fbx.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Autodesk.Fbx.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Autodesk.Fbx.Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDK3">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDK3.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDK3.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDKBase.Editor.ShaderStripping">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.Editor.ShaderStripping.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.Editor.ShaderStripping.dll</HintPath>
     </Reference>
     <Reference Include="UniTask">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.dll</HintPath>
     </Reference>
     <Reference Include="com.vrchat.core.vpm-resolver.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\com.vrchat.core.vpm-resolver.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\com.vrchat.core.vpm-resolver.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="UniTask.DOTween">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.DOTween.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.DOTween.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Postprocessing.Runtime">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Postprocessing.Runtime.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Postprocessing.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDKBase">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.Udon.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.Udon.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Autodesk.Fbx">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Autodesk.Fbx.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Autodesk.Fbx.dll</HintPath>
     </Reference>
     <Reference Include="VRWorldToolkit.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRWorldToolkit.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRWorldToolkit.Editor.dll</HintPath>
     </Reference>
     <Reference Include="com.unity.cinemachine.editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\com.unity.cinemachine.editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UniTask.TextMeshPro">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.TextMeshPro.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="AudioLink.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\AudioLink.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\AudioLink.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UniTask.Linq">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.Linq.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UniTask.Linq.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDK3.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDK3.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDK3.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="vrchat.jordo.easyquestswitch">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\vrchat.jordo.easyquestswitch.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\vrchat.jordo.easyquestswitch.dll</HintPath>
     </Reference>
     <Reference Include="VRC.SDKBase.Editor.BuildPipeline">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.Editor.BuildPipeline.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.SDKBase.Editor.BuildPipeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Formats.Fbx.Runtime">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Formats.Fbx.Runtime.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.Formats.Fbx.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="VRC.ClientSim">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.ClientSim.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\VRC.ClientSim.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PlasticSCM.Editor">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-        <HintPath>D:\Google Drive\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+        <HintPath>C:\VRChatProjects\Procedural Backrooms\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
